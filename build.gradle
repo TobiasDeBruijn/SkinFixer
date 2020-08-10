@@ -1,0 +1,53 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+plugins {
+    id 'java'
+    id 'eclipse'
+}
+
+allprojects {
+
+	version = pluginVersion
+	group = pluginGroup	
+
+	sourceCompatibility = 1.8
+	targetCompatibility = 1.8
+
+	repositories {
+		jcenter()
+  	  	maven{ url "https://hub.spigotmc.org/nexus/content/repositories/snapshots" }
+   	 	maven{ url "https://oss.sonatype.org/content/repositories/snapshots" }
+    }
+    
+	processResources {
+    	from(sourceSets.main.resources.srcDirs) {
+        	filter ReplaceTokens, tokens: [version: version]
+		filter ReplaceTokens, tokens: [name: pluginName]
+		filter ReplaceTokens, tokens: [groupId: pluginGroup]
+		filter ReplaceTokens, tokens: [author: pluginAuthor]
+		filter ReplaceTokens, tokens: [apiVersion: pluginApiVersion]
+		}
+    }
+}
+
+dependencies {
+	
+	compileOnly 'org.spigotmc:spigot-api:1.16.1-R0.1-SNAPSHOT'
+	
+}
+
+task testJar(type: Jar) {
+	
+	description 'Build a test Jar'
+	archiveClassifier = 'DEV'
+	from sourceSets.main.output
+	destinationDirectory = file("$rootDir/server/plugins")
+}
+
+task releaseJar(type: Jar) {
+
+	description 'Build a release Jar'
+	archiveClassifier = 'RELEASE'
+	from sourceSets.main.output
+	destinationDirectory = file("$rootDir/releases")
+}

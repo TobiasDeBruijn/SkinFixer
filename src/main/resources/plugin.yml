@@ -1,0 +1,6 @@
+name: @name@
+main: @groupId@.@name@.@name@
+version: @version@
+author: @author@
+api-version: @apiVersion@
+
