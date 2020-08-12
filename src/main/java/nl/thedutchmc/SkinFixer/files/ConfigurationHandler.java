@@ -1,4 +1,4 @@
-package nl.thedutchmc.SkinFixer;
+package nl.thedutchmc.SkinFixer.files;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,8 +7,11 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import nl.thedutchmc.SkinFixer.SkinFixer;
+
 public class ConfigurationHandler {
 
+	public static boolean useDiscord;
 	public static String token, channel;
 	
 	private File file;
@@ -39,7 +42,16 @@ public class ConfigurationHandler {
 	}
 	
 	public void readConfig() {
-		token = this.getConfig().getString("discordToken");
-		channel = this.getConfig().getString("skinDiscordChannel");
+		useDiscord = this.getConfig().getBoolean("useDiscord");
+		
+		if(useDiscord) {
+			token = this.getConfig().getString("discordToken");
+			channel = this.getConfig().getString("skinDiscordChannel");
+			
+			if(token.equals("") || channel.equals("")) {
+				SkinFixer.logWarn("Token or channel has not been filled in. Not using Discord!");
+				useDiscord = false;
+			}
+		}
 	}
 }

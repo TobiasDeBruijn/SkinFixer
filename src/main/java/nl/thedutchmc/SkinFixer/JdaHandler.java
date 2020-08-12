@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import nl.thedutchmc.SkinFixer.discordEvents.MessageReceivedEventListener;
+import nl.thedutchmc.SkinFixer.files.ConfigurationHandler;
 
 public class JdaHandler {
 
@@ -20,10 +21,9 @@ public class JdaHandler {
 			jda.awaitReady();
 			
 		} catch (LoginException e) {
-			// TODO Auto-generated catch block
+			SkinFixer.logWarn("Unable to connecto the Discord API. Is your token correct?");
 			e.printStackTrace();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -39,5 +39,9 @@ public class JdaHandler {
 	
 	public static MessageChannel getChannel() {
 		return channel;
+	}
+	
+	public static void shutdownJda() throws Exception {
+		jda.shutdownNow();
 	}
 }

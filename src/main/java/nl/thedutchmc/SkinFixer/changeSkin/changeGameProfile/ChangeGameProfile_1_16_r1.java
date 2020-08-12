@@ -59,15 +59,13 @@ public class ChangeGameProfile_1_16_r1 implements ChangeGameProfile {
         
         ep.playerConnection.sendPacket(removeInfo);
         ep.playerConnection.sendPacket(addInfo);
-        
-        System.out.println(loc.getWorld());
-        
+                
         World teleportToWorld = null;
         for(World w : Bukkit.getWorlds()) {
         	if(!w.equals(loc.getWorld())) teleportToWorld = w;
         }
                 
-        player.teleport(new Location(teleportToWorld, 0, 1, 0));
+        player.teleport(new Location(teleportToWorld, 0, 255, 0));
         new BukkitRunnable() {
             @Override
             public void run() {

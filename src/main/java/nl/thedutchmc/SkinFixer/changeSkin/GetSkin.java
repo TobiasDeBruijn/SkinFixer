@@ -18,7 +18,7 @@ import org.apache.http.message.BasicNameValuePair;
 public class GetSkin {
 
 	
-	public static String getSkin(String skinUrl) {
+	public static String getSkin(String skinUrl, boolean slim) {
 
 		HttpClient httpclient = HttpClients.createDefault();
 		HttpPost httppost = new HttpPost("https://api.mineskin.org/generate/url");
@@ -27,6 +27,10 @@ public class GetSkin {
 		List<NameValuePair> params = new ArrayList<NameValuePair>(2);
 		params.add(new BasicNameValuePair("User-Agent", "Java Spigot Plugin"));
 		params.add(new BasicNameValuePair("url", skinUrl));
+		
+		if(slim) {
+			params.add(new BasicNameValuePair("model", "slim"));
+		}
 		
 		try {
 			httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
@@ -45,13 +49,10 @@ public class GetSkin {
 			return responseBuilder.toString();
 			
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

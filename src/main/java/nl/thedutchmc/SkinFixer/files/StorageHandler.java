@@ -1,4 +1,4 @@
-package nl.thedutchmc.SkinFixer;
+package nl.thedutchmc.SkinFixer.files;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,9 +12,12 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import nl.thedutchmc.SkinFixer.SkinFixer;
+import nl.thedutchmc.SkinFixer.SkinObject;
+
 public class StorageHandler {
 	
-	public static HashMap<String, String> pendingLinks = new HashMap<>();
+	public static HashMap<Integer, String> pendingLinks = new HashMap<>();
 	public static HashMap<UUID, SkinObject> skins = new HashMap<>();
 	
 	private File file;
@@ -46,34 +49,52 @@ public class StorageHandler {
 	
 	@SuppressWarnings("unchecked")
 	public void readConfig() {
-		List<String> pendingLinksAsList = (List<String>) this.getConfig().getList("pendingLinks");
 		
-		for(String encoded : pendingLinksAsList) {
-			final String[] parts = encoded.split("|");
-			pendingLinks.put(parts[0], parts[1]);
-		}
-		
-		List<String> skinDataAsList = (List<String>) this.getConfig().getList("skinData");
-		
-		for(String encoded : skinDataAsList) {
-			final String[] parts = encoded.split("|");
+		if(this.getConfig().getList("pendingLinks") != null) {
+			List<String> pendingLinksAsList = (List<String>) this.getConfig().getList("pendingLinks");
 			
-			skins.put(
-				UUID.fromString(parts[0]), //uuid
-				new SkinObject(
-					UUID.fromString(parts[0]), //uuid
-					parts[1], //value
-					parts[2]  //signature
-				)
-			);
+			for(String encoded : pendingLinksAsList) {
+				final String[] parts = encoded.split("<--->");
+				pendingLinks.put(Integer.valueOf(parts[0]), parts[1]);
+			}
+		}
+
+		if(this.getConfig().getList("skinData") != null) {
+			List<String> skinDataAsList = (List<String>) this.getConfig().getList("skinData");
+			
+			for(String encoded : skinDataAsList) {
+							
+				String[] parts = encoded.split("<--->");
+								
+				char[] ca = parts[0].toCharArray();
+            	
+            	//Remove trailing spaces
+            	String uuid = "";
+            	for(int i = 0; i < ca.length; i++) {
+            		char c = ca[i];
+            		
+            		if(i == (ca.length -1) && c == ' ') continue;
+            			
+            		uuid += c;
+            	}
+            					
+				skins.put(
+					UUID.fromString(uuid), //uuid
+					new SkinObject(
+						UUID.fromString(uuid), //uuid
+						parts[1], //value
+						parts[2]  //signature
+					)
+				);
+			}
 		}
 	}
 	
 	public void updateConfig() {
 		
 		List<String> pendingLinksAsList = new ArrayList<>();
-		for(Map.Entry<String, String> entry : pendingLinks.entrySet()) {
-			pendingLinksAsList.add(entry.getKey() + "|" + entry.getValue());
+		for(Map.Entry<Integer, String> entry : pendingLinks.entrySet()) {
+			pendingLinksAsList.add(entry.getKey().toString() + "<--->" + entry.getValue());
 		}
 		
 		List<String> skinDataAsList = new ArrayList<>();
@@ -83,7 +104,7 @@ public class StorageHandler {
 			String value = entry.getValue().getValue();
 			String signature = entry.getValue().getSignature();
 			
-			skinDataAsList.add(uuid + "|" + value + "|" + signature);
+			skinDataAsList.add(uuid.toString() + "<--->" + value + "<--->" + signature);
 		}
 		
 		this.getConfig().set("pendingLinks", pendingLinksAsList);

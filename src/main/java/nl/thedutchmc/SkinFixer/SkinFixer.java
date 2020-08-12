@@ -3,7 +3,12 @@ package nl.thedutchmc.SkinFixer;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import nl.thedutchmc.SkinFixer.commandHandlers.GetCodeCommandExecutor;
 import nl.thedutchmc.SkinFixer.commandHandlers.SetSkinCommandExecutor;
+import nl.thedutchmc.SkinFixer.commandHandlers.SkinFixerCommandExecutor;
+import nl.thedutchmc.SkinFixer.files.ConfigurationHandler;
+import nl.thedutchmc.SkinFixer.files.StorageHandler;
+import nl.thedutchmc.SkinFixer.minecraftEvents.PlayerJoinEventListener;
 
 public class SkinFixer extends JavaPlugin {
 
@@ -11,11 +16,15 @@ public class SkinFixer extends JavaPlugin {
 	public static StorageHandler STORAGE;
 	
 	public static final String NMS_VERSION = Bukkit.getServer().getClass().getPackage().getName().substring(23);
+	public static String PLUGIN_VERSION;
 	
 	@Override
 	public void onEnable() {
 		INSTANCE = this;
 		
+		PLUGIN_VERSION = Bukkit.getPluginManager().getPlugin("SkinFixer").getDescription().getVersion();
+		
+		SkinFixer.logInfo("Welcome to SkinFixer version " + PLUGIN_VERSION + " by TheDutchMC!");
 		SkinFixer.logInfo("Using NMS Version " + SkinFixer.NMS_VERSION);
 		
 		//Read the configuration
@@ -24,24 +33,34 @@ public class SkinFixer extends JavaPlugin {
 	
 		//Storage of skins and pending keys
 		STORAGE = new StorageHandler();
-		STORAGE.readConfig();
+		STORAGE.loadConfig();
 		
 		if(Bukkit.getOnlineMode() == true) logInfo("This plugin is not needed on servers running in online mode!");
 		
 		//Register command executors
 		this.getCommand("setskin").setExecutor(new SetSkinCommandExecutor());
+		this.getCommand("getcode").setExecutor(new GetCodeCommandExecutor());
+		this.getCommand("skinfixer").setExecutor(new SkinFixerCommandExecutor());
 		
 		//Setup JDA
-		JdaHandler jdaHandler = new JdaHandler();
-		jdaHandler.setupJda();
-		
-		//TODO EventListeners for joining
-		
+		if(ConfigurationHandler.useDiscord) {
+			JdaHandler jdaHandler = new JdaHandler();
+			jdaHandler.setupJda();
+		}
+
+		//Register event listeners
+		Bukkit.getPluginManager().registerEvents(new PlayerJoinEventListener(), this);
 	}
 	
 	@Override
 	public void onDisable() {
-		//TODO Log out JDA to quicken shutdown
+		logInfo("Shutting down JDA");
+		
+		try {
+			JdaHandler.shutdownJda();
+		} catch(Exception e) {}
+		
+		logInfo("Thank you for using SkinFixer by TheDutchMC");
 	}
 	
 	public static void logInfo(String log) {

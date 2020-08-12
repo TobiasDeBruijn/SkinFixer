@@ -7,8 +7,8 @@ import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatColor;
 import nl.thedutchmc.SkinFixer.SkinFixer;
-import nl.thedutchmc.SkinFixer.StorageHandler;
 import nl.thedutchmc.SkinFixer.changeSkin.SkinChangeOrchestrator;
+import nl.thedutchmc.SkinFixer.files.StorageHandler;
 
 public class SetSkinCommandExecutor implements CommandExecutor {
 
@@ -20,12 +20,23 @@ public class SetSkinCommandExecutor implements CommandExecutor {
 			return true;
 		}
  		
+		if(!sender.hasPermission("skinfixer.setskin") ) {
+			sender.sendMessage(ChatColor.RED + "You don't have permission to use this command!");
+			return true;
+		}
+		
 		if(args.length == 0) {
 			sender.sendMessage(ChatColor.RED + "You need to provide a code!");
 			return true;
 		}
 		
-		String code = args[0];
+		int code = 0;
+		try {
+			code = getIntFromString(args[0]);
+		} catch(NumberFormatException e) {
+			sender.sendMessage(ChatColor.RED + "The code you entered is not a number!");
+			return true;
+		}
 		
 		if(!StorageHandler.pendingLinks.containsKey(code)) {
 			sender.sendMessage(ChatColor.RED + "Unkown code!");
@@ -35,10 +46,27 @@ public class SetSkinCommandExecutor implements CommandExecutor {
 		String url = StorageHandler.pendingLinks.get(code);
 		
 		Player p = (Player) sender;
-		SkinChangeOrchestrator.changeSkin(url, p.getUniqueId());
+		
+		//Check if the user has given an option for if it should be a slim skin model
+		if(args.length == 2) {
+			if(args[1].equals("true")) {
+				//Slim model
+				SkinChangeOrchestrator.changeSkinJson(url, p.getUniqueId(), true);
+			} else {
+				//Regular model
+				SkinChangeOrchestrator.changeSkinJson(url, p.getUniqueId(), false);
+			}
+		} else {
+			//Regular model
+			SkinChangeOrchestrator.changeSkinJson(url, p.getUniqueId(), false);
+		}
 		
 		SkinFixer.STORAGE.updateConfig();
 		
-		return false;
+		return true;
+	}
+	
+	private int getIntFromString(String str) throws NumberFormatException {
+		return Integer.valueOf(str);
 	}
 }

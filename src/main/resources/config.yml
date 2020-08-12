@@ -1,3 +1,6 @@
+#Should we use Discord. Default: true
+useDiscord: true
+
 #Discord Token
 discordToken: ""
 
