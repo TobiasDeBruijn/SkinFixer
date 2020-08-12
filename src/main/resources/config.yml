@@ -1,1 +1,5 @@
-#Empty configuration file. you should add stuff here yourself or remove it :)
+#Discord Token
+discordToken: ""
+
+#Discord Channel used for uploading skins
+skinDiscordChannel: ""

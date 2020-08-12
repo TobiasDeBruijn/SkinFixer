@@ -1,8 +1,11 @@
 import org.apache.tools.ant.filters.ReplaceTokens
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     id 'java'
     id 'eclipse'
+	id 'com.github.johnrengelman.shadow' version '5.0.0'
+    
 }
 
 allprojects {
@@ -15,6 +18,8 @@ allprojects {
 
 	repositories {
 		jcenter()
+		mavenLocal()
+		mavenCentral()
   	  	maven{ url "https://hub.spigotmc.org/nexus/content/repositories/snapshots" }
    	 	maven{ url "https://oss.sonatype.org/content/repositories/snapshots" }
     }
@@ -32,22 +37,18 @@ allprojects {
 
 dependencies {
 	
-	compileOnly 'org.spigotmc:spigot-api:1.16.1-R0.1-SNAPSHOT'
+	compileOnly 'org.spigotmc:spigot:1.16.1-R0.1-SNAPSHOT'
+	compile 'org.apache.httpcomponents:httpclient:4.5.12'
+	compile 'org.json:json:20200518'
 	
+	
+	//JDA, for hooking into Discord
+	implementation ('net.dv8tion:JDA:4.2.0_168') {
+		exclude module: 'opus-java' 
+	}
 }
 
-task testJar(type: Jar) {
-	
-	description 'Build a test Jar'
-	archiveClassifier = 'DEV'
-	from sourceSets.main.output
-	destinationDirectory = file("$rootDir/server/plugins")
-}
+shadowJar() {
 
-task releaseJar(type: Jar) {
-
-	description 'Build a release Jar'
-	archiveClassifier = 'RELEASE'
-	from sourceSets.main.output
-	destinationDirectory = file("$rootDir/releases")
+	relocate 'net.dv8tion.jda', 'nl.thedutchmc.libs.jda'
 }

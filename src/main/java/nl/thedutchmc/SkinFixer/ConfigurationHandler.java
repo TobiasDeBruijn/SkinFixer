@@ -1,4 +1,4 @@
-package nl.thedutchmc.BaseBukkitPlugin;
+package nl.thedutchmc.SkinFixer;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,6 +9,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 public class ConfigurationHandler {
 
+	public static String token, channel;
+	
 	private File file;
 	private FileConfiguration config;
 	
@@ -17,11 +19,11 @@ public class ConfigurationHandler {
 	}
 	
 	public void loadConfig() {
-		file = new File(BaseBukkitPlugin.INSTANCE.getDataFolder(), "config.yml");
+		file = new File(SkinFixer.INSTANCE.getDataFolder(), "config.yml");
 		
 		if(!file.exists()) {
 			file.getParentFile().mkdirs();
-			BaseBukkitPlugin.INSTANCE.saveResource("config.yml", false);
+			SkinFixer.INSTANCE.saveResource("config.yml", false);
 		}
 		
 		config = new YamlConfiguration();
@@ -30,13 +32,14 @@ public class ConfigurationHandler {
 			config.load(file);
 			readConfig();
 		} catch (InvalidConfigurationException e) {
-			BaseBukkitPlugin.logWarn("Invalid config.yml!");
+			SkinFixer.logWarn("Invalid config.yml!");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	public void readConfig() {
-		//Read the config here
+		token = this.getConfig().getString("discordToken");
+		channel = this.getConfig().getString("skinDiscordChannel");
 	}
 }
