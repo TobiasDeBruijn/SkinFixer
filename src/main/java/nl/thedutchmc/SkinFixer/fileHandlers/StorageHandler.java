@@ -1,4 +1,4 @@
-package nl.thedutchmc.SkinFixer.files;
+package nl.thedutchmc.SkinFixer.fileHandlers;
 
 import java.io.File;
 import java.io.IOException;

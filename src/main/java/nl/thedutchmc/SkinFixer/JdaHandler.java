@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import nl.thedutchmc.SkinFixer.discordEvents.MessageReceivedEventListener;
-import nl.thedutchmc.SkinFixer.files.ConfigurationHandler;
+import nl.thedutchmc.SkinFixer.fileHandlers.ConfigurationHandler;
 
 public class JdaHandler {
 

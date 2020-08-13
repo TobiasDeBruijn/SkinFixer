@@ -4,7 +4,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 plugins {
     id 'java'
     id 'eclipse'
-	id 'com.github.johnrengelman.shadow' version '5.0.0'
+    id 'com.github.johnrengelman.shadow' version '5.0.0'
     
 }
 
@@ -36,19 +36,26 @@ allprojects {
 }
 
 dependencies {
-	
-	compileOnly 'org.spigotmc:spigot:1.16.1-R0.1-SNAPSHOT'
+	//Apache HTTP Client
 	compile 'org.apache.httpcomponents:httpclient:4.5.12'
+	
+	//JSON
 	compile 'org.json:json:20200518'
 	
-	
-	//JDA, for hooking into Discord
+	//JDA
 	implementation ('net.dv8tion:JDA:4.2.0_168') {
 		exclude module: 'opus-java' 
 	}
+	
+	//Spigot 1.16.1
+	compileOnly 'org.spigotmc:spigot-api:1.16.1-R0.1-SNAPSHOT'
+	
+	//NMS classes
+	compile project('Spigot_1_16_R1')
+	compile project('Spigot_1_16_R2')
 }
 
 shadowJar() {
-
+ 	classifier = ''
 	relocate 'net.dv8tion.jda', 'nl.thedutchmc.libs.jda'
 }

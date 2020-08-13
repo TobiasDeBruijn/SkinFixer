@@ -2,7 +2,7 @@ package nl.thedutchmc.SkinFixer.commonEventMethods;
 
 import java.util.Random;
 
-import nl.thedutchmc.SkinFixer.files.StorageHandler;
+import nl.thedutchmc.SkinFixer.fileHandlers.StorageHandler;
 
 public class AddNewSkin {
 

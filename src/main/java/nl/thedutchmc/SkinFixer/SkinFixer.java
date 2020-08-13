@@ -6,8 +6,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import nl.thedutchmc.SkinFixer.commandHandlers.GetCodeCommandExecutor;
 import nl.thedutchmc.SkinFixer.commandHandlers.SetSkinCommandExecutor;
 import nl.thedutchmc.SkinFixer.commandHandlers.SkinFixerCommandExecutor;
-import nl.thedutchmc.SkinFixer.files.ConfigurationHandler;
-import nl.thedutchmc.SkinFixer.files.StorageHandler;
+import nl.thedutchmc.SkinFixer.fileHandlers.ConfigurationHandler;
+import nl.thedutchmc.SkinFixer.fileHandlers.StorageHandler;
 import nl.thedutchmc.SkinFixer.minecraftEvents.PlayerJoinEventListener;
 
 public class SkinFixer extends JavaPlugin {
