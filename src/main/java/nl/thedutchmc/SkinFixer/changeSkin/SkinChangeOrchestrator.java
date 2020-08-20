@@ -43,7 +43,7 @@ public class SkinChangeOrchestrator {
 								
 				//Get the skin texture value, and the skin texture signature
 				JSONTokener tokener = new JSONTokener(skinJson);
-				
+								
 				//Descent to the Texture object
 				JSONObject full = (JSONObject) tokener.nextValue();
 				JSONObject data = (JSONObject) full.get("data");
