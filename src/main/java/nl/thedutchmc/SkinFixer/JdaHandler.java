@@ -1,10 +1,14 @@
 package nl.thedutchmc.SkinFixer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.security.auth.login.LoginException;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import nl.thedutchmc.SkinFixer.discordEvents.MessageReceivedEventListener;
 import nl.thedutchmc.SkinFixer.fileHandlers.ConfigurationHandler;
 
@@ -14,10 +18,15 @@ public class JdaHandler {
 	private static MessageChannel channel;
 	
 	public void setupJda() {
-		JDABuilder jdaBuilder = JDABuilder.createDefault(ConfigurationHandler.token);
+		
+		List<GatewayIntent> intents = new ArrayList<>();
+		intents.add(GatewayIntent.GUILD_MESSAGES);
 		
 		try {
-			jda = jdaBuilder.build();
+			jda = JDABuilder.createDefault(ConfigurationHandler.token)
+					.enableIntents(intents)
+					.build();
+			
 			jda.awaitReady();
 			
 		} catch (LoginException e) {

@@ -43,7 +43,7 @@ dependencies {
 	compile 'org.json:json:20200518'
 	
 	//JDA
-	implementation ('net.dv8tion:JDA:4.2.0_168') {
+	compile  ('net.dv8tion:JDA:4.2.0_168') {
 		exclude module: 'opus-java' 
 	}
 	
@@ -58,4 +58,27 @@ dependencies {
 shadowJar() {
  	classifier = ''
 	relocate 'net.dv8tion.jda', 'nl.thedutchmc.libs.jda'
+}
+
+task testJar(type: ShadowJar) {
+	
+	relocate 'net.dv8tion.jda', 'nl.thedutchmc.libs.jda'
+
+	
+	description 'Build a test Jar'
+	archiveClassifier = 'DEV'
+	from sourceSets.main.output
+	configurations = [project.configurations.runtime]
+	destinationDirectory = file("$rootDir/server/plugins")
+}
+
+task releaseJar(type: ShadowJar) {
+
+	relocate 'net.dv8tion.jda', 'nl.thedutchmc.libs.jda'
+
+	description 'Build a release Jar'
+	archiveClassifier = 'RELEASE'
+	from sourceSets.main.output
+	configurations = [project.configurations.runtime]
+	destinationDirectory = file("$rootDir/releases")
 }
