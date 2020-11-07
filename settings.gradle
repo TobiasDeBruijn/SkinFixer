@@ -1,3 +1,4 @@
 rootProject.name = pluginName
 include ':Spigot_1_16_R1'
 include ':Spigot_1_16_R2'
+include ':Spigot_1_16_R3'

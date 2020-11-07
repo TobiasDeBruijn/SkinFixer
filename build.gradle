@@ -53,6 +53,8 @@ dependencies {
 	//NMS classes
 	compile project('Spigot_1_16_R1')
 	compile project('Spigot_1_16_R2')
+	compile project('Spigot_1_16_R3')
+
 }
 
 shadowJar() {

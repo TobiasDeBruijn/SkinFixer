@@ -13,8 +13,7 @@ import org.json.JSONTokener;
 import net.md_5.bungee.api.ChatColor;
 import nl.thedutchmc.SkinFixer.SkinFixer;
 import nl.thedutchmc.SkinFixer.SkinObject;
-import nl.thedutchmc.SkinFixer.changeSkin.changeGameProfile.ChangeGameProfile_1_16_r1;
-import nl.thedutchmc.SkinFixer.changeSkin.changeGameProfile.ChangeGameProfile_1_16_r2;
+import nl.thedutchmc.SkinFixer.changeSkin.changeGameProfile.*;
 import nl.thedutchmc.SkinFixer.fileHandlers.StorageHandler;
 
 public class SkinChangeOrchestrator {
@@ -90,6 +89,7 @@ public class SkinChangeOrchestrator {
 				switch(SkinFixer.NMS_VERSION) {
 				case "v1_16_R1": ChangeGameProfile_1_16_r1.changeProfile(player.getUniqueId(), skinValue, skinSignature); break;
 				case "v1_16_R2": ChangeGameProfile_1_16_r2.changeProfile(player.getUniqueId(), skinValue, skinSignature); break;
+				case "v1_16_R3": ChangeGameProfile_1_16_r3.changeProfile(player.getUniqueId(), skinValue, skinSignature); break;
 				default:
 					//We dont support the version that the user is running, so we inform them of this.
 					//Calls to the Bukkit API may only be sync, so it's inside a BukkitRunnable
