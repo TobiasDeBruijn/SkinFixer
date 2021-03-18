@@ -2,6 +2,7 @@
 /.gradle/
 */build/*
 build/
+server/
 
 #Eclipse
 *.classpath
