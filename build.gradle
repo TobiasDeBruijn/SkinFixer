@@ -18,10 +18,10 @@ allprojects {
 
 	repositories {
 		jcenter()
-		mavenLocal()
 		mavenCentral()
   	  	maven{ url "https://hub.spigotmc.org/nexus/content/repositories/snapshots" }
    	 	maven{ url "https://oss.sonatype.org/content/repositories/snapshots" }
+   	 	maven{ url 'https://jitpack.io' }
     }
     
 	processResources {
@@ -36,30 +36,31 @@ allprojects {
 }
 
 dependencies {
-	//Apache HTTP Client
-	compile 'org.apache.httpcomponents:httpclient:4.5.12'
+	//HTTP client
+    compile 'com.github.TheDutchMC:HttpLib:1.1'
+	
+	//Logging framework
+	compile 'org.slf4j:slf4j-log4j12:1.7.29'
 	
 	//JSON
-	compile 'org.json:json:20200518'
+    compile 'com.google.code.gson:gson:2.8.6'
 	
 	//JDA
-	compile  ('net.dv8tion:JDA:4.2.0_168') {
+	compile('net.dv8tion:JDA:4.2.0_168') {
 		exclude module: 'opus-java' 
 	}
 	
-	//Spigot 1.16.1
+	//Spigot API
 	compileOnly 'org.spigotmc:spigot-api:1.16.1-R0.1-SNAPSHOT'
-	
-	//NMS classes
-	compile project('Spigot_1_16_R1')
-	compile project('Spigot_1_16_R2')
-	compile project('Spigot_1_16_R3')
 
 }
 
 shadowJar() {
  	classifier = ''
-	relocate 'net.dv8tion.jda', 'nl.thedutchmc.libs.jda'
+	relocate 'net.dv8tion.jda', 'nl.thedutchmc.skinfixer.libs.net.dv8tion.jda'
+	relocate 'com.google.code.gson', 'nl.thedutchmc.skinfixer.libs.com.google.code.gson'
+	relocate 'nl.thedutchmc.httplib', 'nl.thedutchmc.skinfixer.libs.nl.thedutchmc.httplib'
+	relocate 'org.slf4j', 'nl.thedutchmc.skinfixer.libs.org.slf4j'
 }
 
 task testJar(type: ShadowJar) {

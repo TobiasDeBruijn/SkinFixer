@@ -1,4 +1,4 @@
-package nl.thedutchmc.SkinFixer.minecraftEvents;
+package nl.thedutchmc.SkinFixer.minecraftevents;
 
 import java.util.UUID;
 
@@ -9,9 +9,12 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import nl.thedutchmc.SkinFixer.SkinFixer;
 import nl.thedutchmc.SkinFixer.SkinObject;
-import nl.thedutchmc.SkinFixer.changeSkin.CheckUserAgainstMojang;
-import nl.thedutchmc.SkinFixer.changeSkin.SkinChangeOrchestrator;
+import nl.thedutchmc.SkinFixer.apis.MojangApi;
+import nl.thedutchmc.SkinFixer.changeSkin.SkinChangeHandler;
 import nl.thedutchmc.SkinFixer.fileHandlers.StorageHandler;
+import nl.thedutchmc.SkinFixer.gson.MojangAuthResponse;
+import nl.thedutchmc.SkinFixer.util.Triple;
+import nl.thedutchmc.SkinFixer.util.Utils;
 
 public class PlayerJoinEventListener implements Listener {
 
@@ -21,10 +24,13 @@ public class PlayerJoinEventListener implements Listener {
 			
 			@Override
 			public void run() {
-				String uuidAsString = CheckUserAgainstMojang.premiumUser(event.getPlayer().getName());
-				if(uuidAsString != null) {
-					
-					SkinChangeOrchestrator.changeSkinJson(null, event.getPlayer().getUniqueId(), UUID.fromString(uuidAsString), false, true);
+				Triple<Boolean, MojangAuthResponse, String> mojangApiResponse = new MojangApi().getUuidFromMojang(event.getPlayer().getName());
+				
+				if(!mojangApiResponse.getA()) {
+					SkinFixer.logWarn("Something went wrong fetching the UUID from Mojang.");
+				} else if(mojangApiResponse.getB() != null) {
+					String uuidDashedStr = Utils.insertDashUUID(mojangApiResponse.getB().getUuid());
+					SkinChangeHandler.changeSkinJson(null, event.getPlayer().getUniqueId(), UUID.fromString(uuidDashedStr), false, true);
 					return;
 				}
 
@@ -38,7 +44,7 @@ public class PlayerJoinEventListener implements Listener {
 					
 					@Override
 					public void run() {
-						SkinChangeOrchestrator.changeSkinFromObject(skin);
+						SkinChangeHandler.changeSkinFromObject(skin);
 					}
 				}.runTaskLater(SkinFixer.INSTANCE, 5L);
 			}

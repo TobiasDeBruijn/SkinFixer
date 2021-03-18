@@ -1,4 +1,4 @@
-package nl.thedutchmc.SkinFixer.commandHandlers;
+package nl.thedutchmc.SkinFixer.commandexecutors;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -6,7 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatColor;
-import nl.thedutchmc.SkinFixer.commonEventMethods.AddNewSkin;
+import nl.thedutchmc.SkinFixer.common.AddNewSkin;
 
 public class GetCodeCommandExecutor implements CommandExecutor {
 

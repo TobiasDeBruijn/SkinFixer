@@ -1,4 +1,4 @@
-package nl.thedutchmc.SkinFixer.commonEventMethods;
+package nl.thedutchmc.SkinFixer.common;
 
 import java.util.Random;
 

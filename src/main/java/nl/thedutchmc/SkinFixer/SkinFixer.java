@@ -1,14 +1,16 @@
 package nl.thedutchmc.SkinFixer;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import nl.thedutchmc.SkinFixer.commandHandlers.GetCodeCommandExecutor;
-import nl.thedutchmc.SkinFixer.commandHandlers.SetSkinCommandExecutor;
-import nl.thedutchmc.SkinFixer.commandHandlers.SkinFixerCommandExecutor;
+import nl.thedutchmc.SkinFixer.commandexecutors.GetCodeCommandExecutor;
+import nl.thedutchmc.SkinFixer.commandexecutors.SetSkinCommandExecutor;
+import nl.thedutchmc.SkinFixer.commandexecutors.SkinFixerCommandExecutor;
 import nl.thedutchmc.SkinFixer.fileHandlers.ConfigurationHandler;
 import nl.thedutchmc.SkinFixer.fileHandlers.StorageHandler;
-import nl.thedutchmc.SkinFixer.minecraftEvents.PlayerJoinEventListener;
+import nl.thedutchmc.SkinFixer.minecraftevents.PlayerJoinEventListener;
 
 public class SkinFixer extends JavaPlugin {
 
@@ -17,6 +19,8 @@ public class SkinFixer extends JavaPlugin {
 	
 	public static final String NMS_VERSION = Bukkit.getServer().getClass().getPackage().getName().substring(23);
 	public static String PLUGIN_VERSION;
+	
+	public static final Logger LOGGER = LogManager.getLogger(SkinFixer.class);
 	
 	@Override
 	public void onEnable() {

@@ -1,4 +1,4 @@
-package nl.thedutchmc.SkinFixer.commandHandlers;
+package nl.thedutchmc.SkinFixer.commandexecutors;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatColor;
 import nl.thedutchmc.SkinFixer.SkinFixer;
-import nl.thedutchmc.SkinFixer.changeSkin.SkinChangeOrchestrator;
+import nl.thedutchmc.SkinFixer.changeSkin.SkinChangeHandler;
 import nl.thedutchmc.SkinFixer.fileHandlers.StorageHandler;
 
 public class SetSkinCommandExecutor implements CommandExecutor {
@@ -51,14 +51,14 @@ public class SetSkinCommandExecutor implements CommandExecutor {
 		if(args.length == 2) {
 			if(args[1].equals("true")) {
 				//Slim model
-				SkinChangeOrchestrator.changeSkinJson(url, p.getUniqueId(), null, true, false);
+				SkinChangeHandler.changeSkinJson(url, p.getUniqueId(), null, true, false);
 			} else {
 				//Regular model
-				SkinChangeOrchestrator.changeSkinJson(url, p.getUniqueId(), null, false, false);
+				SkinChangeHandler.changeSkinJson(url, p.getUniqueId(), null, false, false);
 			}
 		} else {
 			//Regular model
-			SkinChangeOrchestrator.changeSkinJson(url, p.getUniqueId(), null, false, false);
+			SkinChangeHandler.changeSkinJson(url, p.getUniqueId(), null, false, false);
 		}
 		
 		SkinFixer.STORAGE.updateConfig();
