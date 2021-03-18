@@ -1,4 +1,4 @@
-package nl.thedutchmc.SkinFixer.commandHandlers;
+package nl.thedutchmc.SkinFixer.commandexecutors;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

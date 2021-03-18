@@ -174,7 +174,7 @@ public class ReflectionUtil {
      * Invoke a Method where the Class where to find the method is explicitly given (Helpful if the method is located in a superclass). The argument types are derived from the provided arguments
      * @param clazz The Class where the method is located
      * @param obj The Object to invoke the method on
-     * @param method The name of the method
+     * @param methodName The name of the method
      * @param args The arguments to be passed to the method
      * @return Returns the result of the method, can be null if the method returns void
      * @throws NoSuchMethodException
@@ -182,14 +182,32 @@ public class ReflectionUtil {
      * @throws IllegalArgumentException
      * @throws InvocationTargetException
      */
-    public static Object invokeMethod(Class<?> clazz, Object obj, String method, Object... args) throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    public static Object invokeMethod(Class<?> clazz, Object obj, String methodName, Object... args) throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
     	Class<?>[] argTypes = new Class<?>[args.length];
     	for(int i = 0; i < args.length; i++) {
     		argTypes[i] = args[i].getClass();
     	}
     	
-    	Method m = getMethod(clazz, method, argTypes);
+    	Method m = getMethod(clazz, methodName, argTypes);
     	
+    	return m.invoke(obj, args);
+    }
+    
+    /**
+     * Invoke a Method where the Class where the Method is defined is explicitly given, and the argument types are explicitly given
+     * @param clazz The Class in which the Method is located
+     * @param obj The Object on which to invoke the Method
+     * @param methodName The name of the Method
+     * @param argTypes Argument types
+     * @param args Arguments to pass to the method
+     * @return Returns the result of the method, can be null if the method returns void
+     * @throws NoSuchMethodException
+     * @throws IllegalAccessException
+     * @throws IllegalArgumentException
+     * @throws InvocationTargetException
+     */
+    public static Object invokeMethod(Class<?> clazz, Object obj, String methodName, Class<?>[] argTypes, Object[] args) throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    	Method m = getMethod(clazz, methodName, argTypes);
     	return m.invoke(obj, args);
     }
     
@@ -260,4 +278,28 @@ public class ReflectionUtil {
     	Constructor<?> con = getConstructor(clazz, argTypes);
     	return con.newInstance(args);
     }
+    
+    /**
+     * <strong> For debugging purposes! </strong><br>
+     * Print all Methods in a Class with their parameters, will print to stdout
+     * @param clazz The Class to look in
+     */
+    public static void printMethodsInClassTyped(Class<?> clazz) {
+    	System.out.println("Methods in " + clazz.getName() + ":");
+    	
+    	for(Method m : clazz.getDeclaredMethods()) {
+			String print = m.getName() + "(";
+    		for(int i = 0; i < m.getParameterTypes().length; i++) {
+    			print += m.getParameterTypes()[i].getName();
+    			
+    			if(i != m.getParameterTypes().length -1) {
+    				print += ",";
+    			}
+
+    		}
+    		
+    		print += ")";
+    		System.out.println(print);
+    	}
+    } 
 }

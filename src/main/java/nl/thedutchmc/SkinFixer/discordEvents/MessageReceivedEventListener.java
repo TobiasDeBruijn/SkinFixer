@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import nl.thedutchmc.SkinFixer.JdaHandler;
-import nl.thedutchmc.SkinFixer.commonEventMethods.AddNewSkin;
+import nl.thedutchmc.SkinFixer.common.AddNewSkin;
 
 public class MessageReceivedEventListener extends ListenerAdapter {
 

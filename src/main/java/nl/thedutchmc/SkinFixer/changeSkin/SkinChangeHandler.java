@@ -3,28 +3,28 @@ package nl.thedutchmc.SkinFixer.changeSkin;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import com.google.common.hash.Hashing;
 
 import net.md_5.bungee.api.ChatColor;
 import nl.thedutchmc.SkinFixer.SkinFixer;
 import nl.thedutchmc.SkinFixer.SkinObject;
-import nl.thedutchmc.SkinFixer.changeSkin.changeGameProfile.*;
+import nl.thedutchmc.SkinFixer.apis.MineskinApi;
 import nl.thedutchmc.SkinFixer.fileHandlers.StorageHandler;
+import nl.thedutchmc.SkinFixer.gson.GetSkinResponse;
 import nl.thedutchmc.SkinFixer.util.ReflectionUtil;
+import nl.thedutchmc.SkinFixer.util.Triple;
 
-public class SkinChangeOrchestrator {
+public class SkinChangeHandler {
 	
 	public static void changeSkinJson(String skinUrl, UUID internalUuid, UUID externalUuid, boolean slim, boolean isPremium) {
 
@@ -34,44 +34,30 @@ public class SkinChangeOrchestrator {
 			@Override
 			public void run() {
 				
-				Player player = Bukkit.getPlayer(internalUuid);
-				
-				String value, signature;
-				
+				Player player = Bukkit.getPlayer(internalUuid);				
 				player.sendMessage(ChatColor.GOLD + "Fetching skin value and signature...");
 				
 				//Fetch the skin from Mineskin.org's API
-				String skinJson = null;
+				Triple<Boolean, GetSkinResponse, String> apiResponse;
 				if(isPremium ) {
-					skinJson = GetSkin.getSkinOfValidPlayer(externalUuid.toString());
+					apiResponse = new MineskinApi().getSkinOfPremiumPlayer(externalUuid.toString());
 				} else {
-					skinJson = GetSkin.getSkin(skinUrl, slim);
+					apiResponse = new MineskinApi().getSkin(skinUrl, slim);
 				}
-								
-				//Get the skin texture value, and the skin texture signature
-				JSONTokener tokener = new JSONTokener(skinJson);
-								
-				//Descent to the Texture object
-				JSONObject full = (JSONObject) tokener.nextValue();
-				JSONObject data = (JSONObject) full.get("data");
-				JSONObject texture = (JSONObject) data.get("texture");
 				
-				//Grab the value and signature
-				value = (String) texture.get("value");
-				signature = (String) texture.get("signature");
+				if(!apiResponse.getA()) {
+					player.sendMessage(ChatColor.RED + "Something went wrong applying your skin:\n" + ChatColor.GRAY + apiResponse.getC());
+					return;
+				}
 				
-				changeSkin(value, signature, internalUuid, slim);
+				GetSkinResponse skinResponse = apiResponse.getB();
+				changeSkin(skinResponse.getData().getTexture().getValue(), skinResponse.getData().getTexture().getSignature(), internalUuid, slim);
 			}
 		}.runTaskAsynchronously(SkinFixer.INSTANCE);
 	}
 	
 	public static void changeSkinFromObject(SkinObject skin) {
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				changeSkin(skin.getValue(), skin.getSignature(), skin.getOwner(), skin.getSlim());
-			}
-		}.runTaskAsynchronously(SkinFixer.INSTANCE);
+		changeSkin(skin.getValue(), skin.getSignature(), skin.getOwner(), skin.getSlim());
 	}
 	
 	private static void changeSkin(String skinValue, String skinSignature, UUID caller, boolean slim ) {
@@ -90,25 +76,7 @@ public class SkinChangeOrchestrator {
 		
 		player.sendMessage(ChatColor.GOLD + "Applying skin...");
 		
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				//NMS is version dependant. So we need to set the correct class to use.
-				//TODO switch this over to use reflection
-				switch(SkinFixer.NMS_VERSION) {
-				case "v1_16_R1": ChangeGameProfile_1_16_r1.changeProfile(player.getUniqueId(), skinValue, skinSignature); break;
-				case "v1_16_R2": ChangeGameProfile_1_16_r2.changeProfile(player.getUniqueId(), skinValue, skinSignature); break;
-				case "v1_16_R3": ChangeGameProfile_1_16_r3.changeProfile(player.getUniqueId(), skinValue, skinSignature); break;
-				default:
-					//We dont support the version that the user is running, so we inform them of this.
-					//Calls to the Bukkit API may only be sync, so it's inside a BukkitRunnable
-					Player p = Bukkit.getPlayer(caller);
-					p.sendMessage(ChatColor.RED + "This server is using a Minecraft version that is not supported by SkinFixer!");
-					p.sendMessage(ChatColor.RED + "You are running NMS version " + SkinFixer.NMS_VERSION);
-				}
-			}
-		}.runTask(SkinFixer.INSTANCE);
-		
+		applySkin(player, skinValue, skinSignature);
 		reloadPlayer(player);
 		
 		//Inform the player that we're done
@@ -116,6 +84,63 @@ public class SkinChangeOrchestrator {
 	}
 	
 	private static void applySkin(Player player, String skinValue, String skinSignature) {
+		new BukkitRunnable() {
+			
+			@Override
+			public void run() {
+				try {
+					Class<?> craftPlayerClass = ReflectionUtil.getBukkitClass("entity.CraftPlayer");
+					Object entityPlayer = ReflectionUtil.invokeMethod(craftPlayerClass, player, "getHandle");
+					
+					//Get the GameProfile and the PropertyMap inside the Profile
+					Class<?> entityHumanClass = ReflectionUtil.getNmsClass("EntityHuman");
+					Object gameProfile = ReflectionUtil.invokeMethod(entityHumanClass, entityPlayer, "getProfile");
+					Object propertyMap = ReflectionUtil.invokeMethod(gameProfile, "getProperties");
+					
+					//Check if the PropertyMap contains the 'textures' property
+					//If so remove it
+					//The containsKey method is in the ForwardingMultimap class, which PropertyMap extends
+					Class<?> forwardingMultimapClass = com.google.common.collect.ForwardingMultimap.class;
+					Boolean containsKeyTextures = (Boolean) ReflectionUtil.invokeMethod(forwardingMultimapClass, propertyMap, "containsKey", new Class<?>[] { Object.class }, new Object[] { "textures" });
+					if(containsKeyTextures) {						
+						Object textures = ReflectionUtil.invokeMethod(forwardingMultimapClass, propertyMap, "get", new Class<?>[] { Object.class }, new Object[] { "textures" });
+						Object texturesIter = ReflectionUtil.invokeMethod(Collection.class, textures, "iterator");
+						Object iterNext = ReflectionUtil.invokeMethod(texturesIter, "next");
+						
+						ReflectionUtil.invokeMethod(forwardingMultimapClass, propertyMap, "remove", new Class<?>[] { Object.class, Object.class }, new Object[] { "textures", iterNext });
+					}
+					
+					//Create a new 'textures' Property with the new skinValue and skinSignature
+					//and put it in the PropertyMap
+					Class<?> propertyClass = Class.forName("com.mojang.authlib.properties.Property");
+					Object newProperty = ReflectionUtil.invokeConstructor(propertyClass, "textures", skinValue, skinSignature);
+					ReflectionUtil.invokeMethod(forwardingMultimapClass, propertyMap, "put", new Class<?>[] { Object.class, Object.class }, new Object[] { "textures", newProperty });
+					
+					//Get the Enum constants REMOVE_PLAYER and ADD_PLAYER
+					Class<?> packetPlayOutPlayerInfoClass = ReflectionUtil.getNmsClass("PacketPlayOutPlayerInfo");
+					Object removePlayerEnumConstant = ReflectionUtil.getEnum(packetPlayOutPlayerInfoClass, "EnumPlayerInfoAction", "REMOVE_PLAYER");
+					Object addPlayerEnumConstant = ReflectionUtil.getEnum(packetPlayOutPlayerInfoClass, "EnumPlayerInfoAction", "ADD_PLAYER");
+
+				    //Create an Array of EntityPlayer with size = 1 and add our player to it
+				    Object entityPlayerArr = Array.newInstance(entityPlayer.getClass(), 1);
+				    Array.set(entityPlayerArr, 0, entityPlayer);
+					
+					//Create two PacketPlayOutPlayerInfo packets, one for removing the player and one for re-adding the player
+					Object PacketPlayOutPlayerInfoRemovePlayer = ReflectionUtil.invokeConstructor(packetPlayOutPlayerInfoClass, removePlayerEnumConstant, entityPlayerArr);
+					Object PacketPlayOutPlayerInfoAddPlayer = ReflectionUtil.invokeConstructor(packetPlayOutPlayerInfoClass, addPlayerEnumConstant, entityPlayerArr);
+					
+					//Get the Player's connection and the generic Packet class
+					Object playerConnection = ReflectionUtil.getObject(entityPlayer, "playerConnection");
+				    Class<?> packetClass = ReflectionUtil.getNmsClass("Packet");
+
+				    //Send the two Packets
+				    ReflectionUtil.invokeMethod(playerConnection, "sendPacket", new Class<?>[] { packetClass }, new Object[] { PacketPlayOutPlayerInfoRemovePlayer });
+				    ReflectionUtil.invokeMethod(playerConnection, "sendPacket", new Class<?>[] { packetClass }, new Object[] { PacketPlayOutPlayerInfoAddPlayer });
+				} catch(Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}.runTask(SkinFixer.INSTANCE);
 	}
 	
 	/**
