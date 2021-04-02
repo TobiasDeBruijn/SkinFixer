@@ -3,6 +3,7 @@
 */build/*
 build/
 server/
+releases
 
 #Eclipse
 *.classpath
