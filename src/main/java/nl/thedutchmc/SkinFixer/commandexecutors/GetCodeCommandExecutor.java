@@ -20,7 +20,6 @@ public class GetCodeCommandExecutor implements CommandExecutor {
 		}
  		
 		if(!sender.hasPermission("skinfixer.getcode") ) {
-			//sender.sendMessage(ChatColor.RED + "You don't have permission to use this command!");
 			sender.sendMessage(ChatColor.RED + LangHandler.model.commandNoPermission);
 			return true;
 		}

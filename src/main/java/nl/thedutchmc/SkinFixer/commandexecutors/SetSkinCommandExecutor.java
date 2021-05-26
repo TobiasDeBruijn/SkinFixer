@@ -40,7 +40,6 @@ public class SetSkinCommandExecutor implements CommandExecutor {
 		}
 		
 		if(!StorageHandler.pendingLinks.containsKey(code)) {
-			//sender.sendMessage(ChatColor.RED + "Unkown code!");
 			sender.sendMessage(ChatColor.RED + LangHandler.model.setSkinCodeUnknown);
 			return true;
 		}
