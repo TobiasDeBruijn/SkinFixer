@@ -1,0 +1,23 @@
+skinFetching: Fetching skin value and signature...
+skinApplyFailed: Something went wrong applying your skin %ERROR%
+skinApplying: Applying skin...
+skinApplied: Done.
+
+commandPlayerOnly: This command is for players only!
+commandNoPermission: You don't have permission to use this command!
+
+getCodeUrlRequired: You need to provide a URL to your skin!
+getCodeSkinAdded: Your skin has been added! You can apply it with /setskin %CODE%.
+
+setSkinCodeRequired: You need to provide a code!
+setSkinCodeNotANumber: The code you entered is not a number!
+setSkinCodeUnknown: Unknown code!
+
+skinFixerNoOptionProvided: No option provided. See /skinfixer help for help!
+skinFixerSetSkinHelp: Set your skin from a code.
+skinFixerGetCodeHelp: Generate a code from a Skin url. URL must be the skinfie itself.
+skinFixerShowHelp: Shows this page.
+skinFixerVersionHelp: Returns the version of SkinFixer you are using
+skinFixerVersion: You are using SkinFixer version %VERSION%
+
+discordSetSkin: You can set this as your skin in-game using /setskin %CODE%

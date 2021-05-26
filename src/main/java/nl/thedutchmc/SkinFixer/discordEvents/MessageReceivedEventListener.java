@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import nl.thedutchmc.SkinFixer.JdaHandler;
 import nl.thedutchmc.SkinFixer.common.AddNewSkin;
+import nl.thedutchmc.SkinFixer.language.LangHandler;
 
 public class MessageReceivedEventListener extends ListenerAdapter {
 
@@ -25,7 +26,7 @@ public class MessageReceivedEventListener extends ListenerAdapter {
 		for(Attachment a : attachments) {
 			int n = AddNewSkin.add(a.getUrl());
 			
-			msgChannel.sendMessage("You can set this as your skin in-game using /setskin " + n).queue();
+			msgChannel.sendMessage(LangHandler.model.discordSetSkin.replaceAll("%CODE%", String.valueOf(n))).queue();
 		}
 	}
 }

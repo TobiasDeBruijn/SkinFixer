@@ -27,10 +27,10 @@ allprojects {
 	processResources {
     	from(sourceSets.main.resources.srcDirs) {
         	filter ReplaceTokens, tokens: [version: version]
-		filter ReplaceTokens, tokens: [name: pluginName]
-		filter ReplaceTokens, tokens: [groupId: pluginGroup]
-		filter ReplaceTokens, tokens: [author: pluginAuthor]
-		filter ReplaceTokens, tokens: [apiVersion: pluginApiVersion]
+			filter ReplaceTokens, tokens: [name: pluginName]
+			filter ReplaceTokens, tokens: [groupId: pluginGroup]
+			filter ReplaceTokens, tokens: [author: pluginAuthor]
+			filter ReplaceTokens, tokens: [apiVersion: pluginApiVersion]
 		}
     }
 }
@@ -52,6 +52,8 @@ dependencies {
 	
 	//Spigot API
 	compileOnly 'org.spigotmc:spigot-api:1.16.1-R0.1-SNAPSHOT'
+	
+	compile 'dev.array21:classvalidator:1.0.0'
 
 }
 
@@ -61,6 +63,7 @@ shadowJar() {
 	relocate 'com.google.code.gson', 'nl.thedutchmc.skinfixer.libs.com.google.code.gson'
 	relocate 'nl.thedutchmc.httplib', 'nl.thedutchmc.skinfixer.libs.nl.thedutchmc.httplib'
 	relocate 'org.slf4j', 'nl.thedutchmc.skinfixer.libs.org.slf4j'
+	relocate 'dev.array21.classvalidator', 'nl.thedutchmc.skinfixer.libs.dev.array21.classvalidator'
 }
 
 task testJar(type: ShadowJar) {

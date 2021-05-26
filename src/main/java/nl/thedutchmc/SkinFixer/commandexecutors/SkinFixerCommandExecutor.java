@@ -6,6 +6,7 @@ import org.bukkit.command.CommandSender;
 
 import net.md_5.bungee.api.ChatColor;
 import nl.thedutchmc.SkinFixer.SkinFixer;
+import nl.thedutchmc.SkinFixer.language.LangHandler;
 
 public class SkinFixerCommandExecutor implements CommandExecutor {
 
@@ -16,23 +17,23 @@ public class SkinFixerCommandExecutor implements CommandExecutor {
 		final ChatColor cw = ChatColor.WHITE;
 		
 		if(args.length == 0) {
-			sender.sendMessage(cg + "No option provided. See " + ChatColor.RED + "/skinfixer help " + cg + "for help!");
+			sender.sendMessage(ChatColor.GOLD + LangHandler.model.skinFixerNoOptionProvided);
 			return true;
 		}
 		
 		if(args[0].equals("help")) {
 			sender.sendMessage(cg + "SkinFixer help");
 			sender.sendMessage(cg + "------------");
-			sender.sendMessage("- " + cg + "/setskin <code> [slim true/false]" + cw + " Set your skin from a code.");
-			sender.sendMessage("- " + cg + "/getcode <url>" + cw + " Generate a code from a Skin url. URL must be the skinfie itself.");
-			sender.sendMessage("- " + cg + "/skinfixer help" + cw + " Shows this page");
-			sender.sendMessage("- " + cg + "/skinfixer version" + cw + " Returns the version of SkinFixer you are using");
+			sender.sendMessage("- " + cg + "/setskin <code> [slim true/false]" + cw + " " + LangHandler.model.skinFixerSetSkinHelp);
+			sender.sendMessage("- " + cg + "/getcode <url>" + cw + " " + LangHandler.model.skinFixerGetCodeHelp);
+			sender.sendMessage("- " + cg + "/skinfixer help" + cw + " " + LangHandler.model.skinFixerShowHelp);
+			sender.sendMessage("- " + cg + "/skinfixer version" + cw + " " + LangHandler.model.skinFixerVersionHelp);
 		
 			return true;
 		}
 		
 		if(args[0].equals("version")) {
-			sender.sendMessage(cg + "You are using SkinFixer version " + ChatColor.RED + SkinFixer.PLUGIN_VERSION);
+			sender.sendMessage(cg + LangHandler.model.skinFixerVersion.replaceAll("%VERSION%", ChatColor.RED + SkinFixer.PLUGIN_VERSION + ChatColor.GOLD));
 			
 			return true;
 		}

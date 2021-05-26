@@ -9,6 +9,7 @@ import net.md_5.bungee.api.ChatColor;
 import nl.thedutchmc.SkinFixer.SkinFixer;
 import nl.thedutchmc.SkinFixer.changeSkin.SkinChangeHandler;
 import nl.thedutchmc.SkinFixer.fileHandlers.StorageHandler;
+import nl.thedutchmc.SkinFixer.language.LangHandler;
 
 public class SetSkinCommandExecutor implements CommandExecutor {
 
@@ -16,17 +17,17 @@ public class SetSkinCommandExecutor implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		
 		if(!(sender instanceof Player)) {
-			sender.sendMessage(ChatColor.RED + "This command is for players only!");
+			sender.sendMessage(ChatColor.RED + LangHandler.model.commandPlayerOnly);
 			return true;
 		}
  		
 		if(!sender.hasPermission("skinfixer.setskin") ) {
-			sender.sendMessage(ChatColor.RED + "You don't have permission to use this command!");
+			sender.sendMessage(ChatColor.RED + LangHandler.model.commandNoPermission);
 			return true;
 		}
 		
 		if(args.length == 0) {
-			sender.sendMessage(ChatColor.RED + "You need to provide a code!");
+			sender.sendMessage(ChatColor.RED + LangHandler.model.setSkinCodeRequired);
 			return true;
 		}
 		
@@ -34,12 +35,13 @@ public class SetSkinCommandExecutor implements CommandExecutor {
 		try {
 			code = getIntFromString(args[0]);
 		} catch(NumberFormatException e) {
-			sender.sendMessage(ChatColor.RED + "The code you entered is not a number!");
+			sender.sendMessage(ChatColor.RED + LangHandler.model.setSkinCodeNotANumber);
 			return true;
 		}
 		
 		if(!StorageHandler.pendingLinks.containsKey(code)) {
-			sender.sendMessage(ChatColor.RED + "Unkown code!");
+			//sender.sendMessage(ChatColor.RED + "Unkown code!");
+			sender.sendMessage(ChatColor.RED + LangHandler.model.setSkinCodeUnknown);
 			return true;
 		}
 		

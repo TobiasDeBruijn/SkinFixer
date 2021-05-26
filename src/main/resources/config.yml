@@ -6,3 +6,5 @@ discordToken: ""
 
 #Discord Channel used for uploading skins
 skinDiscordChannel: ""
+
+language: en

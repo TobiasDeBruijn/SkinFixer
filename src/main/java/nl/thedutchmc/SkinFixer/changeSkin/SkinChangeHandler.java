@@ -21,6 +21,7 @@ import nl.thedutchmc.SkinFixer.SkinObject;
 import nl.thedutchmc.SkinFixer.apis.MineskinApi;
 import nl.thedutchmc.SkinFixer.fileHandlers.StorageHandler;
 import nl.thedutchmc.SkinFixer.gson.GetSkinResponse;
+import nl.thedutchmc.SkinFixer.language.LangHandler;
 import nl.thedutchmc.SkinFixer.util.ReflectionUtil;
 import nl.thedutchmc.SkinFixer.util.Triple;
 
@@ -35,7 +36,8 @@ public class SkinChangeHandler {
 			public void run() {
 				
 				Player player = Bukkit.getPlayer(internalUuid);				
-				player.sendMessage(ChatColor.GOLD + "Fetching skin value and signature...");
+				//player.sendMessage(ChatColor.GOLD + "Fetching skin value and signature...");
+				player.sendMessage(ChatColor.GOLD + LangHandler.model.skinFetching);
 				
 				//Fetch the skin from Mineskin.org's API
 				Triple<Boolean, GetSkinResponse, String> apiResponse;
@@ -46,7 +48,8 @@ public class SkinChangeHandler {
 				}
 				
 				if(!apiResponse.getA()) {
-					player.sendMessage(ChatColor.RED + "Something went wrong applying your skin:\n" + ChatColor.GRAY + apiResponse.getC());
+					//player.sendMessage(ChatColor.RED + "Something went wrong applying your skin:\n" + ChatColor.GRAY + apiResponse.getC());
+					player.sendMessage(ChatColor.RED + LangHandler.model.skinApplyFailed.replaceAll("%ERROR%", ChatColor.GRAY + apiResponse.getC() + ChatColor.RED));
 					return;
 				}
 				
@@ -63,7 +66,6 @@ public class SkinChangeHandler {
 	private static void changeSkin(String skinValue, String skinSignature, UUID caller, boolean slim ) {
 		Player player = Bukkit.getPlayer(caller);
 		
-		//Store the skin to the storage file, so it can be reapplied when they join.
 		if(StorageHandler.skins.containsKey(caller)) {
 			SkinObject skin = StorageHandler.skins.get(caller);
 			if(slim) skin.setSlim(true);
@@ -74,13 +76,13 @@ public class SkinChangeHandler {
 			StorageHandler.skins.put(caller, skin);
 		}
 		
-		player.sendMessage(ChatColor.GOLD + "Applying skin...");
+		player.sendMessage(ChatColor.GOLD + LangHandler.model.skinApplying);
 		
 		applySkin(player, skinValue, skinSignature);
 		reloadPlayer(player);
 		
 		//Inform the player that we're done
-		player.sendMessage(ChatColor.GOLD + "Done.");
+		player.sendMessage(ChatColor.GOLD + LangHandler.model.skinApplied);
 	}
 	
 	private static void applySkin(Player player, String skinValue, String skinSignature) {

@@ -14,6 +14,11 @@ public class ConfigurationHandler {
 	public static boolean useDiscord;
 	public static String token, channel;
 	
+	/**
+	 * @since 1.4.0
+	 */
+	public static String language;
+	
 	private File file;
 	private FileConfiguration config;
 	
@@ -53,5 +58,7 @@ public class ConfigurationHandler {
 				useDiscord = false;
 			}
 		}
+		
+		language = this.getConfig().getString("language");
 	}
 }

@@ -10,6 +10,7 @@ import nl.thedutchmc.SkinFixer.commandexecutors.SetSkinCommandExecutor;
 import nl.thedutchmc.SkinFixer.commandexecutors.SkinFixerCommandExecutor;
 import nl.thedutchmc.SkinFixer.fileHandlers.ConfigurationHandler;
 import nl.thedutchmc.SkinFixer.fileHandlers.StorageHandler;
+import nl.thedutchmc.SkinFixer.language.LangHandler;
 import nl.thedutchmc.SkinFixer.minecraftevents.PlayerJoinEventListener;
 
 public class SkinFixer extends JavaPlugin {
@@ -35,12 +36,18 @@ public class SkinFixer extends JavaPlugin {
 		ConfigurationHandler configHandler = new ConfigurationHandler();
 		configHandler.loadConfig();
 	
+		LangHandler langHandler = new LangHandler(this);
+		if(ConfigurationHandler.language != null) {
+			langHandler.loadLang(ConfigurationHandler.language);
+		} else {
+			SkinFixer.logWarn("Configuration entry 'language' is missing. Using English as default.");
+			langHandler.loadLang("en");
+		}
+		
 		//Storage of skins and pending keys
 		STORAGE = new StorageHandler();
 		STORAGE.loadConfig();
-		
-		if(Bukkit.getOnlineMode() == true) logInfo("This plugin is not needed on servers running in online mode!");
-		
+				
 		//Register command executors
 		this.getCommand("setskin").setExecutor(new SetSkinCommandExecutor());
 		this.getCommand("getcode").setExecutor(new GetCodeCommandExecutor());
