@@ -23,6 +23,7 @@ SkinFixer also works with Discord. You can upload your skin to a designated Disc
 - Allow players on Offline-mode servers to have a skin
 - Premium-minecraft players will get their skin applied on offline-mode servers
 - Allow players to upload their skin to Discord, and set that skin in-game
+- Multi-language support
 
 ## Contributing
 Please try to follow my codestyle, I don't yet follow any guideline myself.
