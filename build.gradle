@@ -36,25 +36,14 @@ allprojects {
 }
 
 dependencies {
-	//HTTP client
     compile 'com.github.TheDutchMC:HttpLib:1.1'
-	
-	//Logging framework
+	compileOnly 'org.spigotmc:spigot-api:1.16.1-R0.1-SNAPSHOT'
 	compile 'org.slf4j:slf4j-log4j12:1.7.29'
-	
-	//JSON
-    compile 'com.google.code.gson:gson:2.8.6'
-	
-	//JDA
 	compile('net.dv8tion:JDA:4.2.0_168') {
 		exclude module: 'opus-java' 
 	}
-	
-	//Spigot API
-	compileOnly 'org.spigotmc:spigot-api:1.16.1-R0.1-SNAPSHOT'
-	
 	compile 'dev.array21:classvalidator:1.0.0'
-
+	compile 'dev.array21:pluginstatlib:1.0.5'
 }
 
 shadowJar() {
@@ -63,13 +52,11 @@ shadowJar() {
 	relocate 'com.google.code.gson', 'nl.thedutchmc.skinfixer.libs.com.google.code.gson'
 	relocate 'nl.thedutchmc.httplib', 'nl.thedutchmc.skinfixer.libs.nl.thedutchmc.httplib'
 	relocate 'org.slf4j', 'nl.thedutchmc.skinfixer.libs.org.slf4j'
-	relocate 'dev.array21.classvalidator', 'nl.thedutchmc.skinfixer.libs.dev.array21.classvalidator'
+	relocate 'dev.array21', 'nl.thedutchmc.skinfixer.libs.dev.array21'
 }
 
 task testJar(type: ShadowJar) {
-	
 	relocate 'net.dv8tion.jda', 'nl.thedutchmc.libs.jda'
-
 	
 	description 'Build a test Jar'
 	archiveClassifier = 'DEV'
@@ -79,7 +66,6 @@ task testJar(type: ShadowJar) {
 }
 
 task releaseJar(type: ShadowJar) {
-
 	relocate 'net.dv8tion.jda', 'nl.thedutchmc.libs.jda'
 
 	description 'Build a release Jar'

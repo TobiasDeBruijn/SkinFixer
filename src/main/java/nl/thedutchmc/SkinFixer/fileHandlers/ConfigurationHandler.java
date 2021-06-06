@@ -19,6 +19,16 @@ public class ConfigurationHandler {
 	 */
 	public static String language;
 	
+	/**
+	 * @since 1.4.1
+	 */
+	public static String statUuid;
+	
+	/**
+	 * @since 1.4.1
+	 */
+	public static boolean disableStat;
+	
 	private File file;
 	private FileConfiguration config;
 	
@@ -60,5 +70,21 @@ public class ConfigurationHandler {
 		}
 		
 		language = this.getConfig().getString("language");
+		
+		String uuid = this.getConfig().getString("statUuid");
+		statUuid = uuid != null ? uuid : "";
+		disableStat = this.getConfig().getBoolean("disableStat");
+		
+	}
+	
+	public void setUuid(String uuid) {
+		ConfigurationHandler.statUuid = uuid;
+		
+		this.getConfig().set("statUuid", uuid);
+		try {
+			this.config.save(file);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

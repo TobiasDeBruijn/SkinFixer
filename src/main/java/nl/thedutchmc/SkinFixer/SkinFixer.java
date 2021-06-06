@@ -5,6 +5,8 @@ import org.apache.log4j.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import dev.array21.pluginstatlib.PluginStat;
+import dev.array21.pluginstatlib.PluginStat.PluginStatBuilder;
 import nl.thedutchmc.SkinFixer.commandexecutors.GetCodeCommandExecutor;
 import nl.thedutchmc.SkinFixer.commandexecutors.SetSkinCommandExecutor;
 import nl.thedutchmc.SkinFixer.commandexecutors.SkinFixerCommandExecutor;
@@ -12,13 +14,12 @@ import nl.thedutchmc.SkinFixer.fileHandlers.ConfigurationHandler;
 import nl.thedutchmc.SkinFixer.fileHandlers.StorageHandler;
 import nl.thedutchmc.SkinFixer.language.LangHandler;
 import nl.thedutchmc.SkinFixer.minecraftevents.PlayerJoinEventListener;
+import nl.thedutchmc.SkinFixer.updatechecker.UpdateChecker;
 
 public class SkinFixer extends JavaPlugin {
 
 	public static SkinFixer INSTANCE;
 	public static StorageHandler STORAGE;
-	
-	public static final String NMS_VERSION = Bukkit.getServer().getClass().getPackage().getName().substring(23);
 	public static String PLUGIN_VERSION;
 	
 	public static final Logger LOGGER = LogManager.getLogger(SkinFixer.class);
@@ -30,7 +31,14 @@ public class SkinFixer extends JavaPlugin {
 		PLUGIN_VERSION = Bukkit.getPluginManager().getPlugin("SkinFixer").getDescription().getVersion();
 		
 		SkinFixer.logInfo("Welcome to SkinFixer version " + PLUGIN_VERSION + " by TheDutchMC!");
-		SkinFixer.logInfo("Using NMS Version " + SkinFixer.NMS_VERSION);
+		
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				new UpdateChecker(SkinFixer.this).checkUpdate();
+
+			}
+		}, "SkinFixer UpdateChecker Thread").start();
 		
 		//Read the configuration
 		ConfigurationHandler configHandler = new ConfigurationHandler();
@@ -42,6 +50,16 @@ public class SkinFixer extends JavaPlugin {
 		} else {
 			SkinFixer.logWarn("Configuration entry 'language' is missing. Using English as default.");
 			langHandler.loadLang("en");
+		}
+		
+		if(!ConfigurationHandler.disableStat) {
+			PluginStat stat = PluginStatBuilder.createDefault()
+					.setLogErrFn(SkinFixer::logWarn)
+					.setSetUuidFn(configHandler::setUuid)
+					.setUuid(ConfigurationHandler.statUuid)
+					.build();
+			
+			stat.start();
 		}
 		
 		//Storage of skins and pending keys
@@ -74,11 +92,11 @@ public class SkinFixer extends JavaPlugin {
 		logInfo("Thank you for using SkinFixer by TheDutchMC");
 	}
 	
-	public static void logInfo(String log) {
-		Bukkit.getLogger().info("[" + SkinFixer.INSTANCE.getDescription().getName() + "] " + log);	
+	public static void logInfo(Object log) {
+		Bukkit.getLogger().info("[" + SkinFixer.INSTANCE.getDescription().getName() + "] " + log.toString());	
 	}
 	
-	public static void logWarn(String log) {
-		Bukkit.getLogger().warning("[" + SkinFixer.INSTANCE.getDescription().getName() + "] " + log);	
+	public static void logWarn(Object log) {
+		Bukkit.getLogger().warning("[" + SkinFixer.INSTANCE.getDescription().getName() + "] " + log.toString());	
 	}
 }
