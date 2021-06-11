@@ -7,6 +7,8 @@ import java.lang.reflect.Method;
 
 import org.bukkit.Bukkit;
 
+import net.dv8tion.jda.annotations.ForRemoval;
+
 public class ReflectionUtil {
 
 	public static String SERVER_VERSION;
@@ -21,6 +23,11 @@ public class ReflectionUtil {
 		SERVER_VERSION = Bukkit.getServer().getClass().getPackage().getName().substring(Bukkit.getServer().getClass().getPackage().getName().lastIndexOf('.') + 1);
 	}
 	
+	public static boolean isUseNewSpigotPackaging() {
+		String major = SERVER_VERSION.split("_")[1];
+		return Integer.valueOf(major) >= 17;
+	}
+	
 	/**
 	 * Get a Class from the org.bukkit.craftbukkit.SERVER_VERSION. package
 	 * @param className The name of the class
@@ -32,13 +39,21 @@ public class ReflectionUtil {
 	}
 	
 	/**
+	 * <strong>MC:1.16 and lower only </strong>
+	 * 
 	 * Get a Class from the net.minecraft.server.SERVER_VERSION. package
 	 * @param className The name of the class
 	 * @return Returns the Class
 	 * @throws ClassNotFoundException Thrown when the Class was not found
 	 */
+	@Deprecated
+	@ForRemoval
 	public static Class<?> getNmsClass(String className) throws ClassNotFoundException {
 		return Class.forName("net.minecraft.server." + SERVER_VERSION + "." + className);
+	}
+	
+	public static Class<?> getMinecraftClass(String className) throws ClassNotFoundException {
+		return Class.forName("net.minecraft." + className);
 	}
 	
 	/**
@@ -49,7 +64,7 @@ public class ReflectionUtil {
 	 * @throws NoSuchMethodException Thrown when no Constructor in the Class was found with the provided combination of arguments
 	 */
 	public static Constructor<?> getConstructor(Class<?> clazz, Class<?>... args) throws NoSuchMethodException {
-		Constructor<?> con = clazz.getConstructor(args);
+		Constructor<?> con = clazz.getDeclaredConstructor(args);
 		con.setAccessible(true);
 		
 		return con;

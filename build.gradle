@@ -4,7 +4,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 plugins {
     id 'java'
     id 'eclipse'
-    id 'com.github.johnrengelman.shadow' version '5.0.0'
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
     
 }
 
@@ -13,15 +13,19 @@ allprojects {
 	version = pluginVersion
 	group = pluginGroup	
 
-	sourceCompatibility = 1.8
-	targetCompatibility = 1.8
+	sourceCompatibility = 1.16
+	targetCompatibility = 1.16
+	
 
 	repositories {
-		jcenter()
 		mavenCentral()
   	  	maven{ url "https://hub.spigotmc.org/nexus/content/repositories/snapshots" }
    	 	maven{ url "https://oss.sonatype.org/content/repositories/snapshots" }
    	 	maven{ url 'https://jitpack.io' }
+        maven {
+            name 'm2-dv8tion'
+            url 'https://m2.dv8tion.net/releases'
+        }
     }
     
 	processResources {
@@ -36,14 +40,14 @@ allprojects {
 }
 
 dependencies {
-    compile 'com.github.TheDutchMC:HttpLib:1.1'
-	compileOnly 'org.spigotmc:spigot-api:1.16.1-R0.1-SNAPSHOT'
-	compile 'org.slf4j:slf4j-log4j12:1.7.29'
-	compile('net.dv8tion:JDA:4.2.0_168') {
+    implementation 'com.github.TheDutchMC:HttpLib:1.1'
+	compileOnly 'org.spigotmc:spigot-api:1.17-R0.1-SNAPSHOT'
+	implementation 'org.slf4j:slf4j-log4j12:1.7.29'
+	implementation('net.dv8tion:JDA:4.2.1_266') {
 		exclude module: 'opus-java' 
 	}
-	compile 'dev.array21:classvalidator:1.0.0'
-	compile 'dev.array21:pluginstatlib:1.0.5'
+	implementation 'dev.array21:classvalidator:1.0.0'
+	implementation 'dev.array21:pluginstatlib:1.0.5'
 }
 
 shadowJar() {
@@ -55,22 +59,31 @@ shadowJar() {
 	relocate 'dev.array21', 'nl.thedutchmc.skinfixer.libs.dev.array21'
 }
 
+
 task testJar(type: ShadowJar) {
+	duplicatesStrategy = DuplicatesStrategy.INCLUDE
+
 	relocate 'net.dv8tion.jda', 'nl.thedutchmc.libs.jda'
 	
 	description 'Build a test Jar'
 	archiveClassifier = 'DEV'
 	from sourceSets.main.output
-	configurations = [project.configurations.runtime]
+	configurations = [project.configurations.runtimeClasspath]
 	destinationDirectory = file("$rootDir/server/plugins")
 }
 
+processResources  {
+	duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
 task releaseJar(type: ShadowJar) {
+	duplicatesStrategy = DuplicatesStrategy.INCLUDE
+
 	relocate 'net.dv8tion.jda', 'nl.thedutchmc.libs.jda'
 
 	description 'Build a release Jar'
 	archiveClassifier = 'RELEASE'
 	from sourceSets.main.output
-	configurations = [project.configurations.runtime]
+	configurations = [project.configurations.runtimeClasspath]
 	destinationDirectory = file("$rootDir/releases")
 }

@@ -3,8 +3,12 @@ package nl.thedutchmc.SkinFixer.changeSkin;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -85,6 +89,7 @@ public class SkinChangeHandler {
 		player.sendMessage(ChatColor.GOLD + LangHandler.model.skinApplied);
 	}
 	
+	@SuppressWarnings("deprecation")
 	private static void applySkin(Player player, String skinValue, String skinSignature) {
 		new BukkitRunnable() {
 			
@@ -95,7 +100,13 @@ public class SkinChangeHandler {
 					Object entityPlayer = ReflectionUtil.invokeMethod(craftPlayerClass, player, "getHandle");
 					
 					//Get the GameProfile and the PropertyMap inside the Profile
-					Class<?> entityHumanClass = ReflectionUtil.getNmsClass("EntityHuman");
+					Class<?> entityHumanClass;
+					if(ReflectionUtil.isUseNewSpigotPackaging()) {
+						entityHumanClass = ReflectionUtil.getMinecraftClass("world.entity.player.EntityHuman");
+					} else {
+						entityHumanClass = ReflectionUtil.getNmsClass("EntityHuman");
+					}
+					
 					Object gameProfile = ReflectionUtil.invokeMethod(entityHumanClass, entityPlayer, "getProfile");
 					Object propertyMap = ReflectionUtil.invokeMethod(gameProfile, "getProperties");
 					
@@ -119,25 +130,61 @@ public class SkinChangeHandler {
 					ReflectionUtil.invokeMethod(forwardingMultimapClass, propertyMap, "put", new Class<?>[] { Object.class, Object.class }, new Object[] { "textures", newProperty });
 					
 					//Get the Enum constants REMOVE_PLAYER and ADD_PLAYER
-					Class<?> packetPlayOutPlayerInfoClass = ReflectionUtil.getNmsClass("PacketPlayOutPlayerInfo");
+					Class<?> packetPlayOutPlayerInfoClass;
+					if(ReflectionUtil.isUseNewSpigotPackaging()) {
+						packetPlayOutPlayerInfoClass = ReflectionUtil.getMinecraftClass("network.protocol.game.PacketPlayOutPlayerInfo");
+					} else {
+						packetPlayOutPlayerInfoClass = ReflectionUtil.getNmsClass("PacketPlayOutPlayerInfo");
+					}
 					Object removePlayerEnumConstant = ReflectionUtil.getEnum(packetPlayOutPlayerInfoClass, "EnumPlayerInfoAction", "REMOVE_PLAYER");
 					Object addPlayerEnumConstant = ReflectionUtil.getEnum(packetPlayOutPlayerInfoClass, "EnumPlayerInfoAction", "ADD_PLAYER");
-
+									    
 				    //Create an Array of EntityPlayer with size = 1 and add our player to it
 				    Object entityPlayerArr = Array.newInstance(entityPlayer.getClass(), 1);
 				    Array.set(entityPlayerArr, 0, entityPlayer);
-					
+				    
 					//Create two PacketPlayOutPlayerInfo packets, one for removing the player and one for re-adding the player
-					Object PacketPlayOutPlayerInfoRemovePlayer = ReflectionUtil.invokeConstructor(packetPlayOutPlayerInfoClass, removePlayerEnumConstant, entityPlayerArr);
-					Object PacketPlayOutPlayerInfoAddPlayer = ReflectionUtil.invokeConstructor(packetPlayOutPlayerInfoClass, addPlayerEnumConstant, entityPlayerArr);
+				    Object packetPlayOutPlayerInfoRemovePlayer;
+				    if(ReflectionUtil.isUseNewSpigotPackaging()) {
+				    	Class<?> enumPlayerInfoActionClass = ReflectionUtil.getMinecraftClass("network.protocol.game.PacketPlayOutPlayerInfo$EnumPlayerInfoAction");
+				    	
+				    	packetPlayOutPlayerInfoRemovePlayer = ReflectionUtil.invokeConstructor(packetPlayOutPlayerInfoClass, 
+					    		new Class<?>[] { enumPlayerInfoActionClass, entityPlayerArr.getClass() },
+					    		new Object[] { removePlayerEnumConstant, entityPlayerArr });
+				    } else {
+				    	packetPlayOutPlayerInfoRemovePlayer = ReflectionUtil.invokeConstructor(packetPlayOutPlayerInfoClass, removePlayerEnumConstant, entityPlayerArr);
+				    }
+				    
+					Object packetPlayOutPlayerInfoAddPlayer;
+					if(ReflectionUtil.isUseNewSpigotPackaging()) {
+				    	Class<?> enumPlayerInfoActionClass = ReflectionUtil.getMinecraftClass("network.protocol.game.PacketPlayOutPlayerInfo$EnumPlayerInfoAction");
+
+						packetPlayOutPlayerInfoAddPlayer = ReflectionUtil.invokeConstructor(packetPlayOutPlayerInfoClass,
+								new Class<?>[] { enumPlayerInfoActionClass, entityPlayerArr.getClass() },
+								new Object[] { removePlayerEnumConstant, entityPlayerArr }
+								);
+					} else {
+						packetPlayOutPlayerInfoAddPlayer = ReflectionUtil.invokeConstructor(packetPlayOutPlayerInfoClass, addPlayerEnumConstant, entityPlayerArr);
+					}
 					
 					//Get the Player's connection and the generic Packet class
-					Object playerConnection = ReflectionUtil.getObject(entityPlayer, "playerConnection");
-				    Class<?> packetClass = ReflectionUtil.getNmsClass("Packet");
+					Object playerConnection;
+					if(ReflectionUtil.isUseNewSpigotPackaging()) {
+						playerConnection = ReflectionUtil.getObject(entityPlayer, "b");
+					} else {
+						playerConnection = ReflectionUtil.getObject(entityPlayer, "playerConnection");
+					}
+					
+					Class<?> packetClass;
+					if(ReflectionUtil.isUseNewSpigotPackaging()) {
+						packetClass = ReflectionUtil.getMinecraftClass("network.protocol.Packet");
+					} else {
+						packetClass = ReflectionUtil.getNmsClass("Packet");
+					}
 
 				    //Send the two Packets
-				    ReflectionUtil.invokeMethod(playerConnection, "sendPacket", new Class<?>[] { packetClass }, new Object[] { PacketPlayOutPlayerInfoRemovePlayer });
-				    ReflectionUtil.invokeMethod(playerConnection, "sendPacket", new Class<?>[] { packetClass }, new Object[] { PacketPlayOutPlayerInfoAddPlayer });
+				    ReflectionUtil.invokeMethod(playerConnection, "sendPacket", new Class<?>[] { packetClass }, new Object[] { packetPlayOutPlayerInfoRemovePlayer });
+				    ReflectionUtil.invokeMethod(playerConnection, "sendPacket", new Class<?>[] { packetClass }, new Object[] { packetPlayOutPlayerInfoAddPlayer });
 				} catch(Exception e) {
 					e.printStackTrace();
 				}
@@ -149,6 +196,7 @@ public class SkinChangeHandler {
 	 * Reload the Player so the Player's new skin shows for other players and the Player itself
 	 * @param player The Player to reload
 	 */
+	@SuppressWarnings("deprecation")
 	private static void reloadPlayer(Player player) {
 		new BukkitRunnable() {
 			@Override
@@ -175,7 +223,13 @@ public class SkinChangeHandler {
 				    				    				    				    			
 				    //Get the PlayerInteractManagar,
 				    //From that get the Gamemode of the player as an EnumGamemode and the numerical ID for that
-				    Object playerIntManager = ReflectionUtil.getObject(entityPlayer, "playerInteractManager");
+				    Object playerIntManager;
+				    if(ReflectionUtil.isUseNewSpigotPackaging()) {
+				    	playerIntManager = ReflectionUtil.getObject(entityPlayer, "d");
+				    } else {
+				    	playerIntManager = ReflectionUtil.getObject(entityPlayer, "playerInteractManager");
+				    }
+				    
 				    Enum<?> enumGamemode = (Enum<?>) ReflectionUtil.invokeMethod(playerIntManager, "getGameMode");
 				    int gamemodeId = (int) ReflectionUtil.invokeMethod(enumGamemode, "getId");
 				    
@@ -190,7 +244,13 @@ public class SkinChangeHandler {
 			    	Object gamemodeEnumConst = getGamemodeByIdMethod.invoke(null, gamemodeId);
 				    
 			    	//PacketPlayOutRespawn Class
-				    Class<?> playPacketOutRespawnClass = ReflectionUtil.getNmsClass("PacketPlayOutRespawn");
+				    Class<?> playPacketOutRespawnClass;
+				    if(ReflectionUtil.isUseNewSpigotPackaging()) {
+				    	playPacketOutRespawnClass = ReflectionUtil.getMinecraftClass("network.protocol.game.PacketPlayOutRespawn");
+				    } else {
+				    	playPacketOutRespawnClass = ReflectionUtil.getNmsClass("PacketPlayOutRespawn");
+				    }
+				    
 
 				    //Instantiate the PacketPlayOutRespawn packet,
 				    //Different Minecraft versions have slightly different constructors, so we have multiple
@@ -273,22 +333,53 @@ public class SkinChangeHandler {
 			    	}
 				    
 				    //PacketPlayOutPosition
-				    Class<?> packetPlayOutPositionClass = ReflectionUtil.getNmsClass("PacketPlayOutPosition");
-				    Object packetPlayOutPosition = ReflectionUtil.invokeConstructor(packetPlayOutPositionClass, 
-				    		new Class<?>[] { double.class, double.class, double.class, float.class, float.class, Set.class, int.class },
-				    		new Object[] { playerLocation.getX(), playerLocation.getY(), playerLocation.getZ(), playerLocation.getYaw(), playerLocation.getPitch(), new HashSet<Enum<?>>(), 0 });
+				    Class<?> packetPlayOutPositionClass;
+				    if(ReflectionUtil.isUseNewSpigotPackaging()) {
+				    	packetPlayOutPositionClass = ReflectionUtil.getMinecraftClass("network.protocol.game.PacketPlayOutPosition");
+				    } else {
+				    	packetPlayOutPositionClass = ReflectionUtil.getNmsClass("PacketPlayOutPosition");
+				    }
+ 
+				    Object packetPlayOutPosition;
+				    if(ReflectionUtil.isUseNewSpigotPackaging()) {
+				    	packetPlayOutPosition = ReflectionUtil.invokeConstructor(packetPlayOutPositionClass, 
+					    		new Class<?>[] { double.class, double.class, double.class, float.class, float.class, Set.class, int.class, boolean.class },
+					    		new Object[] { playerLocation.getX(), playerLocation.getY(), playerLocation.getZ(), playerLocation.getYaw(), playerLocation.getPitch(), new HashSet<Enum<?>>(), 0, false });
+				    } else {
+				    	packetPlayOutPosition = ReflectionUtil.invokeConstructor(packetPlayOutPositionClass, 
+					    		new Class<?>[] { double.class, double.class, double.class, float.class, float.class, Set.class, int.class },
+					    		new Object[] { playerLocation.getX(), playerLocation.getY(), playerLocation.getZ(), playerLocation.getYaw(), playerLocation.getPitch(), new HashSet<Enum<?>>(), 0 });
+				    }
 				    
 				    //PacketPlayOutHeldItem
-				    Class<?> packetPlayOutHeldItemSlotClass = ReflectionUtil.getNmsClass("PacketPlayOutHeldItemSlot");
+				    Class<?> packetPlayOutHeldItemSlotClass;
+				    if(ReflectionUtil.isUseNewSpigotPackaging()) {
+				    	packetPlayOutHeldItemSlotClass = ReflectionUtil.getMinecraftClass("network.protocol.game.PacketPlayOutHeldItemSlot");
+				    } else {
+				    	packetPlayOutHeldItemSlotClass = ReflectionUtil.getNmsClass("PacketPlayOutHeldItemSlot");
+				    }
+				   
 				    Object packetPlayOutHeldItemSlot = ReflectionUtil.invokeConstructor(packetPlayOutHeldItemSlotClass, 
 				    		new Class<?>[] { int.class },
 				    		new Object[] { player.getInventory().getHeldItemSlot() });
 				    
 				    //Get the EntityPlayers' connection
-				    Object playerConnection = ReflectionUtil.getObject(entityPlayer, "playerConnection");
+					//Get the Player's connection and the generic Packet class
+					Object playerConnection;
+					if(ReflectionUtil.isUseNewSpigotPackaging()) {
+						playerConnection = ReflectionUtil.getObject(entityPlayer, "b");
+					} else {
+						playerConnection = ReflectionUtil.getObject(entityPlayer, "playerConnection");
+					}
 				    
 				    //Get the Enum constants for REMOVE_PLAYER and ADD_PLAYER
-				    Class<?> packetPlayOutPlayerInfo = ReflectionUtil.getNmsClass("PacketPlayOutPlayerInfo");
+				    Class<?> packetPlayOutPlayerInfo; 
+				    if(ReflectionUtil.isUseNewSpigotPackaging()) {
+				    	packetPlayOutPlayerInfo = ReflectionUtil.getMinecraftClass("network.protocol.game.PacketPlayOutPlayerInfo");
+				    } else {
+					    packetPlayOutPlayerInfo = ReflectionUtil.getNmsClass("PacketPlayOutPlayerInfo");
+				    }
+				    
 				    Object removePlayerEnumConst = ReflectionUtil.getEnum(packetPlayOutPlayerInfo, "EnumPlayerInfoAction", "REMOVE_PLAYER");
 				    Object addPlayerEnumConst = ReflectionUtil.getEnum(packetPlayOutPlayerInfo, "EnumPlayerInfoAction", "ADD_PLAYER");
 				    				    
@@ -297,18 +388,39 @@ public class SkinChangeHandler {
 				    Array.set(entityPlayerArr, 0, entityPlayer);
 				    
 				    //Construct a PacketPlayOutPlayerInfo with intention REMOVE_PLAYER
-				    Object packetPlayOutRemovePlayer = ReflectionUtil.invokeConstructor(packetPlayOutPlayerInfo, 
-				    		new Class<?>[] { removePlayerEnumConst.getClass(), entityPlayerArr.getClass() }, 
-				    		new Object[] { removePlayerEnumConst, entityPlayerArr });
+				    Object packetPlayOutRemovePlayer;
+				    if(ReflectionUtil.isUseNewSpigotPackaging()) {
+				    	Class<?> enumPlayerInfoActionClass = ReflectionUtil.getMinecraftClass("network.protocol.game.PacketPlayOutPlayerInfo$EnumPlayerInfoAction");
+
+				    	packetPlayOutRemovePlayer = ReflectionUtil.invokeConstructor(packetPlayOutPlayerInfo, 
+					    		new Class<?>[] { enumPlayerInfoActionClass, entityPlayerArr.getClass() }, 
+					    		new Object[] { removePlayerEnumConst, entityPlayerArr });
+				    } else {
+				    	packetPlayOutRemovePlayer = ReflectionUtil.invokeConstructor(packetPlayOutPlayerInfo, 
+					    		new Class<?>[] { removePlayerEnumConst.getClass(), entityPlayerArr.getClass() }, 
+					    		new Object[] { removePlayerEnumConst, entityPlayerArr });
+				    }
 				    
 				    //Construct a PacketPlayOutPlayerInfo with intention ADD_PLAYER
-				    Object packetPlayOutAddPlayer = ReflectionUtil.invokeConstructor(packetPlayOutPlayerInfo, 
-				    		new Class<?>[] { addPlayerEnumConst.getClass(), entityPlayerArr.getClass() },
-				    		new Object[] { addPlayerEnumConst, entityPlayerArr });
+				    Object packetPlayOutAddPlayer;
+				    if(ReflectionUtil.isUseNewSpigotPackaging()) {
+				    	Class<?> enumPlayerInfoActionClass = ReflectionUtil.getMinecraftClass("network.protocol.game.PacketPlayOutPlayerInfo$EnumPlayerInfoAction");
+				    	packetPlayOutAddPlayer = ReflectionUtil.invokeConstructor(packetPlayOutPlayerInfo, 
+					    		new Class<?>[] { enumPlayerInfoActionClass, entityPlayerArr.getClass() }, 
+					    		new Object[] { addPlayerEnumConst, entityPlayerArr });
+				    } else {
+				    	packetPlayOutAddPlayer = ReflectionUtil.invokeConstructor(packetPlayOutPlayerInfo, 
+					    		new Class<?>[] { addPlayerEnumConst.getClass(), entityPlayerArr.getClass() },
+					    		new Object[] { addPlayerEnumConst, entityPlayerArr });
+				    }
 				    
 				    //Get the generic Packet class
-				    Class<?> packetClass = ReflectionUtil.getNmsClass("Packet");
-				    
+					Class<?> packetClass;
+					if(ReflectionUtil.isUseNewSpigotPackaging()) {
+						packetClass = ReflectionUtil.getMinecraftClass("network.protocol.Packet");
+					} else {
+						packetClass = ReflectionUtil.getNmsClass("Packet");
+					}				    
 				    //Send both the PacketPlayOutPlayerInfo packets
 				    ReflectionUtil.invokeMethod(playerConnection, "sendPacket", new Class<?>[] { packetClass }, new Object[] { packetPlayOutRemovePlayer });
 				    ReflectionUtil.invokeMethod(playerConnection, "sendPacket", new Class<?>[] { packetClass }, new Object[] { packetPlayOutAddPlayer });
