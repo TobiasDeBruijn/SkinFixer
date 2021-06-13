@@ -25,22 +25,22 @@ SkinFixer also works with Discord. You can upload your skin to a designated Disc
 - Allow players to upload their skin to Discord, and set that skin in-game
 - Multi-language support
 
+## APIs
+SkinFixer relies on two APIs directly:
+- Mojang API
+- [SkinFixer API](https://github.com/TheDutchMC/SkinFixer-API)
+    - [MineSkin API](https://github.com/MineSkin/api.mineskin.org)
+
+The SkinFixer API was introduced as of v2.5.1 due to changes in the MineSkin API requiring authentication with an API key. The SkinFixer API relies on the MineSkin API under the hood.
+
 ## Contributing
 Please try to follow my codestyle, I don't yet follow any guideline myself.
 
 ## Issues
 Issues can be reported [here](https://github.com/TheDutchMC/SkinFixer/issues)
 
-## Adding new Spigot versions
-1. Add a new folder in root called `Spigot_1_xx_Ry`, where `x` is the Minecraft version, and `y` is the specific release.
-2. Add a new include to settings.gradle
-3. Add a new depenceny to build.gradle for your version
-4. Write your class
-3. Add a new case to the switch in SkinChangeOrchestrator.java
-4. Test and open a PR :)
-
 ## Building
 On Windows:  
-`gradlew shadowJar`  
+`gradlew releasejar`  
 On Linux:  
-`./gradlew shadowJar`
+`./gradlew releasejar`
