@@ -61,10 +61,7 @@ shadowJar() {
 
 
 task testJar(type: ShadowJar) {
-	duplicatesStrategy = DuplicatesStrategy.INCLUDE
-
 	relocate 'net.dv8tion.jda', 'nl.thedutchmc.libs.jda'
-	
 	description 'Build a test Jar'
 	archiveClassifier = 'DEV'
 	from sourceSets.main.output
@@ -77,13 +74,21 @@ processResources  {
 }
 
 task releaseJar(type: ShadowJar) {
-	duplicatesStrategy = DuplicatesStrategy.INCLUDE
-
 	relocate 'net.dv8tion.jda', 'nl.thedutchmc.libs.jda'
-
 	description 'Build a release Jar'
 	archiveClassifier = 'RELEASE'
 	from sourceSets.main.output
 	configurations = [project.configurations.runtimeClasspath]
 	destinationDirectory = file("$rootDir/releases")
+}
+
+task ghActions(type: ShadowJar) {
+	relocate 'net.dv8tion.jda', 'nl.thedutchmc.libs.jda'
+	description 'GitHub Actions task. Not used for regular development'
+	version = ''
+	archiveClassifier = ''
+	archiveBaseName = 'output'
+	from sourceSets.main.output
+	configurations = [project.configurations.runtimeClasspath]
+	destinationDirectory = file("$rootDir/actions")
 }
