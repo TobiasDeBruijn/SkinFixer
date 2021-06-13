@@ -18,7 +18,7 @@ import com.google.common.hash.Hashing;
 import net.md_5.bungee.api.ChatColor;
 import nl.thedutchmc.SkinFixer.SkinFixer;
 import nl.thedutchmc.SkinFixer.SkinObject;
-import nl.thedutchmc.SkinFixer.apis.MineskinApi;
+import nl.thedutchmc.SkinFixer.apis.SkinFixerApi;
 import nl.thedutchmc.SkinFixer.fileHandlers.StorageHandler;
 import nl.thedutchmc.SkinFixer.gson.GetSkinResponse;
 import nl.thedutchmc.SkinFixer.language.LangHandler;
@@ -36,25 +36,23 @@ public class SkinChangeHandler {
 			public void run() {
 				
 				Player player = Bukkit.getPlayer(internalUuid);				
-				//player.sendMessage(ChatColor.GOLD + "Fetching skin value and signature...");
 				player.sendMessage(ChatColor.GOLD + LangHandler.model.skinFetching);
 				
 				//Fetch the skin from Mineskin.org's API
 				Triple<Boolean, GetSkinResponse, String> apiResponse;
 				if(isPremium ) {
-					apiResponse = new MineskinApi().getSkinOfPremiumPlayer(externalUuid.toString());
+					apiResponse = new SkinFixerApi().getSkinOfPremiumPlayer(externalUuid.toString());
 				} else {
-					apiResponse = new MineskinApi().getSkin(skinUrl, slim);
+					apiResponse = new SkinFixerApi().getSkin(skinUrl, slim);
 				}
 				
 				if(!apiResponse.getA()) {
-					//player.sendMessage(ChatColor.RED + "Something went wrong applying your skin:\n" + ChatColor.GRAY + apiResponse.getC());
 					player.sendMessage(ChatColor.RED + LangHandler.model.skinApplyFailed.replaceAll("%ERROR%", ChatColor.GRAY + apiResponse.getC() + ChatColor.RED));
 					return;
 				}
 				
 				GetSkinResponse skinResponse = apiResponse.getB();
-				changeSkin(skinResponse.getData().getTexture().getValue(), skinResponse.getData().getTexture().getSignature(), internalUuid, slim);
+				changeSkin(skinResponse.value, skinResponse.signature, internalUuid, slim);
 			}
 		}.runTaskAsynchronously(SkinFixer.INSTANCE);
 	}
