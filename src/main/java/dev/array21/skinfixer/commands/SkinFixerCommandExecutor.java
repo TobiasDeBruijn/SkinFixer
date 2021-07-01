@@ -28,7 +28,8 @@ public class SkinFixerCommandExecutor implements CommandExecutor {
 			sender.sendMessage("- " + cg + "/getcode <url>" + cw + " " + LangHandler.model.skinFixerGetCodeHelp);
 			sender.sendMessage("- " + cg + "/skinfixer help" + cw + " " + LangHandler.model.skinFixerShowHelp);
 			sender.sendMessage("- " + cg + "/skinfixer version" + cw + " " + LangHandler.model.skinFixerVersionHelp);
-		
+			sender.sendMessage("- " + cg + "/resetskin" + cw + " " + LangHandler.model.skinFixerVersionHelp);
+			
 			return true;
 		}
 		

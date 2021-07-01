@@ -88,6 +88,7 @@ public class LangHandler {
 		
 		if(!validationResult.getA() ) {
 			SkinFixer.logWarn(String.format("LanguageModel '%s' failed validation: %s", modelFile.getAbsolutePath(), validationResult.getB()));
+			SkinFixer.logWarn("Did you recently update SkinFixer and forgot to remove your 'langs' folder?");
 			Bukkit.getPluginManager().disablePlugin(this.plugin);
 			return null;
 		}

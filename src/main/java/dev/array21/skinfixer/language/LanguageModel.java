@@ -48,6 +48,8 @@ public class LanguageModel {
 	@Required
 	public String skinFixerVersionHelp;
 	@Required
+	public String skinFixerResetSkinHelp;
+	@Required
 	//Variable: %VERSION%
 	public String skinFixerVersion;
 	

@@ -17,6 +17,7 @@ skinFixerNoOptionProvided: No option provided. See /skinfixer help for help!
 skinFixerSetSkinHelp: Set your skin from a code.
 skinFixerGetCodeHelp: Generate a code from a Skin url. URL must be the skinfie itself.
 skinFixerShowHelp: Shows this page.
+skinFixerResetSkinHelp: Reset your skin, if you have a premium account your real skin will be applied when you log in again.
 skinFixerVersionHelp: Returns the version of SkinFixer you are using
 skinFixerVersion: You are using SkinFixer version %VERSION%
 
