@@ -29,8 +29,20 @@ public class PlayerJoinEventListener implements Listener {
 			
 			@Override
 			public void run() {
+				SkinData sd = PlayerJoinEventListener.this.plugin.getStorageHandler().getManifest().getForPlayer(event.getPlayer().getUniqueId());
+				if(sd != null) {
+					new BukkitRunnable() {
+						
+						@Override
+						public void run() {
+							new SkinChangeHandler(PlayerJoinEventListener.this.plugin).changeSkinFromObject(sd.into(), true);
+						}
+					}.runTaskLater(PlayerJoinEventListener.this.plugin, 5L);
+					
+					return;
+				}
+								
 				Triple<Boolean, MojangAuthResponse, String> mojangApiResponse = new MojangApi().getUuidFromMojang(event.getPlayer().getName());
-				
 				if(!mojangApiResponse.getA()) {
 					SkinFixer.logWarn("Something went wrong fetching the UUID from Mojang.");
 				} else if(mojangApiResponse.getB() != null) {
@@ -38,19 +50,6 @@ public class PlayerJoinEventListener implements Listener {
 					new SkinChangeHandler(PlayerJoinEventListener.this.plugin).changeSkinJson(null, event.getPlayer().getUniqueId(), UUID.fromString(uuidDashedStr), false, true, true);
 					return;
 				}
-
-				SkinData sd = PlayerJoinEventListener.this.plugin.getStorageHandler().getManifest().getForPlayer(event.getPlayer().getUniqueId());
-				if(sd == null) {
-					return;
-				}
-								
-				new BukkitRunnable() {
-					
-					@Override
-					public void run() {
-						new SkinChangeHandler(PlayerJoinEventListener.this.plugin).changeSkinFromObject(sd.into(), true);
-					}
-				}.runTaskLater(PlayerJoinEventListener.this.plugin, 5L);
 			}
 		}.runTaskAsynchronously(this.plugin);
 	}

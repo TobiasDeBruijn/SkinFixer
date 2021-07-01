@@ -13,6 +13,9 @@ commands:
  skinfixer:
   description: SkinFixer base command
   usage: /skinfixer <option>
+ resetSkin:
+  description: Remove a Player's skin from the cache
+  usage: /resetskin
 permissions:
  skinfixer.*:
   default: op
@@ -22,6 +25,7 @@ permissions:
    skinfixer.getcode: true
    skinfixer.help: true
    skinfixer.version: true
+   skinfixer.resetskin: true
  skinfixer.setskin:
   default: true
   description: Allows the player to set their skin using /setskin 
@@ -33,4 +37,7 @@ permissions:
   description: Allows the use of /skinfixer version
  skinfixer.help:
   default: true
-  description: allows the use of /skinfixer help
+  description: Allows the use of /skinfixer help
+ skinfixer.resetskin:
+  default: true
+  description: Allows the use of /resetskin

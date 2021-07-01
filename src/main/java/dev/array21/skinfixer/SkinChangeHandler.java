@@ -81,10 +81,10 @@ public class SkinChangeHandler {
 			SkinObject skin = new SkinObject(caller, skinValue, skinSignature);
 			if(slim) {
 				skin.setSlim(true);
-			}
-			
-			this.plugin.getStorageHandler().updateSkinData(caller, skinValue, skinSignature);
+			}			
 		}
+		
+		this.plugin.getStorageHandler().updateSkinData(caller, skinValue, skinSignature);
 		
 		if(!(onLogin && SkinChangeHandler.this.plugin.getConfigManifest().disableSkinApplyOnLoginMessage)) { 
 			player.sendMessage(ChatColor.GOLD + LangHandler.model.skinApplying);

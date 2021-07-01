@@ -70,9 +70,12 @@ public class StorageHandler {
 		skinData.playerUuid = player.toString();
 		skinData.value = value;
 		skinData.signature = signature;
-		
+
 		this.manifest.addSkinData(skinData);
-		
+		saveConfig();
+	}
+	
+	public void saveConfig() {
 		new BukkitRunnable() {
 			
 			@Override

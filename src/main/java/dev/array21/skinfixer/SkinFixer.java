@@ -10,6 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import dev.array21.pluginstatlib.PluginStat;
 import dev.array21.pluginstatlib.PluginStat.PluginStatBuilder;
 import dev.array21.skinfixer.commands.GetCodeCommandExecutor;
+import dev.array21.skinfixer.commands.ResetSkinCommandExecutor;
 import dev.array21.skinfixer.commands.SetSkinCommandExecutor;
 import dev.array21.skinfixer.commands.SkinFixerCommandExecutor;
 import dev.array21.skinfixer.config.ConfigHandler;
@@ -76,6 +77,8 @@ public class SkinFixer extends JavaPlugin {
 		this.getCommand("setskin").setExecutor(new SetSkinCommandExecutor(this));
 		this.getCommand("getcode").setExecutor(new GetCodeCommandExecutor(this));
 		this.getCommand("skinfixer").setExecutor(new SkinFixerCommandExecutor());
+		this.getCommand("resetskin").setExecutor(new ResetSkinCommandExecutor(this));
+		
 		
 		//Setup JDA
 		if(this.configManifest.useDiscord) {

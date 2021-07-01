@@ -21,3 +21,5 @@ skinFixerVersionHelp: Returns the version of SkinFixer you are using
 skinFixerVersion: You are using SkinFixer version %VERSION%
 
 discordSetSkin: You can set this as your skin in-game using /setskin %CODE%
+
+skinReset: Your skin has been reset! SkinFixer will fetch a new skin, if it is available, the next time you join the game!

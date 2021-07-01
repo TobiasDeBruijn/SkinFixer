@@ -55,4 +55,8 @@ public class LanguageModel {
 	@Required
 	//Variable: %CODE%
 	public String discordSetSkin;
+	
+	//ResetSkinCommandExecutor
+	@Required
+	public String skinReset;
 }

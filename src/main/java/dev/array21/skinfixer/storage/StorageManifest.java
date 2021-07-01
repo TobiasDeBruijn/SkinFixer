@@ -11,17 +11,23 @@ public class StorageManifest {
 	
 	public void addSkinData(SkinData sd) {
 		List<SkinData> skinDataList = new ArrayList<>(Arrays.asList(this.skinData));
-		skinDataList.removeIf(x -> sd.playerUuid == sd.playerUuid);
+		skinDataList.removeIf(x -> x.playerUuid.equals(sd.playerUuid));
 		skinDataList.add(sd);
+		this.skinData = skinDataList.toArray(new SkinData[0]);
+	}
+	
+	public void deleteForPlayer(UUID player) {
+		List<SkinData> skinDataList = new ArrayList<>(Arrays.asList(this.skinData));
+		skinDataList.removeIf(x -> x.playerUuid.equals(player.toString()));
+		this.skinData = skinDataList.toArray(new SkinData[0]);
 	}
 	
 	public SkinData getForPlayer(UUID player) {
 		for(SkinData sd : this.skinData) {
-			if(sd.playerUuid == player.toString()) {
+			if(sd.playerUuid.equals(player.toString())) {
 				return sd;
 			}
 		}
-		
 		return null;
 	}
 }

@@ -48,16 +48,15 @@ dependencies {
 
 shadowJar() {
  	classifier = ''
-	relocate 'net.dv8tion.jda', 'nl.thedutchmc.skinfixer.libs.net.dv8tion.jda'
-	relocate 'com.google.code.gson', 'nl.thedutchmc.skinfixer.libs.com.google.code.gson'
-	relocate 'nl.thedutchmc.httplib', 'nl.thedutchmc.skinfixer.libs.nl.thedutchmc.httplib'
-	relocate 'org.slf4j', 'nl.thedutchmc.skinfixer.libs.org.slf4j'
-	relocate 'dev.array21', 'nl.thedutchmc.skinfixer.libs.dev.array21'
+	relocate 'net.dv8tion.jda', 'dev.array21.skinfixer.libs.net.dv8tion.jda'
+	relocate 'com.google.code.gson', 'dev.array21.skinfixer.libs.com.google.code.gson'
+	relocate 'nl.thedutchmc.httplib', 'dev.array21.skinfixer.libs.nl.thedutchmc.httplib'
+	relocate 'org.slf4j', 'dev.array21.skinfixer.libs.org.slf4j'
+	relocate 'dev.array21', 'dev.array21.skinfixer.libs.dev.array21'
 }
 
 
 task testJar(type: ShadowJar) {
-	relocate 'net.dv8tion.jda', 'nl.thedutchmc.libs.jda'
 	description 'Build a test Jar'
 	archiveClassifier = 'DEV'
 	from sourceSets.main.output
@@ -70,7 +69,6 @@ processResources  {
 }
 
 task releaseJar(type: ShadowJar) {
-	relocate 'net.dv8tion.jda', 'nl.thedutchmc.libs.jda'
 	description 'Build a release Jar'
 	archiveClassifier = 'RELEASE'
 	from sourceSets.main.output
@@ -79,7 +77,6 @@ task releaseJar(type: ShadowJar) {
 }
 
 task ghActions(type: ShadowJar) {
-	relocate 'net.dv8tion.jda', 'nl.thedutchmc.libs.jda'
 	description 'GitHub Actions task. Not used for regular development'
 	version = ''
 	archiveClassifier = ''
