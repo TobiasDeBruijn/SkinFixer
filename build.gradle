@@ -5,17 +5,15 @@ plugins {
     id 'java'
     id 'eclipse'
     id 'com.github.johnrengelman.shadow' version '7.0.0'
-    
 }
 
 allprojects {
 	version = pluginVersion
-	group = pluginGroup	
+	group = 'dev.array21'	
 
 	sourceCompatibility = 1.16
 	targetCompatibility = 1.16
 	
-
 	repositories {
 		mavenCentral()
   	  	maven{ url "https://hub.spigotmc.org/nexus/content/repositories/snapshots" }
@@ -30,23 +28,22 @@ allprojects {
 	processResources {
     	from(sourceSets.main.resources.srcDirs) {
         	filter ReplaceTokens, tokens: [version: version]
-			filter ReplaceTokens, tokens: [name: pluginName]
-			filter ReplaceTokens, tokens: [groupId: pluginGroup]
-			filter ReplaceTokens, tokens: [author: pluginAuthor]
-			filter ReplaceTokens, tokens: [apiVersion: pluginApiVersion]
 		}
     }
 }
 
 dependencies {
-    implementation 'com.github.TheDutchMC:HttpLib:1.1'
 	compileOnly 'org.spigotmc:spigot-api:1.17-R0.1-SNAPSHOT'
+
+    implementation 'com.github.TheDutchMC:HttpLib:1.1'
+	implementation 'dev.array21:classvalidator:1.0.0'
+	implementation 'dev.array21:pluginstatlib:1.0.5'
+
+	// JDA and related dependencies
 	implementation 'org.slf4j:slf4j-log4j12:1.7.29'
 	implementation('net.dv8tion:JDA:4.2.1_266') {
 		exclude module: 'opus-java' 
 	}
-	implementation 'dev.array21:classvalidator:1.0.0'
-	implementation 'dev.array21:pluginstatlib:1.0.5'
 }
 
 shadowJar() {
