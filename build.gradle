@@ -9,7 +9,6 @@ plugins {
 }
 
 allprojects {
-
 	version = pluginVersion
 	group = pluginGroup	
 

@@ -1,8 +1,8 @@
-name: @name@
-main: @groupId@.@name@.@name@
+name: SkinFixer
+main: dev.array21.skinfixer.SkinFixer
 version: @version@
-author: @author@
-api-version: @apiVersion@
+author: Dutchy76
+api-version: 1.16
 commands:
  setskin:
   description: set your skin.
