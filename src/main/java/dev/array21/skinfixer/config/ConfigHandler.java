@@ -63,7 +63,7 @@ public class ConfigHandler {
 			manifest.statUuid = "";
 		}
 		
-		if(manifest.useDiscord != null && manifest.useDiscord) {
+		if(manifest.useDiscord) {
 			if(manifest.token == null || manifest.token.isEmpty()) {
 				SkinFixer.logWarn("Configuration is invalid: useDiscord is set to true, but 'token' was left blank.");
 				Bukkit.getPluginManager().disablePlugin(this.plugin);

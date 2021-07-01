@@ -8,7 +8,7 @@ public class ConfigManifest {
 	 * Should SkinFixer use Discord
 	 */
 	@Required
-	public Boolean useDiscord;
+	public boolean useDiscord;
 	
 	/**
 	 * The Discord Token SkinFixer should use
@@ -37,11 +37,11 @@ public class ConfigManifest {
 	 * Should statistics be disabled
 	 * @since 1.4.1
 	 */
-	public Boolean disableStat;
+	public boolean disableStat;
 	
 	/**
 	 * Should a message be displayed informing the user that we're applying their skin when they log in. This excludes error messages
 	 * @since 1.5.2
 	 */
-	public Boolean disableSkinApplyOnLoginMessage;
+	public boolean disableSkinApplyOnLoginMessage;
 }

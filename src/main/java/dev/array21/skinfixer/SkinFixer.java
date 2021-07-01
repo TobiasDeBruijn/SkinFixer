@@ -34,8 +34,7 @@ public class SkinFixer extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		INSTANCE = this;
-		
-		PLUGIN_VERSION = Bukkit.getPluginManager().getPlugin("SkinFixer").getDescription().getVersion();
+		PLUGIN_VERSION = this.getDescription().getVersion();
 		
 		SkinFixer.logInfo("Welcome to SkinFixer version " + PLUGIN_VERSION + " by TheDutchMC!");
 		
@@ -71,7 +70,8 @@ public class SkinFixer extends JavaPlugin {
 		
 		//Storage of skins and pending keys
 		this.storageHandler = new StorageHandler(this);
-				
+		this.storageHandler.read();	
+		
 		//Register command executors
 		this.getCommand("setskin").setExecutor(new SetSkinCommandExecutor(this));
 		this.getCommand("getcode").setExecutor(new GetCodeCommandExecutor(this));
