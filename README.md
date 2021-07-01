@@ -31,7 +31,7 @@ SkinFixer relies on two APIs directly:
 - [SkinFixer API](https://github.com/TheDutchMC/SkinFixer-API)
     - [MineSkin API](https://github.com/MineSkin/api.mineskin.org)
 
-The SkinFixer API was introduced as of v2.5.1 due to changes in the MineSkin API requiring authentication with an API key. The SkinFixer API relies on the MineSkin API under the hood.
+The SkinFixer API was introduced as of v1.5.1 due to changes in the MineSkin API requiring authentication with an API key. The SkinFixer API relies on the MineSkin API under the hood.
 
 ## Contributing
 Please try to follow my codestyle, I don't yet follow any guideline myself.
