@@ -10,7 +10,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import dev.array21.skinfixer.SkinChangeHandler;
 import dev.array21.skinfixer.SkinFixer;
 import dev.array21.skinfixer.apis.MojangApi;
-import dev.array21.skinfixer.gson.MojangAuthResponse;
+import dev.array21.skinfixer.apis.gson.MojangAuthResponse;
 import dev.array21.skinfixer.storage.SkinData;
 import dev.array21.skinfixer.util.Triple;
 import dev.array21.skinfixer.util.Utils;

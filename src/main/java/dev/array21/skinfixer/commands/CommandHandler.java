@@ -12,6 +12,7 @@ import org.bukkit.command.TabCompleter;
 import dev.array21.skinfixer.SkinFixer;
 import dev.array21.skinfixer.commands.subcommands.GetCommand;
 import dev.array21.skinfixer.commands.subcommands.HelpCommand;
+import dev.array21.skinfixer.commands.subcommands.ReloadCommand;
 import dev.array21.skinfixer.commands.subcommands.ResetCommand;
 import dev.array21.skinfixer.commands.subcommands.SetCommand;
 import dev.array21.skinfixer.commands.subcommands.VersionCommand;
@@ -34,6 +35,7 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 		registerCommand(new VersionCommand());
 		registerCommand(new SetCommand());
 		registerCommand(new GetCommand());
+		registerCommand(new ReloadCommand());
 	}
 	
 	/**
@@ -75,9 +77,7 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 	}
 	
 	@Override
-	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-		
-		System.out.println(args.length);
+	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {		
 		if(args.length == 1) {
 			List.copyOf(this.subcommands.keySet()).forEach(x -> System.out.println(x));
 			return List.copyOf(subcommands.keySet());

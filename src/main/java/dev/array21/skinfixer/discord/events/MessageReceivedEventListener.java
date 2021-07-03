@@ -4,7 +4,6 @@ import java.util.List;
 
 import dev.array21.skinfixer.SkinFixer;
 import dev.array21.skinfixer.common.AddNewSkin;
-import dev.array21.skinfixer.discord.JdaHandler;
 import dev.array21.skinfixer.language.LangHandler;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
@@ -24,7 +23,7 @@ public class MessageReceivedEventListener extends ListenerAdapter {
 	public void onMessageReceived(MessageReceivedEvent event) {
 		final MessageChannel msgChannel = event.getChannel();
 		
-		if(!msgChannel.equals(JdaHandler.getChannel())) return;
+		if(!msgChannel.equals(this.plugin.getJdaHandler().getChannel())) return;
 		
 		Message msg = event.getMessage();
 		

@@ -1,4 +1,4 @@
-package dev.array21.skinfixer.gson;
+package dev.array21.skinfixer.apis.gson;
 
 import com.google.gson.annotations.SerializedName;
 

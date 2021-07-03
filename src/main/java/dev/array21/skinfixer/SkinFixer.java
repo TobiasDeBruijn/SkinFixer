@@ -9,6 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import dev.array21.pluginstatlib.PluginStat;
 import dev.array21.pluginstatlib.PluginStat.PluginStatBuilder;
+import dev.array21.skinfixer.annotations.Nullable;
 import dev.array21.skinfixer.commands.CommandHandler;
 import dev.array21.skinfixer.config.ConfigHandler;
 import dev.array21.skinfixer.config.ConfigManifest;
@@ -27,8 +28,9 @@ public class SkinFixer extends JavaPlugin {
 	
 	private HashMap<Integer, String> skinCodes = new HashMap<>();
 	
-	private ConfigManifest configManifest;
+	private ConfigHandler configHandler;
 	private StorageHandler storageHandler;
+	private JdaHandler jdaHandler;
 	
 	@Override
 	public void onEnable() {
@@ -46,22 +48,22 @@ public class SkinFixer extends JavaPlugin {
 		}, "SkinFixer UpdateChecker Thread").start();
 		
 		//Read the configuration
-		ConfigHandler configHandler = new ConfigHandler(this);
-		this.configManifest = configHandler.read();
+		this.configHandler = new ConfigHandler(this);
+		ConfigManifest configManifest = configHandler.read();
 	
 		LangHandler langHandler = new LangHandler(this);
-		if(this.configManifest.language != null) {
-			langHandler.loadLang(this.configManifest.language);
+		if(configManifest.language != null) {
+			langHandler.loadLang(configManifest.language);
 		} else {
 			SkinFixer.logWarn("Configuration entry 'language' is missing. Using English as default.");
 			langHandler.loadLang("en");
 		}
 		
-		if(!this.configManifest.disableStat) {
+		if(!configManifest.disableStat) {
 			PluginStat stat = PluginStatBuilder.createDefault()
 					.setLogErrFn(SkinFixer::logWarn)
 					.setSetUuidFn(configHandler::setStatUuid)
-					.setUuid(this.configManifest.statUuid)
+					.setUuid(configManifest.statUuid)
 					.build();
 			
 			stat.start();
@@ -74,19 +76,11 @@ public class SkinFixer extends JavaPlugin {
 		CommandHandler commandHandler = new CommandHandler(this);
 		this.getCommand("skin").setExecutor(commandHandler);
 		this.getCommand("skin").setTabCompleter(commandHandler);
-		/*
-		
-		//Register command executors
-		this.getCommand("setskin").setExecutor(new SetSkinCommandExecutor(this));
-		this.getCommand("getcode").setExecutor(new GetCodeCommandExecutor(this));
-		this.getCommand("skinfixer").setExecutor(new SkinFixerCommandExecutor());
-		this.getCommand("resetskin").setExecutor(new ResetSkinCommandExecutor(this));
-*/
-		
+
 		//Setup JDA
-		if(this.configManifest.useDiscord) {
-			JdaHandler jdaHandler = new JdaHandler(this);
-			jdaHandler.setupJda();
+		if(configManifest.useDiscord) {
+			this.jdaHandler = new JdaHandler(this);
+			this.jdaHandler.setupJda();
 		}
 
 		//Register event listeners
@@ -100,23 +94,75 @@ public class SkinFixer extends JavaPlugin {
 	public static void logWarn(Object log) {
 		Bukkit.getLogger().warning("[" + SkinFixer.INSTANCE.getDescription().getName() + "] " + log.toString());	
 	}
-	
-	public ConfigManifest getConfigManifest() {
-		return this.configManifest;
+
+	/**
+	 * Reload the configuration.
+	 * @return The new ConfigManifest
+	 */
+	public ConfigManifest reloadConfigManifest() {
+		return this.configHandler.read();
 	}
 	
+	/**
+	 * Reload JDA, if Discord is used
+	 * - Shutdown JDA
+	 * - Re-run JDA setup
+	 */
+	public void reloadJda() {
+		if(this.jdaHandler != null) {
+			try {
+				this.jdaHandler.shutdownJda();
+			} catch(Exception e) {}
+			this.jdaHandler.setupJda();
+		}
+	}
+	
+	/**
+	 * Get the JDA Handler. This is null if Discord has been disabled in the config (i.e. it is not used)
+	 * @return The JDAHandler, if applicable
+	 */
+	@Nullable
+	public JdaHandler getJdaHandler() {
+		return this.jdaHandler;
+	}
+	
+	/**
+	 * Get the plugin configuration
+	 * @return ConfigManifest
+	 */
+	public ConfigManifest getConfigManifest() {
+		return this.configHandler.getConfigManifest();
+	}
+	
+	/**
+	 * Get the storage handler
+	 * @return StorageHandler
+	 */
 	public StorageHandler getStorageHandler() {
 		return this.storageHandler;
 	}
 	
+	/**
+	 * Get the Skin Code HashMap, where K is the code, and V is the URL associated with the code
+	 * @return
+	 */
 	public HashMap<Integer, String> getSkinCodeMap() {
 		return this.skinCodes;
 	}
 	
+	/**
+	 * Insert a new entry into the skin code map
+	 * @param skinCode The code to insert
+	 * @param url The URL associated with the code
+	 */
 	public void insertSkinCode(int skinCode, String url) {
 		this.skinCodes.put(skinCode, url);
 	}
 	
+	/**
+	 * Get the SkinFixer Prefix which should be used in all messages send to the Player
+	 * @return The prefix
+	 */
 	public static String getPrefix() {
 		return ChatColor.GRAY + "[" + ChatColor.AQUA + "SF" + ChatColor.GRAY + "] " + ChatColor.RESET;
 	}

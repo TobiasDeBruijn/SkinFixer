@@ -16,7 +16,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.google.common.hash.Hashing;
 
 import dev.array21.skinfixer.apis.SkinFixerApi;
-import dev.array21.skinfixer.gson.GetSkinResponse;
+import dev.array21.skinfixer.apis.gson.GetSkinResponse;
 import dev.array21.skinfixer.language.LangHandler;
 import dev.array21.skinfixer.storage.SkinData;
 import dev.array21.skinfixer.util.ReflectionUtil;

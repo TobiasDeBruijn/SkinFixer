@@ -51,4 +51,7 @@ public class LanguageModel {
 	
 	@Required
 	public String unknownCommand;
+	
+	@Required
+	public String reloadSuccessful;
 }

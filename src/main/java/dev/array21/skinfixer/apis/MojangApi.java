@@ -5,7 +5,7 @@ import java.io.IOException;
 import com.google.gson.Gson;
 
 import dev.array21.skinfixer.SkinFixer;
-import dev.array21.skinfixer.gson.MojangAuthResponse;
+import dev.array21.skinfixer.apis.gson.MojangAuthResponse;
 import dev.array21.skinfixer.util.Triple;
 import dev.array21.skinfixer.util.Utils;
 import nl.thedutchmc.httplib.Http;

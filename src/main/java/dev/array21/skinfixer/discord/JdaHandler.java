@@ -15,8 +15,8 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 
 public class JdaHandler {
 
-	private static JDA jda;
-	private static MessageChannel channel;
+	private JDA jda;
+	private MessageChannel channel;
 	private SkinFixer plugin;
 	
 	public JdaHandler(SkinFixer plugin) {
@@ -30,11 +30,11 @@ public class JdaHandler {
 		intents.add(GatewayIntent.GUILD_MESSAGES);
 		
 		try {
-			jda = JDABuilder.createDefault(manifest.token)
+			this.jda = JDABuilder.createDefault(manifest.token)
 					.enableIntents(intents)
 					.build();
 			
-			jda.awaitReady();
+			this.jda.awaitReady();
 			
 		} catch (LoginException e) {
 			SkinFixer.logWarn("Unable to connecto the Discord API. Is your token correct?");
@@ -45,19 +45,18 @@ public class JdaHandler {
 		
 		//Register event listeners
 		jda.addEventListener(new MessageReceivedEventListener(this.plugin));
-		
-		channel = jda.getTextChannelById(manifest.channel);
+		this.channel = jda.getTextChannelById(manifest.channel);
 	}
 	
-	public static JDA getJda() {
+	public JDA getJda() {
 		return jda;
 	}
 	
-	public static MessageChannel getChannel() {
+	public MessageChannel getChannel() {
 		return channel;
 	}
 	
-	public static void shutdownJda() throws Exception {
+	public void shutdownJda() throws Exception {
 		jda.shutdownNow();
 	}
 }

@@ -7,7 +7,7 @@ commandPlayerOnly: This command is for players only!
 commandNoPermission: You don't have permission to use this command!
 
 getCodeUrlRequired: You need to provide a URL to your skin!
-getCodeSkinAdded: Your skin has been added! You can apply it with /setskin %CODE%.
+getCodeSkinAdded: Your skin has been added! You can apply it with /skin set %CODE%.
 
 setSkinCodeRequired: You need to provide a code!
 setSkinCodeNotANumber: The code you entered is not a number!
@@ -15,8 +15,9 @@ setSkinCodeUnknown: Unknown code!
 
 skinFixerVersion: You are using SkinFixer version %VERSION%
 
-discordSetSkin: You can set this as your skin in-game using /setskin %CODE%
+discordSetSkin: You can set this as your skin in-game using /skin set %CODE%
 
 skinReset: Your skin has been reset! SkinFixer will fetch a new skin, if it is available, the next time you join the game!
 
 unknownCommand: The command provided was not recognized. Use /skin help to see a list of available commands.
+reloadSuccessful: SkinFixer was reloaded successfully.

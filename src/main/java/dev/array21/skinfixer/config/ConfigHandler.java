@@ -81,6 +81,10 @@ public class ConfigHandler {
 		return manifest;
 	}
 	
+	public ConfigManifest getConfigManifest() {
+		return this.manifest;
+	}
+	
 	public void setStatUuid(String uuid) {
 		this.manifest.statUuid = uuid;
 		String yaml = YAML.dumpAsMap(this.manifest);
