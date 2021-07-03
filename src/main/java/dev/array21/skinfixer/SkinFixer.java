@@ -9,10 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import dev.array21.pluginstatlib.PluginStat;
 import dev.array21.pluginstatlib.PluginStat.PluginStatBuilder;
-import dev.array21.skinfixer.commands.GetCodeCommandExecutor;
-import dev.array21.skinfixer.commands.ResetSkinCommandExecutor;
-import dev.array21.skinfixer.commands.SetSkinCommandExecutor;
-import dev.array21.skinfixer.commands.SkinFixerCommandExecutor;
+import dev.array21.skinfixer.commands.CommandHandler;
 import dev.array21.skinfixer.config.ConfigHandler;
 import dev.array21.skinfixer.config.ConfigManifest;
 import dev.array21.skinfixer.discord.JdaHandler;
@@ -20,6 +17,7 @@ import dev.array21.skinfixer.events.PlayerJoinEventListener;
 import dev.array21.skinfixer.language.LangHandler;
 import dev.array21.skinfixer.storage.StorageHandler;
 import dev.array21.skinfixer.updatechecker.UpdateChecker;
+import net.md_5.bungee.api.ChatColor;
 
 public class SkinFixer extends JavaPlugin {
 
@@ -73,12 +71,17 @@ public class SkinFixer extends JavaPlugin {
 		this.storageHandler = new StorageHandler(this);
 		this.storageHandler.read();	
 		
+		CommandHandler commandHandler = new CommandHandler(this);
+		this.getCommand("skin").setExecutor(commandHandler);
+		this.getCommand("skin").setTabCompleter(commandHandler);
+		/*
+		
 		//Register command executors
 		this.getCommand("setskin").setExecutor(new SetSkinCommandExecutor(this));
 		this.getCommand("getcode").setExecutor(new GetCodeCommandExecutor(this));
 		this.getCommand("skinfixer").setExecutor(new SkinFixerCommandExecutor());
 		this.getCommand("resetskin").setExecutor(new ResetSkinCommandExecutor(this));
-		
+*/
 		
 		//Setup JDA
 		if(this.configManifest.useDiscord) {
@@ -88,17 +91,6 @@ public class SkinFixer extends JavaPlugin {
 
 		//Register event listeners
 		Bukkit.getPluginManager().registerEvents(new PlayerJoinEventListener(this), this);
-	}
-	
-	@Override
-	public void onDisable() {
-		logInfo("Shutting down JDA");
-		
-		try {
-			JdaHandler.shutdownJda();
-		} catch(Exception e) {}
-		
-		logInfo("Thank you for using SkinFixer by TheDutchMC");
 	}
 	
 	public static void logInfo(Object log) {
@@ -123,5 +115,9 @@ public class SkinFixer extends JavaPlugin {
 	
 	public void insertSkinCode(int skinCode, String url) {
 		this.skinCodes.put(skinCode, url);
+	}
+	
+	public static String getPrefix() {
+		return ChatColor.GRAY + "[" + ChatColor.AQUA + "SF" + ChatColor.GRAY + "] " + ChatColor.RESET;
 	}
 }

@@ -13,14 +13,10 @@ setSkinCodeRequired: You need to provide a code!
 setSkinCodeNotANumber: The code you entered is not a number!
 setSkinCodeUnknown: Unknown code!
 
-skinFixerNoOptionProvided: No option provided. See /skinfixer help for help!
-skinFixerSetSkinHelp: Set your skin from a code.
-skinFixerGetCodeHelp: Generate a code from a Skin url. URL must be the skinfie itself.
-skinFixerShowHelp: Shows this page.
-skinFixerResetSkinHelp: Reset your skin, if you have a premium account your real skin will be applied when you log in again.
-skinFixerVersionHelp: Returns the version of SkinFixer you are using
 skinFixerVersion: You are using SkinFixer version %VERSION%
 
 discordSetSkin: You can set this as your skin in-game using /setskin %CODE%
 
 skinReset: Your skin has been reset! SkinFixer will fetch a new skin, if it is available, the next time you join the game!
+
+unknownCommand: The command provided was not recognized. Use /skin help to see a list of available commands.

@@ -4,40 +4,5 @@ version: @version@
 author: Dutchy76
 api-version: 1.16
 commands:
- setskin:
-  description: set your skin.
-  usage: /setskin <code> [slim true/false]
- getcode:
-  description: Get a code for your skin
-  usage: /getcode <url>
- skinfixer:
-  description: SkinFixer base command
-  usage: /skinfixer <option>
- resetSkin:
-  description: Remove a Player's skin from the cache
-  usage: /resetskin
-permissions:
- skinfixer.*:
-  default: op
-  description: Grants all permissions for SkinFixer
-  children:
-   skinfixer.setskin: true
-   skinfixer.getcode: true
-   skinfixer.help: true
-   skinfixer.version: true
-   skinfixer.resetskin: true
- skinfixer.setskin:
-  default: true
-  description: Allows the player to set their skin using /setskin 
- skinfixer.getcode:
-  default: true
-  description: Allows the player to get a code for their skin-image using /getcode
- skinfixer.version:
-  default: op
-  description: Allows the use of /skinfixer version
- skinfixer.help:
-  default: true
-  description: Allows the use of /skinfixer help
- skinfixer.resetskin:
-  default: true
-  description: Allows the use of /resetskin
+  skin:
+    description: SkinFixer's main command

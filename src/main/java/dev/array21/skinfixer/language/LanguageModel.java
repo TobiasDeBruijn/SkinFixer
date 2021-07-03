@@ -36,19 +36,6 @@ public class LanguageModel {
 	@Required
 	public String setSkinCodeUnknown;
 	
-	//SkinFixerCommandExecutor
-	@Required
-	public String skinFixerNoOptionProvided;
-	@Required
-	public String skinFixerSetSkinHelp;
-	@Required
-	public String skinFixerGetCodeHelp;
-	@Required
-	public String skinFixerShowHelp;
-	@Required
-	public String skinFixerVersionHelp;
-	@Required
-	public String skinFixerResetSkinHelp;
 	@Required
 	//Variable: %VERSION%
 	public String skinFixerVersion;
@@ -61,4 +48,7 @@ public class LanguageModel {
 	//ResetSkinCommandExecutor
 	@Required
 	public String skinReset;
+	
+	@Required
+	public String unknownCommand;
 }
