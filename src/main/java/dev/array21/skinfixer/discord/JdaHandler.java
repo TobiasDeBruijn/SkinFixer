@@ -30,7 +30,7 @@ public class JdaHandler {
 		intents.add(GatewayIntent.GUILD_MESSAGES);
 		
 		try {
-			this.jda = JDABuilder.createDefault(manifest.token)
+			this.jda = JDABuilder.createDefault(manifest.discordSettings.token)
 					.enableIntents(intents)
 					.build();
 			
@@ -38,14 +38,13 @@ public class JdaHandler {
 			
 		} catch (LoginException e) {
 			SkinFixer.logWarn("Unable to connecto the Discord API. Is your token correct?");
-			e.printStackTrace();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 		
 		//Register event listeners
 		jda.addEventListener(new MessageReceivedEventListener(this.plugin));
-		this.channel = jda.getTextChannelById(manifest.channel);
+		this.channel = jda.getTextChannelById(manifest.discordSettings.channelId);
 	}
 	
 	public JDA getJda() {

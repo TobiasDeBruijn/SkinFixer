@@ -59,19 +59,25 @@ public class ConfigHandler {
 			return null;
 		}
 		
-		if(manifest.statUuid == null) {
-			manifest.statUuid = "";
+		if(manifest.metricsUuid == null) {
+			manifest.metricsUuid = "";
 		}
 		
 		if(manifest.useDiscord) {
-			if(manifest.token == null || manifest.token.isEmpty()) {
-				SkinFixer.logWarn("Configuration is invalid: useDiscord is set to true, but 'token' was left blank.");
+			if(manifest.discordSettings == null) {
+				SkinFixer.logWarn("Configuration is invalid: useDiscord is set to true, but discordSettings is missing.");
 				Bukkit.getPluginManager().disablePlugin(this.plugin);
 				return null;
 			}
 			
-			if(manifest.channel == null || manifest.channel.isEmpty()) {
-				SkinFixer.logWarn("Configuration is invalid: useDiscord is set to true, but 'channel' was left blank.");
+			if(manifest.discordSettings.token == null || manifest.discordSettings.token.isEmpty()) {
+				SkinFixer.logWarn("Configuration is invalid: useDiscord is set to true, but 'discordSettings.token' was left blank.");
+				Bukkit.getPluginManager().disablePlugin(this.plugin);
+				return null;
+			}
+			
+			if(manifest.discordSettings.channelId == null || manifest.discordSettings.channelId == 0) {
+				SkinFixer.logWarn("Configuration is invalid: useDiscord is set to true, but 'discordSettings.channelId' was left blank.");
 				Bukkit.getPluginManager().disablePlugin(this.plugin);
 				return null;
 			}
@@ -86,7 +92,7 @@ public class ConfigHandler {
 	}
 	
 	public void setStatUuid(String uuid) {
-		this.manifest.statUuid = uuid;
+		this.manifest.metricsUuid = uuid;
 		String yaml = YAML.dumpAsMap(this.manifest);
 		try {
 			File configFile = new File(this.plugin.getDataFolder(), "config.yml");

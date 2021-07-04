@@ -59,11 +59,11 @@ public class SkinFixer extends JavaPlugin {
 			langHandler.loadLang("en");
 		}
 		
-		if(!configManifest.disableStat) {
+		if(configManifest.sendMetrics) {
 			PluginStat stat = PluginStatBuilder.createDefault()
 					.setLogErrFn(SkinFixer::logWarn)
 					.setSetUuidFn(configHandler::setStatUuid)
-					.setUuid(configManifest.statUuid)
+					.setUuid(configManifest.metricsUuid)
 					.build();
 			
 			stat.start();
