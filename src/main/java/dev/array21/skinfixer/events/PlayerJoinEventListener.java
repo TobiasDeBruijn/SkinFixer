@@ -29,7 +29,7 @@ public class PlayerJoinEventListener implements Listener {
 			
 			@Override
 			public void run() {
-				SkinData sd = PlayerJoinEventListener.this.plugin.getStorageHandler().getManifest().getForPlayer(event.getPlayer().getUniqueId());
+				SkinData sd = PlayerJoinEventListener.this.plugin.getLibWrapper().getSkinProfile(event.getPlayer().getUniqueId());
 				if(sd != null) {
 					new BukkitRunnable() {
 						

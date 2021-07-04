@@ -69,7 +69,7 @@ public class SkinChangeHandler {
 	
 	private void changeSkin(String skinValue, String skinSignature, UUID caller, boolean slim, boolean onLogin) {
 		Player player = Bukkit.getPlayer(caller);
-		SkinData skinData = this.plugin.getStorageHandler().getManifest().getForPlayer(caller);
+		SkinData skinData = this.plugin.getLibWrapper().getSkinProfile(caller);
 		
 		if(skinData != null) {
 			SkinObject skin = skinData.into();
@@ -84,7 +84,7 @@ public class SkinChangeHandler {
 			}			
 		}
 		
-		this.plugin.getStorageHandler().updateSkinData(caller, skinValue, skinSignature);
+		this.plugin.getLibWrapper().setSkinProfile(new SkinData(caller, skinValue, skinSignature));
 		
 		if(!(onLogin && SkinChangeHandler.this.plugin.getConfigManifest().disableSkinApplyOnLoginMessage)) { 
 			player.sendMessage(ChatColor.GOLD + LangHandler.model.skinApplying);

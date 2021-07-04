@@ -81,7 +81,18 @@ public class LibWrapper {
 		
 		ConfigManifest configManifest = this.plugin.getConfigManifest();
 		SqlSettings sqlSettings = configManifest.sqlSettings;
-		LibSkinFixer.init(configManifest.databaseType.toString(), sqlSettings.host, sqlSettings.database, sqlSettings.username, sqlSettings.password);
+		
+		String host = (sqlSettings.host != null) ? sqlSettings.host : "";
+		String database = (sqlSettings.database != null) ? sqlSettings.database : "";
+		String username = (sqlSettings.username != null) ? sqlSettings.username : "";
+		String password = (sqlSettings.password != null) ? sqlSettings.password : "";
+		
+		File pluginFolder = this.plugin.getDataFolder();
+		if(!pluginFolder.exists()) {
+			pluginFolder.mkdirs();
+		}
+		
+		LibSkinFixer.init(configManifest.databaseType.toString(), host, database, username, password, pluginFolder.getAbsolutePath());
 	}
 	
 	public SkinData getSkinProfile(UUID owner) {

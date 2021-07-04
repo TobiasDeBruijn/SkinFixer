@@ -19,8 +19,7 @@ public class ResetCommand implements Subcommand {
 			return;
 		}
 		
-		plugin.getStorageHandler().getManifest().deleteForPlayer(((Player) sender).getUniqueId());
-		plugin.getStorageHandler().saveConfig();
+		plugin.getLibWrapper().delSkinProfile(((Player) sender).getUniqueId());
 		sender.sendMessage(SkinFixer.getPrefix() + ChatColor.GOLD + LangHandler.model.skinReset);
 	}
 

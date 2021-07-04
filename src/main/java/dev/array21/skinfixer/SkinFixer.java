@@ -16,7 +16,7 @@ import dev.array21.skinfixer.config.ConfigManifest;
 import dev.array21.skinfixer.discord.JdaHandler;
 import dev.array21.skinfixer.events.PlayerJoinEventListener;
 import dev.array21.skinfixer.language.LangHandler;
-import dev.array21.skinfixer.storage.StorageHandler;
+import dev.array21.skinfixer.rust.LibWrapper;
 import dev.array21.skinfixer.updatechecker.UpdateChecker;
 import net.md_5.bungee.api.ChatColor;
 
@@ -29,8 +29,8 @@ public class SkinFixer extends JavaPlugin {
 	private HashMap<Integer, String> skinCodes = new HashMap<>();
 	
 	private ConfigHandler configHandler;
-	private StorageHandler storageHandler;
 	private JdaHandler jdaHandler;
+	private LibWrapper libWrapper;
 	
 	@Override
 	public void onEnable() {
@@ -51,6 +51,9 @@ public class SkinFixer extends JavaPlugin {
 		this.configHandler = new ConfigHandler(this);
 		ConfigManifest configManifest = configHandler.read();
 	
+		this.libWrapper = new LibWrapper(this);
+		this.libWrapper.init();
+		
 		LangHandler langHandler = new LangHandler(this);
 		if(configManifest.language != null) {
 			langHandler.loadLang(configManifest.language);
@@ -68,10 +71,6 @@ public class SkinFixer extends JavaPlugin {
 			
 			stat.start();
 		}
-		
-		//Storage of skins and pending keys
-		this.storageHandler = new StorageHandler(this);
-		this.storageHandler.read();	
 		
 		CommandHandler commandHandler = new CommandHandler(this);
 		this.getCommand("skin").setExecutor(commandHandler);
@@ -135,11 +134,11 @@ public class SkinFixer extends JavaPlugin {
 	}
 	
 	/**
-	 * Get the storage handler
-	 * @return StorageHandler
+	 * Get the libskinfixer wrapper
+	 * @return LibWrapper
 	 */
-	public StorageHandler getStorageHandler() {
-		return this.storageHandler;
+	public LibWrapper getLibWrapper() {
+		return this.libWrapper;
 	}
 	
 	/**

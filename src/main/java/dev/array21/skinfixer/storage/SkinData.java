@@ -5,6 +5,14 @@ import java.util.UUID;
 import dev.array21.skinfixer.SkinObject;
 
 public class SkinData {
+	
+	public SkinData() {}
+	public SkinData(UUID owner, String value, String signature) {
+		this.playerUuid = owner.toString();
+		this.value = value;
+		this.signature = signature;
+	}
+	
 	public String playerUuid;
 	public String value;
 	public String signature;
