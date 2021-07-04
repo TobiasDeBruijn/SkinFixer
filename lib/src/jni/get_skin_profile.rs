@@ -102,7 +102,7 @@ pub extern "system" fn Java_dev_array21_skinfixer_rust_LibSkinFixer_getSkinProfi
                 Ok(s) => s,
                 Err(e) => panic!("Failed to deserialize storage bin: {:?}", e)
             };
-            
+
             let skins_match = skins.into_iter().flat_map(|x| {
                 if x.uuid.eq(&uuid) {
                     Ok(x)
@@ -122,6 +122,37 @@ pub extern "system" fn Java_dev_array21_skinfixer_rust_LibSkinFixer_getSkinProfi
 
                 array
             }
+        },
+        StorageType::Sqlite => {
+            use rusqlite::named_params;
+
+            let conn = match config.sqlite_conn() {
+                Ok(c) => c,
+                Err(e) => panic!("Failed to create SQLite connection: {:?}", e)
+            };
+
+            let mut stmt = conn.prepare("SELECT value,signature FROM skins WHERE uuid = :uuid").unwrap();
+            let mut rows = match stmt.query(named_params! {
+                ":uuid": uuid
+            }) {
+                Ok(r) => r,
+                Err(e) => panic!("Failed to query table 'skins': {:?}", e)
+            };
+
+            while let Ok(Some(row)) = rows.next() {
+                let value = row.get::<&str, String>("value").unwrap();
+                let signature = row.get::<&str, String>("signature").unwrap();
+
+                let j_value = env.new_string(&value).unwrap();
+                let j_signature = env.new_string(&signature).unwrap();
+
+                let array = env.new_object_array(2, string_class, JObject::null()).unwrap();
+                env.set_object_array_element(array, 0, j_value).unwrap();
+                env.set_object_array_element(array, 1, j_signature).unwrap();
+
+                return array;
+            }
+            env.new_object_array(0, string_class, JObject::null()).unwrap()
         }
     }
 }

@@ -1,7 +1,7 @@
 use std::str::FromStr;
 use std::cell::RefCell;
 use std::sync::{Arc, Mutex};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 lazy_static::lazy_static! {
     pub static ref CONFIG: Arc<Mutex<RefCell<Option<Config>>>> = Arc::new(Mutex::new(RefCell::new(None)));
@@ -30,7 +30,7 @@ impl Config {
     pub fn get_path(&self) -> Result<&Path, String> {
         match &self.storage_path {
             Some(p) => Ok(Path::new(p)),
-            None=> Err("File storage is not used as storage backend.".to_string())
+            None=> Err("File storage/SQLite is not used as storage backend.".to_string())
         }
     }
 
@@ -55,6 +55,19 @@ impl Config {
         match postgres::Client::connect(&uri, postgres::NoTls) {
             Ok(c) => Ok(c),
             Err(e) => Err(format!("Failed to create PostgreSQL connection: {:?}", e))
+        }
+    }
+
+    pub fn sqlite_conn(&self) -> Result<rusqlite::Connection, String> {
+        let mut path = PathBuf::from(match &self.storage_path {
+            Some(p) => p,
+            None => return Err("SQLite is not being used as storage backend.".to_string())
+        });
+
+        path.push("skins.db3");
+        match rusqlite::Connection::open(&path) {
+            Ok(c) => Ok(c),
+            Err(e) => Err(e.to_string())
         }
     }
 
@@ -92,7 +105,8 @@ impl Config {
 pub enum StorageType {
     Mysql,
     Postgres,
-    Bin
+    Bin,
+    Sqlite
 }
 
 impl FromStr for StorageType {

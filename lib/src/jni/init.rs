@@ -57,6 +57,17 @@ pub extern "system" fn Java_dev_array21_skinfixer_rust_LibSkinFixer_init(env: JN
                     Err(e) => panic!("Failed to create skins.bin file: {:?}", e)
                 }
             }
+        },
+        StorageType::Sqlite => {
+            let conn = match config.sqlite_conn() {
+                Ok(c) => c,
+                Err(e) => panic!("Failed to create SQLite connection: {:?}", e)
+            };
+
+            match conn.execute("CREATE TABLE IF NOT EXISTS skins (uuid TEXT PRIMARY KEY, value TEXT, signature TEXT)", rusqlite::params!{}) {
+                Ok(_) => {},
+                Err(e) => panic!("Failed to create table 'skins': {:?}", e)
+            }
         }
     }
 

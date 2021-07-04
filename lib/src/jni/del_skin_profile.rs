@@ -85,6 +85,22 @@ pub extern "system" fn Java_dev_array21_skinfixer_rust_LibSkinFixer_delSkinProfi
                 Ok(_) => {},
                 Err(e) => panic!("Failed to write to skins.bin file: {:?}", e)
             }
+        },
+        StorageType::Sqlite => {
+            use rusqlite::named_params;
+
+            let conn = match config.sqlite_conn() {
+                Ok(c) => c,
+                Err(e) => panic!("Failed to create SQLite connection: {:?}", e)
+            };
+
+            let mut stmt = conn.prepare("DELETE FROM skins WHERE uuid = :uuid").unwrap();
+            match stmt.execute(named_params! {
+                ":uuid": uuid
+            }) {
+                Ok(_) => {},
+                Err(e) => panic!("Failed to delete skin from database: {:?}", e)
+            }
         }
     }
 }

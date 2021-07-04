@@ -101,6 +101,24 @@ pub extern "system" fn Java_dev_array21_skinfixer_rust_LibSkinFixer_setSkinProfi
                 Ok(_) => {},
                 Err(e) => panic!("Failed to write to skins.bin file: {:?}", e)
             }
+        },
+        StorageType::Sqlite => {
+            use rusqlite::named_params;
+
+            let conn = match config.sqlite_conn() {
+                Ok(c) => c,
+                Err(e) => panic!("Failed to create SQLite connection: {:?}", e)
+            };
+
+            let mut stmt = conn.prepare("INSERT INTO skins (uuid, value, signature) VALUES (:uuid, :value, :signature)").unwrap();
+            match stmt.execute(named_params! {
+                ":uuid": uuid,
+                ":value": value,
+                ":signature": signature
+            }) {
+                Ok(_) => {},
+                Err(e) => panic!("Failed to insert skin into database: {:?}", e)
+            }
         }
     }
 }
