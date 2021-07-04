@@ -60,9 +60,13 @@ pub extern "system" fn Java_dev_array21_skinfixer_rust_LibSkinFixer_setSkinProfi
                 Err(e) => panic!("Failed to open storage bin: {:?}", e)
             };
 
-            let mut skins: Vec<Skin> = match bincode::deserialize(&contents) {
-                Ok(s) => s,
-                Err(e) => panic!("Failed to deserialize storage bin: {:?}", e)
+            let mut skins: Vec<Skin> = if contents.is_empty() {
+                Vec::new()
+            } else {
+                match bincode::deserialize(&contents) {
+                    Ok(s) => s,
+                    Err(e) => panic!("Failed to deserialize storage bin: {:?}", e)
+                }
             };
 
             let new_skin = Skin {
@@ -71,11 +75,17 @@ pub extern "system" fn Java_dev_array21_skinfixer_rust_LibSkinFixer_setSkinProfi
                 signature: (*signature).to_string()
             };
 
+            let mut skin_contained = false;
             skins.iter_mut().for_each(|x| {
                 if x.uuid.eq(&uuid) {
                     *x = new_skin.clone();
+                    skin_contained = true;
                 }
             });
+
+            if !skin_contained {
+                skins.push(new_skin);
+            }
 
             let bytes = match bincode::serialize(&skins) {
                 Ok(b) => b,

@@ -24,9 +24,9 @@ public class LibWrapper {
 			if(osString.contains("linux")) {
 				libName = "/x86_64/linux/libskinfixer.so";
 			} else if(osString.contains("windows")) {
-				libName = "/x86_64/linux/libskinfixer.dll";
+				libName = "/x86_64/windows/libskinfixer.dll";
 			} else if(osString.contains("mac")) {
-				libName = "/x86_64/linux/libskinfixer.dylib";
+				libName = "/x86_64/darwin/libskinfixer.dylib";
 			} else {
 				SkinFixer.logWarn(String.format("Your operating system is not supported. Please open a request here: https://github.com/TheDutchMC/SkinFixer/issues/new/choose. Your OS is '%s', make sure you mention this in your request!", osString));
 				break saveLib;
@@ -42,7 +42,7 @@ public class LibWrapper {
 			}
 			
 			String[] libNameParts = libName.split(Pattern.quote("/"));
-			File libTmpFile = new File(tmpDir, libNameParts[libName.length() -1]);
+			File libTmpFile = new File(tmpDir, libNameParts[libNameParts.length -1]);
 			try {
 				InputStream is = libUrl.openStream();
 				Files.copy(is, libTmpFile.toPath());
@@ -80,12 +80,17 @@ public class LibWrapper {
 		}
 		
 		ConfigManifest configManifest = this.plugin.getConfigManifest();
+
+		String host, database, username, password;
 		SqlSettings sqlSettings = configManifest.sqlSettings;
-		
-		String host = (sqlSettings.host != null) ? sqlSettings.host : "";
-		String database = (sqlSettings.database != null) ? sqlSettings.database : "";
-		String username = (sqlSettings.username != null) ? sqlSettings.username : "";
-		String password = (sqlSettings.password != null) ? sqlSettings.password : "";
+		if(sqlSettings != null) {
+			host = (sqlSettings.host != null) ? sqlSettings.host : "";
+			database = (sqlSettings.database != null) ? sqlSettings.database : "";
+			username = (sqlSettings.username != null) ? sqlSettings.username : "";
+			password = (sqlSettings.password != null) ? sqlSettings.password : "";	
+		} else {
+			host = database = username = password = "";
+		}
 		
 		File pluginFolder = this.plugin.getDataFolder();
 		if(!pluginFolder.exists()) {

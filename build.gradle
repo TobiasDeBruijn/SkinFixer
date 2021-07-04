@@ -55,8 +55,13 @@ shadowJar() {
 	relocate 'dev.array21', 'dev.array21.skinfixer.libs.dev.array21'
 }
 
+processResources  {
+	duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
 
 task testJar(type: ShadowJar) {
+	dependsOn('copyDependenciesDebug')
+
 	description 'Build a test Jar'
 	archiveClassifier = 'DEV'
 	from sourceSets.main.output
@@ -64,11 +69,9 @@ task testJar(type: ShadowJar) {
 	destinationDirectory = file("$rootDir/server/plugins")
 }
 
-processResources  {
-	duplicatesStrategy = DuplicatesStrategy.INCLUDE
-}
-
 task releaseJar(type: ShadowJar) {
+	dependsOn('copyDependenciesRelease')
+
 	description 'Build a release Jar'
 	archiveClassifier = 'RELEASE'
 	from sourceSets.main.output
@@ -76,12 +79,32 @@ task releaseJar(type: ShadowJar) {
 	destinationDirectory = file("$rootDir/releases")
 }
 
-task ghActions(type: ShadowJar) {
-	description 'GitHub Actions task. Not used for regular development'
-	version = ''
-	archiveClassifier = ''
-	archiveBaseName = 'output'
-	from sourceSets.main.output
-	configurations = [project.configurations.runtimeClasspath]
-	destinationDirectory = file("$rootDir/actions")
+task copyDependenciesDebug() {
+	dependsOn('copyLinuxLibraryDebug')
+	dependsOn('copyWindowsLibraryDebug')
+}
+
+task copyDependenciesRelease() {
+	dependsOn('copyLinuxLibraryRelease')
+	dependsOn('copyWindowsLibraryRelease')
+}
+
+task copyLinuxLibraryRelease(type: Copy) {
+	from "$rootDir/lib/target/x86_64-unknown-linux-gnu/release/libskinfixer.so"
+	into "$buildDir/resources/main/x86_64/linux"
+}
+
+task copyLinuxLibraryDebug(type: Copy) {
+	from "$rootDir/lib/target/x86_64-unknown-linux-gnu/debug/libskinfixer.so"
+	into "$buildDir/resources/main/x86_64/linux"
+}
+
+task copyWindowsLibraryRelease(type: Copy) {
+	from "$rootDir/lib/target/x86_64-pc-windows-gnu/release/libskinfixer.dll"
+	into "$buildDir/resources/main/x86_64/windows"
+}
+
+task copyWindowsLibraryDebug(type: Copy) {
+	from "$rootDir/lib/target/x86_64-pc-windows-gnu/debug/libskinfixer.dll"
+	into "$buildDir/resources/main/x86_64/windows"
 }

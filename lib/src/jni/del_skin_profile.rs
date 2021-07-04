@@ -54,6 +54,10 @@ pub extern "system" fn Java_dev_array21_skinfixer_rust_LibSkinFixer_delSkinProfi
                 Err(e) => panic!("Failed to open storage bin: {:?}", e)
             };
 
+            if contents.is_empty() {
+                return;
+            }
+
             let skins: Vec<Skin> = match bincode::deserialize(&contents) {
                 Ok(s) => s,
                 Err(e) => panic!("Failed to deserialize storage bin: {:?}", e)

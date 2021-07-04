@@ -1,10 +1,8 @@
-#Should we use Discord. Default: true
-useDiscord: true
+configVersion: 2
 
-#Discord Token
-discordToken: ""
-
-#Discord Channel used for uploading skins
-skinDiscordChannel: ""
-
+databaseType: BIN
+useDiscord: false
 language: en
+updateCheck: true
+disableSkinApplyOnLoginMessage: false
+sendMetrics: true

@@ -26,7 +26,6 @@ public class ConfigManifest {
 	@Required
 	public Boolean sendMetrics;
 	
-	@Required
 	public String metricsUuid;
 	
 	@Required

@@ -54,7 +54,7 @@ public class ConfigHandler {
 		}
 		
 		if(!validation.getA()) {
-			SkinFixer.logWarn(String.format("Configuration is invalid: %", validation.getB()));
+			SkinFixer.logWarn(String.format("Configuration is invalid: %s", validation.getB()));
 			Bukkit.getPluginManager().disablePlugin(this.plugin);
 			return null;
 		}

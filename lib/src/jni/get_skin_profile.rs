@@ -94,11 +94,15 @@ pub extern "system" fn Java_dev_array21_skinfixer_rust_LibSkinFixer_getSkinProfi
                 Err(e) => panic!("Failed to open storage bin: {:?}", e)
             };
 
+            if contents.is_empty() {
+                return env.new_object_array(0, string_class, JObject::null()).unwrap();
+            }
+
             let skins: Vec<Skin> = match bincode::deserialize(&contents) {
                 Ok(s) => s,
                 Err(e) => panic!("Failed to deserialize storage bin: {:?}", e)
             };
-
+            
             let skins_match = skins.into_iter().flat_map(|x| {
                 if x.uuid.eq(&uuid) {
                     Ok(x)

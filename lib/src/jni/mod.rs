@@ -26,7 +26,7 @@ macro_rules! optional_string {
     }
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Skin {
     pub uuid:       String,
     pub value:      String,

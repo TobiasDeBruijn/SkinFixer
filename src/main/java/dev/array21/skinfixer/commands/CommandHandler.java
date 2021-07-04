@@ -79,7 +79,6 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {		
 		if(args.length == 1) {
-			List.copyOf(this.subcommands.keySet()).forEach(x -> System.out.println(x));
 			return List.copyOf(subcommands.keySet());
 		}
 		
