@@ -16,7 +16,7 @@ import dev.array21.skinfixer.config.ConfigManifest;
 import dev.array21.skinfixer.discord.JdaHandler;
 import dev.array21.skinfixer.events.PlayerJoinEventListener;
 import dev.array21.skinfixer.language.LangHandler;
-import dev.array21.skinfixer.rust.LibWrapper;
+import dev.array21.skinfixer.storage.LibWrapper;
 import dev.array21.skinfixer.updatechecker.UpdateChecker;
 import net.md_5.bungee.api.ChatColor;
 

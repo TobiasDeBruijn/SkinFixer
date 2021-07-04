@@ -12,7 +12,7 @@ use std::fs;
 use crate::jni::Skin;
 
 #[no_mangle]
-pub extern "system" fn Java_dev_array21_skinfixer_rust_LibSkinFixer_getSkinProfile(env: JNIEnv, _class: JClass, uuid: JString) -> jarray {
+pub extern "system" fn Java_dev_array21_skinfixer_storage_LibSkinFixer_getSkinProfile(env: JNIEnv, _class: JClass, uuid: JString) -> jarray {
     let uuid = jstring_to_string!(env, uuid);
     let config_guard = crate::config::CONFIG.lock().expect("Failed to lock CONFIG");
     let config_ref = match config_guard.try_borrow() {

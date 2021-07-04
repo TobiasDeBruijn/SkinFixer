@@ -80,23 +80,49 @@ task releaseJar(type: ShadowJar) {
 }
 
 task copyDependenciesDebug() {
-	dependsOn('copyLinuxLibraryDebug')
+	dependsOn('copyLinuxLibraryDebugX86')
+	dependsOn('copyLinuxLibraryDebugAarch64')
+	dependsOn('copyLinuxLibraryDebugArmhf')
+
 	dependsOn('copyWindowsLibraryDebug')
 }
 
 task copyDependenciesRelease() {
-	dependsOn('copyLinuxLibraryRelease')
+	dependsOn('copyLinuxLibraryReleaseX86')
+	dependsOn('copyLinuxLibraryReleaseAarch64')
+	dependsOn('copyLinuxLibraryReleaseArmhf')
+
 	dependsOn('copyWindowsLibraryRelease')
 }
 
-task copyLinuxLibraryRelease(type: Copy) {
+task copyLinuxLibraryReleaseX86(type: Copy) {
 	from "$rootDir/lib/target/x86_64-unknown-linux-gnu/release/libskinfixer.so"
 	into "$buildDir/resources/main/x86_64/linux"
 }
 
-task copyLinuxLibraryDebug(type: Copy) {
+task copyLinuxLibraryReleaseAarch64(type: Copy) {
+	from "$rootDir/lib/target/aarch64-unknown-linux-gnu/release/libskinfixer.so"
+	into "$buildDir/resources/main/aarch64/linux"
+}
+
+task copyLinuxLibraryReleaseArmhf(type: Copy) {
+	from "$rootDir/lib/target/arm-unknown-linux-gnueabihf/release/libskinfixer.so"
+	into "$buildDir/resources/main/armhf/linux"
+}
+
+task copyLinuxLibraryDebugX86(type: Copy) {
 	from "$rootDir/lib/target/x86_64-unknown-linux-gnu/debug/libskinfixer.so"
 	into "$buildDir/resources/main/x86_64/linux"
+}
+
+task copyLinuxLibraryDebugAarch64(type: Copy) {
+	from "$rootDir/lib/target/aarch64-unknown-linux-gnu/debug/libskinfixer.so"
+	into "$buildDir/resources/main/aarch64/linux"
+}
+
+task copyLinuxLibraryDebugArmhf(type: Copy) {
+	from "$rootDir/lib/target/arm-unknown-linux-gnueabihf/debug/libskinfixer.so"
+	into "$buildDir/resources/main/armhf/linux"
 }
 
 task copyWindowsLibraryRelease(type: Copy) {

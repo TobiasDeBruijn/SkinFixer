@@ -1,4 +1,4 @@
-package dev.array21.skinfixer.rust;
+package dev.array21.skinfixer.storage;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
 import dev.array21.skinfixer.SkinFixer;
 import dev.array21.skinfixer.config.ConfigManifest;
 import dev.array21.skinfixer.config.SqlSettings;
-import dev.array21.skinfixer.storage.SkinData;
 
 public class LibWrapper {
 	
@@ -19,18 +18,46 @@ public class LibWrapper {
 	
 	static {
 		saveLib: {
-			String osString = System.getProperty("os.name").toLowerCase();
 			String libName;
-			if(osString.contains("linux")) {
-				libName = "/x86_64/linux/libskinfixer.so";
-			} else if(osString.contains("windows")) {
-				libName = "/x86_64/windows/libskinfixer.dll";
-			} else if(osString.contains("mac")) {
-				libName = "/x86_64/darwin/libskinfixer.dylib";
-			} else {
-				SkinFixer.logWarn(String.format("Your operating system is not supported. Please open a request here: https://github.com/TheDutchMC/SkinFixer/issues/new/choose. Your OS is '%s', make sure you mention this in your request!", osString));
+			
+			switch(System.getProperty("os.name").toLowerCase()) {
+			case "linux":
+				switch(System.getProperty("os.arch")) {
+				case "amd64": libName = "/x86_64/linux/libskinfixer.so"; break;
+				case "arm": libName = "/armhf/linux/libskinfixer.so"; break;
+				case "aarch64": libName = "/aarch64/linux/libskinfixer.so"; break;
+				default:
+					SkinFixer.logWarn(String.format("Your architecture is not supported. Please open a request here: https://github.com/TheDutchMC/SkinFixer/issues/new/choose. Your Arch is '%s' running on Linux, make sure you mention this in your request!", System.getProperty("os.arch")));
+					break saveLib;
+				}
+
+				break;
+				
+			case "windows":
+				switch(System.getProperty("os.arch")) {
+				case "amd64": libName = "/x86_64/windows/libskinfixer.dll"; break;
+				default:
+					SkinFixer.logWarn(String.format("Your architecture is not supported. Please open a request here: https://github.com/TheDutchMC/SkinFixer/issues/new/choose. Your Arch is '%s' running on Windows, make sure you mention this in your request!", System.getProperty("os.arch")));
+					break saveLib;
+				}
+				
+				break;
+				
+			case "mac":
+				switch(System.getProperty("os.arch")) {
+				case "amd64": libName = "/x86_64/darwin/libskinfixer.dylib";; break;
+				default:
+					SkinFixer.logWarn(String.format("Your architecture is not supported. Please open a request here: https://github.com/TheDutchMC/SkinFixer/issues/new/choose. Your Arch is '%s' running on MacOS (Apple Darwin), make sure you mention this in your request!", System.getProperty("os.arch")));
+					break saveLib;
+				}
+				
+				break;
+			
+			default:
+				SkinFixer.logWarn(String.format("Your operating system is not supported. Please open a request here: https://github.com/TheDutchMC/SkinFixer/issues/new/choose. Your OS is '%s', make sure you mention this in your request!", System.getProperty("os.name")));
 				break saveLib;
 			}
+			
 			
 			URL libUrl = LibWrapper.class.getResource(libName);
 			File tmpDir;

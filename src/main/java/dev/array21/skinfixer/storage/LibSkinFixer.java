@@ -1,4 +1,4 @@
-package dev.array21.skinfixer.rust;
+package dev.array21.skinfixer.storage;
 
 public class LibSkinFixer {
 

@@ -9,7 +9,7 @@ use crate::{jstring_to_string, optional_string};
 use std::path::PathBuf;
 
 #[no_mangle]
-pub extern "system" fn Java_dev_array21_skinfixer_rust_LibSkinFixer_init(env: JNIEnv, _class: JClass, storage_type: JString, host: JString, database: JString, username: JString, password: JString, storage_path: JString) {
+pub extern "system" fn Java_dev_array21_skinfixer_storage_LibSkinFixer_init(env: JNIEnv, _class: JClass, storage_type: JString, host: JString, database: JString, username: JString, password: JString, storage_path: JString) {
     let storage_type_str: String = jstring_to_string!(env, storage_type);
     let storage_type = match StorageType::from_str(&storage_type_str) {
         Ok(st) => st,

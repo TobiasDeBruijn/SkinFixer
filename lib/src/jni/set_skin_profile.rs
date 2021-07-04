@@ -11,7 +11,7 @@ use std::path::PathBuf;
 use std::io::Write;
 
 #[no_mangle]
-pub extern "system" fn Java_dev_array21_skinfixer_rust_LibSkinFixer_setSkinProfile(env: JNIEnv, _class: JClass, uuid: JString, value: JString, signature: JString) {
+pub extern "system" fn Java_dev_array21_skinfixer_storage_LibSkinFixer_setSkinProfile(env: JNIEnv, _class: JClass, uuid: JString, value: JString, signature: JString) {
     let uuid = jstring_to_string!(env, uuid);
     let value = jstring_to_string!(env, value);
     let signature = jstring_to_string!(env, signature);
