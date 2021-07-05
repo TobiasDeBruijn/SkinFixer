@@ -6,3 +6,15 @@ api-version: 1.16
 commands:
   skin:
     description: SkinFixer's main command
+
+permissions:
+  skinfixer.get:
+    default: true
+  skinfixer.reload:
+    default: op
+  skinfixer.reset:
+    default: true
+  skinfixer.set:
+    default: true
+  skinfixer.version:
+    default: op

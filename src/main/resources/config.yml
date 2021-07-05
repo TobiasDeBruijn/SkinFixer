@@ -1,8 +1,43 @@
+# DO NOT CHANGE THIS
 configVersion: 2
 
+# The type of database to use as storage backend
+# Possible values are:
+# - MYSQL
+# - POSTGRES
+# - BIN (default)
+# - SQLITE
+# Some of these options require further configuration, refer to sqlSettings
 databaseType: BIN
+
+# This setting is required for MySQL and PostgreSQL
+sqlSettings:
+    host: 'mysql.example.com'
+    database: 'skinfixer_database'
+    username: 'skinfixer_user'
+    password: 'super secure password herer'
+
+# Should SkinFixer itegrate with Discord, if this is set to true you will need to configure discordSettigns
 useDiscord: false
+
+# This is required if useDiscord is set to true
+discordSettings:
+    token: 'your secret bot token here'
+    channelId: The ID of the channel to listen on here
+
+# The language to use. Default: en
+# If you want to use your own language, place your YAML file in the langs/ directory
+# e.g if you have nl.yml, you would set this option to 'nl'
 language: en
+
+# Should SkinFixer perform an update check.
+# It is recommended that you keep this enabled
 updateCheck: true
+
+# If this is set to true, SkinFixer will not inform players that it is changing their skin when they log in
+# This however does not suppress any error message that might be send to the player
 disableSkinApplyOnLoginMessage: false
+
+# Should anonymous metrics be send to Dutchy76 (The author of SkinFixer)
+# These metrics are used to get insights on what kind of systems SkinFixer is running
 sendMetrics: true

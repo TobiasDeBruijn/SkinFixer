@@ -12,5 +12,8 @@ This entire document assumes you are using Debian or a Debian derived distro.
 ## Java
 1. `apt install openjdk-16-jdk-headless`
 
+## Docker
+You must also have Docker installed. This is required for building the linux x86_64 target as well as the Apple darwin x86_64 target
+
 ## Building
 Either `make testjar` or `make releasejar`, depending on which you want

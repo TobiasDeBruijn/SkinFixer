@@ -41,18 +41,20 @@ public class SkinFixer extends JavaPlugin {
 		
 		SkinFixer.logInfo("Welcome to SkinFixer version " + PLUGIN_VERSION + " by TheDutchMC!");
 		
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				new UpdateChecker(SkinFixer.this).checkUpdate();
-
-			}
-		}, "SkinFixer UpdateChecker Thread").start();
-		
 		//Read the configuration
 		this.configHandler = new ConfigHandler(this);
 		ConfigManifest configManifest = configHandler.read();
 	
+		if(configManifest.updateCheck) {
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					new UpdateChecker(SkinFixer.this).checkUpdate();
+
+				}
+			}, "SkinFixer UpdateChecker Thread").start();
+		}
+		
 		this.libWrapper = new LibWrapper(this);
 		this.libWrapper.init();
 		
