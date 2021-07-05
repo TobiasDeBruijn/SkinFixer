@@ -6,8 +6,9 @@ skinApplied: Done.
 commandPlayerOnly: This command is for players only!
 commandNoPermission: You don't have permission to use this command!
 
-getCodeUrlRequired: You need to provide a URL to your skin!
+getCodeArgumentRequired: You need to provide either a URL linking directly to the image you want as skin, or provide a nickname!
 getCodeSkinAdded: Your skin has been added! You can apply it with /skin set %CODE%.
+getCodeFailedFetchingUuid: 'Failed to fetch UUID for the provided nickname: %ERROR%'
 
 setSkinCodeRequired: You need to provide a code!
 setSkinCodeNotANumber: The code you entered is not a number!

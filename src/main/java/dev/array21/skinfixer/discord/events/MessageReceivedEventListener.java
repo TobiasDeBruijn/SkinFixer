@@ -32,7 +32,7 @@ public class MessageReceivedEventListener extends ListenerAdapter {
 		
 		AddNewSkin ans = new AddNewSkin(this.plugin);
 		for(Attachment a : attachments) {
-			int n = ans.add(a.getUrl());
+			int n = ans.addByUrl(a.getUrl());
 			msgChannel.sendMessage(LangHandler.model.discordSetSkin.replaceAll("%CODE%", String.valueOf(n))).queue();
 		}
 	}

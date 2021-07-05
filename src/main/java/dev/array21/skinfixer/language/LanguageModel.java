@@ -23,10 +23,14 @@ public class LanguageModel {
 	
 	//GetCodeCommandExecutor
 	@Required
-	public String getCodeUrlRequired;
+	public String getCodeArgumentRequired;
 	@Required
 	//Variable: %CODE%
 	public String getCodeSkinAdded;
+	
+	@Required
+	//Variable: %ERROR%
+	public String getCodeFailedFetchingUuid;
 	
 	//SetSkinCommandExecutor
 	@Required

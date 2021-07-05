@@ -46,7 +46,7 @@ public class SkinChangeHandler {
 				
 				//Fetch the skin from Mineskin.org's API
 				Triple<Boolean, GetSkinResponse, String> apiResponse;
-				if(isPremium ) {
+				if(isPremium) {
 					apiResponse = new SkinFixerApi().getSkinOfPremiumPlayer(externalUuid.toString());
 				} else {
 					apiResponse = new SkinFixerApi().getSkin(skinUrl, slim);
@@ -65,6 +65,23 @@ public class SkinChangeHandler {
 	
 	public void changeSkinFromObject(SkinObject skin, boolean onLogin) {
 		changeSkin(skin.getValue(), skin.getSignature(), skin.getOwner(), skin.getSlim(), onLogin);
+	}
+	
+	public void changeSkinFromUuid(UUID mojangUuid, UUID localPlayerUuid, boolean slim) {
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				Player p = Bukkit.getPlayer(localPlayerUuid);
+				Triple<Boolean, GetSkinResponse, String> apiResponse = new SkinFixerApi().getSkinOfPremiumPlayer(mojangUuid.toString());
+				if(!apiResponse.getA()) {
+					p.sendMessage(ChatColor.RED + LangHandler.model.skinApplyFailed.replaceAll("%ERROR%", ChatColor.GRAY + apiResponse.getC() + ChatColor.RED));
+					return;
+				}
+				
+				GetSkinResponse skinResponse = apiResponse.getB();
+				changeSkin(skinResponse.value, skinResponse.signature, localPlayerUuid, slim, false);
+			}
+		}.runTaskAsynchronously(this.plugin);
 	}
 	
 	private void changeSkin(String skinValue, String skinSignature, UUID caller, boolean slim, boolean onLogin) {

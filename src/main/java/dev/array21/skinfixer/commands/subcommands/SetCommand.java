@@ -1,6 +1,7 @@
 package dev.array21.skinfixer.commands.subcommands;
 
 import java.math.BigInteger;
+import java.util.UUID;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -33,32 +34,28 @@ public class SetCommand implements Subcommand {
 			return;
 		}
 		
+		
+		boolean slim = false;
+		if(args.length == 2 && args[1].equalsIgnoreCase("true")) {
+			slim = true;
+		}
+		
 		int code = Integer.valueOf(args[0]);
-		if(!plugin.getSkinCodeMap().containsKey(code)) {
+		Player p = (Player) sender;
+		SkinChangeHandler sck = new SkinChangeHandler(plugin);
+
+		if(plugin.getSkinCodeUrlMap().containsKey(code)) {
+			String url = plugin.getSkinCodeUrlMap().remove(code);			
+			sck.changeSkinJson(url, p.getUniqueId(), null, slim, false, false);
+			
+		} else if(plugin.getSkinCodeUuidMap().containsKey(code)) {
+			String externalUuid = plugin.getSkinCodeUuidMap().remove(code);
+			sck.changeSkinFromUuid(UUID.fromString(externalUuid), p.getUniqueId(), slim);
+		
+		} else {
 			sender.sendMessage(SkinFixer.getPrefix() + ChatColor.RED + LangHandler.model.setSkinCodeUnknown);
 			return;
 		}
-		
-		String url = plugin.getSkinCodeMap().remove(code);
-		Player p = (Player) sender;
-		SkinChangeHandler sck = new SkinChangeHandler(plugin);
-		
-		//Check if the user has given an option for if it should be a slim skin model
-		if(args.length == 2) {
-			if(args[1].equals("true")) {
-				//Slim model
-				sck.changeSkinJson(url, p.getUniqueId(), null, true, false, false);
-			} else {
-				//Regular model
-				sck.changeSkinJson(url, p.getUniqueId(), null, false, false, false);
-			}
-		} else {
-			//Regular model
-			sck.changeSkinJson(url, p.getUniqueId(), null, false, false, false);
-		}
-				
-		return;
-		
 	}
 
 	@Override

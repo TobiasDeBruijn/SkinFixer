@@ -26,7 +26,9 @@ public class SkinFixer extends JavaPlugin {
 	public static String PLUGIN_VERSION;
 	public static final Logger LOGGER = LogManager.getLogger(SkinFixer.class);
 	
-	private HashMap<Integer, String> skinCodes = new HashMap<>();
+	
+	private HashMap<Integer, String> skinUuidCodes = new HashMap<>();
+	private HashMap<Integer, String> skinUrlCodes = new HashMap<>();
 	
 	private ConfigHandler configHandler;
 	private JdaHandler jdaHandler;
@@ -145,8 +147,16 @@ public class SkinFixer extends JavaPlugin {
 	 * Get the Skin Code HashMap, where K is the code, and V is the URL associated with the code
 	 * @return
 	 */
-	public HashMap<Integer, String> getSkinCodeMap() {
-		return this.skinCodes;
+	public HashMap<Integer, String> getSkinCodeUrlMap() {
+		return this.skinUrlCodes;
+	}
+	
+	public void insertSkinCodeUuid(int code, String uuid) {
+		this.skinUuidCodes.put(code, uuid);
+	}
+	
+	public HashMap<Integer, String> getSkinCodeUuidMap() {
+		return this.skinUuidCodes;
 	}
 	
 	/**
@@ -154,8 +164,8 @@ public class SkinFixer extends JavaPlugin {
 	 * @param skinCode The code to insert
 	 * @param url The URL associated with the code
 	 */
-	public void insertSkinCode(int skinCode, String url) {
-		this.skinCodes.put(skinCode, url);
+	public void insertSkinCodeUrl(int skinCode, String url) {
+		this.skinUrlCodes.put(skinCode, url);
 	}
 	
 	/**
