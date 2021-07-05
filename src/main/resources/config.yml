@@ -21,9 +21,9 @@ sqlSettings:
 useDiscord: false
 
 # This is required if useDiscord is set to true
-discordSettings:
-    token: 'your secret bot token here'
-    channelId: The ID of the channel to listen on here
+#discordSettings:
+#    token: 'your secret bot token here'
+#    channelId: The ID of the channel to listen on here
 
 # The language to use. Default: en
 # If you want to use your own language, place your YAML file in the langs/ directory
