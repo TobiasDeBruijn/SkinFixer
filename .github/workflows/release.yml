@@ -39,8 +39,10 @@ jobs:
     - uses: actions/checkout@v2
   
     # Dependencies
-    - name: Change Apt repository
+    - name: Change Apt Azure repositories
       run: sudo sed -i 's|deb http://azure.archive.ubuntu.com/ubuntu/|deb [arch=amd64] http://archive.ubuntu.com/ubuntu/|' /etc/apt/sources.list
+    - name: Change Apt Security repositories
+      run: sudo sed -i 's|deb http://security.ubuntu.com/ubuntu|deb [arch=amd64] http://security.ubuntu.com/ubuntu|' /etc/apt/sources.list
     - name: Add ARM repos
       run: |
         sudo tee -a /etc/apt/sources.list.d/arm.list1 <<EOF
@@ -81,8 +83,10 @@ jobs:
     - uses: actions/checkout@v2
   
     # Dependencies
-    - name: Change Apt repository
+    - name: Change Apt Azure repositories
       run: sudo sed -i 's|deb http://azure.archive.ubuntu.com/ubuntu/|deb [arch=amd64] http://archive.ubuntu.com/ubuntu/|' /etc/apt/sources.list
+    - name: Change Apt Security repositories
+      run: sudo sed -i 's|deb http://security.ubuntu.com/ubuntu|deb [arch=amd64] http://security.ubuntu.com/ubuntu|' /etc/apt/sources.list
     - name: Add ARM repos
       run: |
         sudo tee -a /etc/apt/sources.list.d/arm.list1 <<EOF
