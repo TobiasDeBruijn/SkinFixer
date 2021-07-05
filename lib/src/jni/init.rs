@@ -1,15 +1,20 @@
-use crate::config::{StorageType, Config};
-use jni::JNIEnv;
-use jni::objects::{JClass, JString};
-use mysql::Params;
-use mysql::prelude::Queryable;
-use std::str::FromStr;
+//! JNI bindings for dev.array21.skinfixer.storage.LibSkinFixer#init()
 
 use crate::{jstring_to_string, optional_string};
-use std::path::PathBuf;
+use crate::config::{StorageType, Config};
 
+use jni::objects::{JClass, JString};
+use mysql::prelude::Queryable;
+use std::path::PathBuf;
+use std::str::FromStr;
+use mysql::Params;
+use jni::JNIEnv;
+
+/// Java JNI function
+///
+/// dev.array21.skinfixer.storage.LibSkinFixer#init(String storageType, String host, String database, String username, String password, String storagePath)
 #[no_mangle]
-pub extern "system" fn Java_dev_array21_skinfixer_storage_LibSkinFixer_init(env: JNIEnv, _class: JClass, storage_type: JString, host: JString, database: JString, username: JString, password: JString, storage_path: JString) {
+pub extern "system" fn Java_dev_array21_skinfixer_storage_LibSkinFixer_init(env: JNIEnv<'_>, _class: JClass<'_>, storage_type: JString<'_>, host: JString<'_>, database: JString<'_>, username: JString<'_>, password: JString<'_>, storage_path: JString<'_>) {
     let storage_type_str: String = jstring_to_string!(env, storage_type);
     let storage_type = match StorageType::from_str(&storage_type_str) {
         Ok(st) => st,

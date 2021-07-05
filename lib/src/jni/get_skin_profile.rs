@@ -1,18 +1,22 @@
-use crate::config::StorageType;
-use jni::JNIEnv;
-use jni::objects::{JClass, JString, JObject};
-use mysql::Params;
-use mysql::prelude::Queryable;
-use jni::sys::jarray;
+//! JNI bindings for dev.array21.skinfixer.storage.LibSkinFixer#getSkinProfile()
 
+use crate::config::StorageType;
 use crate::jstring_to_string;
-use mysql::params;
-use std::path::PathBuf;
-use std::fs;
 use crate::jni::Skin;
 
+use jni::objects::{JClass, JString, JObject};
+use mysql::prelude::Queryable;
+use mysql::{params, Params};
+use std::path::PathBuf;
+use jni::sys::jarray;
+use jni::JNIEnv;
+use std::fs;
+
+/// Java JNI function
+///
+/// dev.array21.skinfixer.storage.LibSkinFixer#getSkinProfile(String uuid)
 #[no_mangle]
-pub extern "system" fn Java_dev_array21_skinfixer_storage_LibSkinFixer_getSkinProfile(env: JNIEnv, _class: JClass, uuid: JString) -> jarray {
+pub extern "system" fn Java_dev_array21_skinfixer_storage_LibSkinFixer_getSkinProfile(env: JNIEnv<'_>, _class: JClass<'_>, uuid: JString<'_>) -> jarray {
     let uuid = jstring_to_string!(env, uuid);
     let config_guard = crate::config::CONFIG.lock().expect("Failed to lock CONFIG");
     let config_ref = match config_guard.try_borrow() {
@@ -139,7 +143,7 @@ pub extern "system" fn Java_dev_array21_skinfixer_storage_LibSkinFixer_getSkinPr
                 Err(e) => panic!("Failed to query table 'skins': {:?}", e)
             };
 
-            while let Ok(Some(row)) = rows.next() {
+            if let Ok(Some(row)) = rows.next() {
                 let value = row.get::<&str, String>("value").unwrap();
                 let signature = row.get::<&str, String>("signature").unwrap();
 

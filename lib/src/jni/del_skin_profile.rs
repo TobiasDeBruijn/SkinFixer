@@ -1,16 +1,22 @@
-use jni::JNIEnv;
-use jni::objects::{JClass, JString};
+//! JNI bindings for dev.array21.skinfixer.storage.LibSkinFixer#delSkinProfile()
+
 use crate::config::StorageType;
 use crate::jstring_to_string;
+use crate::jni::Skin;
+
+use jni::objects::{JClass, JString};
 use mysql::prelude::Queryable;
 use mysql::{Params, params};
-use crate::jni::Skin;
-use std::fs;
-use std::io::Write;
 use std::path::PathBuf;
+use std::io::Write;
+use jni::JNIEnv;
+use std::fs;
 
+/// Java JNI function
+///
+/// dev.array21.skinfixer.storage.LibSkinFixer#delSkinProfile(String uuid)
 #[no_mangle]
-pub extern "system" fn Java_dev_array21_skinfixer_storage_LibSkinFixer_delSkinProfile(env: JNIEnv, _class: JClass, uuid: JString) {
+pub extern "system" fn Java_dev_array21_skinfixer_storage_LibSkinFixer_delSkinProfile(env: JNIEnv<'_>, _class: JClass<'_>, uuid: JString<'_>) {
     let uuid = jstring_to_string!(env, uuid);
     let config_guard = crate::config::CONFIG.lock().expect("Failed to lock CONFIG");
     let config_ref = match config_guard.try_borrow() {

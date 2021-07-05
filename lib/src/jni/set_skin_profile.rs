@@ -1,17 +1,22 @@
-use jni::JNIEnv;
-use jni::objects::{JClass, JString};
+//! JNI bindings for dev.array21.skinfixer.storage.LibSkinFixer#setSkinProfile()
 
-use crate::jstring_to_string;
 use crate::config::StorageType;
+use crate::jstring_to_string;
+use crate::jni::Skin;
+
+use jni::objects::{JClass, JString};
 use mysql::prelude::Queryable;
 use mysql::{Params, params};
-use std::fs;
-use crate::jni::Skin;
 use std::path::PathBuf;
 use std::io::Write;
+use jni::JNIEnv;
+use std::fs;
 
+/// Java JNI function
+///
+/// dev.array21.skinfixer.storage.LibSkinFixer#setSkinProfile(String uuid, String value, String signature)
 #[no_mangle]
-pub extern "system" fn Java_dev_array21_skinfixer_storage_LibSkinFixer_setSkinProfile(env: JNIEnv, _class: JClass, uuid: JString, value: JString, signature: JString) {
+pub extern "system" fn Java_dev_array21_skinfixer_storage_LibSkinFixer_setSkinProfile(env: JNIEnv<'_>, _class: JClass<'_>, uuid: JString<'_>, value: JString<'_>, signature: JString<'_>) {
     let uuid = jstring_to_string!(env, uuid);
     let value = jstring_to_string!(env, value);
     let signature = jstring_to_string!(env, signature);
