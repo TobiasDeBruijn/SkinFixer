@@ -9,8 +9,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import dev.array21.skinfixer.SkinChangeHandler;
 import dev.array21.skinfixer.SkinFixer;
-import dev.array21.skinfixer.apis.MojangApi;
-import dev.array21.skinfixer.apis.gson.MojangAuthResponse;
+import dev.array21.skinfixer.apis.SkinFixerApi;
 import dev.array21.skinfixer.storage.SkinData;
 import dev.array21.skinfixer.util.Triple;
 import dev.array21.skinfixer.util.Utils;
@@ -42,11 +41,11 @@ public class PlayerJoinEventListener implements Listener {
 					return;
 				}
 								
-				Triple<Boolean, MojangAuthResponse, String> mojangApiResponse = new MojangApi().getUuidFromMojang(event.getPlayer().getName());
+				Triple<Boolean, String, String> mojangApiResponse = new SkinFixerApi().getUuid(event.getPlayer().getName());
 				if(!mojangApiResponse.getA()) {
 					SkinFixer.logWarn("Something went wrong fetching the UUID from Mojang.");
 				} else if(mojangApiResponse.getB() != null) {
-					String uuidDashedStr = Utils.insertDashUUID(mojangApiResponse.getB().getUuid());
+					String uuidDashedStr = Utils.insertDashUUID(mojangApiResponse.getB());
 					new SkinChangeHandler(PlayerJoinEventListener.this.plugin).changeSkinJson(null, event.getPlayer().getUniqueId(), UUID.fromString(uuidDashedStr), false, true, true);
 					return;
 				}
