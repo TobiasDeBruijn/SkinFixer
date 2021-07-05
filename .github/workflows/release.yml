@@ -13,7 +13,7 @@ jobs:
 
     # Docker
     - name: Install dependencies for Docker
-      run: sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release make
+      run: sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release make
     - name: Docker GPG Key
       run: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
     - name: Docker APT repository
@@ -42,9 +42,9 @@ jobs:
     - name: Add dpkg arch
       run: sudo dpkg --add-architecture arm64
     - name: Install dependencies
-      run: sudo apt-get install -y make gcc libssl-dev gcc-aarch64-linux-gnu libssl-dev:arm64 pkg-config:arm64
+      run: sudo apt-get update && sudo apt-get install -y make gcc libssl-dev gcc-aarch64-linux-gnu libssl-dev:arm64 pkg-config:arm64
     - name: Install Rust
-      run: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+      run: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
     - name: Add Rust binaries to path
       run: export PATH = $PATH:$HOME/.cargo/bin
     - name: Add aarch64 target
@@ -71,9 +71,9 @@ jobs:
     - name: Add dpkg arch
       run: sudo dpkg --add-architecture armhf
     - name: Install dependencies
-      run: sudo apt-get install -y make gcc libssl-dev gcc-arm-linux-gnueabihf libssl-dev:armhf pkg-config:armhf
+      run: sudo apt-get update && sudo apt-get install -y make gcc libssl-dev gcc-arm-linux-gnueabihf libssl-dev:armhf pkg-config:armhf
     - name: Install Rust
-      run: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+      run: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
     - name: Add Rust binaries to path
       run: export PATH = $PATH:$HOME/.cargo/bin
     - name: Add armhf target
@@ -98,9 +98,9 @@ jobs:
 
     # Dependencies
     - name: Install dependencies
-      run: sudo apt-get install -y make gcc libssl-dev gcc-mingw-w64-x86-64
+      run: sudo apt-get update && sudo apt-get install -y make gcc libssl-dev gcc-mingw-w64-x86-64
     - name: Install Rust
-      run: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+      run: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
     - name: Add Rust binaries to path
       run: export PATH = $PATH:$HOME/.cargo/bin
     - name: Add windows target
@@ -125,7 +125,7 @@ jobs:
 
     # Docker
     - name: Install dependencies for Docker
-      run: sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release make
+      run: sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release make
     - name: Docker GPG Key
       run: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
     - name: Docker APT repository
