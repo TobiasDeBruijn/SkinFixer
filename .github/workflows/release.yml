@@ -40,10 +40,10 @@ jobs:
   
     # Dependencies
     - name: Change Apt repository
-      run: sudo sed -i 's|deb http://azure.archive.ubuntu.com/ubuntu/|deb [arch=amd64] http://archive.ubuntu.com/ubuntu/|'
+      run: sudo sed -i 's|deb http://azure.archive.ubuntu.com/ubuntu/|deb [arch=amd64] http://archive.ubuntu.com/ubuntu/|' /etc/apt/sources.list
     - name: Add ARM repos
       run: |
-        tee -a /etc/apt/sources.list.d/arm.list1 <<EOF
+        sudo tee -a /etc/apt/sources.list.d/arm.list1 <<EOF
         deb [arch=arm64,armhf] http://ports.ubuntu.com/ubuntu-ports focal main restricted
         deb [arch=arm64,armhf] http://ports.ubuntu.com/ubuntu-ports focal-updates main restricted
         deb [arch=arm64,armhf] http://ports.ubuntu.com/ubuntu-ports focal universe
@@ -82,10 +82,10 @@ jobs:
   
     # Dependencies
     - name: Change Apt repository
-      run: sudo sed -i 's|deb http://azure.archive.ubuntu.com/ubuntu/|deb [arch=amd64] http://archive.ubuntu.com/ubuntu/|'
+      run: sudo sed -i 's|deb http://azure.archive.ubuntu.com/ubuntu/|deb [arch=amd64] http://archive.ubuntu.com/ubuntu/|' /etc/apt/sources.list
     - name: Add ARM repos
       run: |
-        tee -a /etc/apt/sources.list.d/arm.list1 <<EOF
+        sudo tee -a /etc/apt/sources.list.d/arm.list1 <<EOF
         deb [arch=arm64,armhf] http://ports.ubuntu.com/ubuntu-ports focal main restricted
         deb [arch=arm64,armhf] http://ports.ubuntu.com/ubuntu-ports focal-updates main restricted
         deb [arch=arm64,armhf] http://ports.ubuntu.com/ubuntu-ports focal universe
