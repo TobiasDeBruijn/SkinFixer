@@ -11,12 +11,12 @@ lib/target/x86_64-unknown-linux-gnu/release/libskinfixer.so: ${RUST_SOURCE_FILES
 # Release - Linux aarch64
 lib/target/aarch64-unknown-linux-gnu/release/libskinfixer.so: ${RUST_SOURCE_FILES}
 	cd lib; \
-		PKG_CONFIG_SYSROOT_DIR=/usr/lib/aarch64-linux-gnu/ cargo build --target aarch64-unknown-linux-gnu
+		PKG_CONFIG_SYSROOT_DIR=/usr/lib/aarch64-linux-gnu/ cargo build --release --target aarch64-unknown-linux-gnu
 
 # Release - Linux armhf
 lib/target/arm-unknown-linux-gnueabihf/release/libskinfixer.so: ${RUST_SOURCE_FILES}
 	cd lib; \
-		PKG_CONFIG_SYSROOT_DIR=/usr/lib/arm-linux-gnueabihf/ cargobuild --target --target arm-unknown-linux-gnueabihf
+		PKG_CONFIG_SYSROOT_DIR=/usr/lib/arm-linux-gnueabihf/ cargo build --release --target arm-unknown-linux-gnueabihf
 
 # Release - Windows x86_64
 lib/target/x86_64-pc-windows-gnu/release/libskinfixer.dll: ${RUST_SOURCE_FILES}
@@ -55,4 +55,4 @@ testjar: lib/target/x86_64-pc-windows-gnu/debug/libskinfixer.so lib/target/aarch
 releasejar: lib/target/x86_64-unknown-linux-gnu/release/libskinfixer.so lib/target/aarch64-unknown-linux-gnu/release/libskinfixer.so lib/target/arm-unknown-linux-gnueabihf/release/libskinfixer.so lib/target/x86_64-pc-windows-gnu/release/libskinfixer.dll
 	chmod +x gradlew
 	rm -rf ./build/resources
-	./gradlew testjar1
+	./gradlew releasejar

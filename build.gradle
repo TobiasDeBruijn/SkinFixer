@@ -46,15 +46,6 @@ dependencies {
 	}
 }
 
-shadowJar() {
- 	classifier = ''
-	relocate 'net.dv8tion.jda', 'dev.array21.skinfixer.libs.net.dv8tion.jda'
-	relocate 'com.google.code.gson', 'dev.array21.skinfixer.libs.com.google.code.gson'
-	relocate 'nl.thedutchmc.httplib', 'dev.array21.skinfixer.libs.nl.thedutchmc.httplib'
-	relocate 'org.slf4j', 'dev.array21.skinfixer.libs.org.slf4j'
-	relocate 'dev.array21', 'dev.array21.skinfixer.libs.dev.array21'
-}
-
 processResources  {
 	duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
