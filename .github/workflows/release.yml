@@ -30,7 +30,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: linux-x86_64-xenial.so
-        path: librconsole/target/x86_64-unknown-linux-gnu/release/libskinfixer.so
+        path: lib/target/x86_64-unknown-linux-gnu/release/libskinfixer.so
         retention-days: 1
 
   build-linux-x86_64-focal:
@@ -57,7 +57,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: linux-x86_64-focal.so
-        path: librconsole/target/x86_64-unknown-linux-gnu/release/libskinfixer.so
+        path: lib/target/x86_64-unknown-linux-gnu/release/libskinfixer.so
         retention-days: 1
 
   build-linux-aarch64:
@@ -84,7 +84,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: linux-aarch64.so
-        path: librconsole/target/aarch64-unknown-linux-gnu/release/libskinfixer.so
+        path: lib/target/aarch64-unknown-linux-gnu/release/libskinfixer.so
         retention-days: 1
 
   build-linux-armhf:
