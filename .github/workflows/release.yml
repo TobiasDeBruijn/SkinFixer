@@ -195,47 +195,47 @@ jobs:
         name: linux-x86_64-xenial.so
         path: lib/target/x86_64-unknown-linux/release/
     - name: Rename artifact
-      run: mv lib/target/x86_64-unknown-linux/release/linux-x86_64-xenial.so lib/target/x86_64-unknown-linux/release/libskinfixer-xenial.so
+      run: mv lib/target/x86_64-unknown-linux/release/libskinfixer.so lib/target/x86_64-unknown-linux/release/libskinfixer-xenial.so
 
     - name: Download Linux x86_64 Focal artifact
       uses: actions/download-artifact@v2
       with:
         name: linux-x86_64-focal.so
         path: lib/target/x86_64-unknown-linux/release/
-    - name: Rename artifact
-      run: mv lib/target/x86_64-unknown-linux/release/linux-x86_64-focal.so lib/target/x86_64-unknown-linux/release/libskinfixer.so
+    #- name: Rename artifact
+    #  run: mv lib/target/x86_64-unknown-linux/release/linux-x86_64-focal.so lib/target/x86_64-unknown-linux/release/libskinfixer.so
 
     - name: Download Linux aarch64 artifact
       uses: actions/download-artifact@v2
       with:
         name: linux-aarch64.so
         path: lib/target/aarch64-unknown-linux/release/
-    - name: Rename artifact
-      run: mv lib/target/aarch64-unknown-linux/release/linux-aarch64.so lib/target/aarch64-unknown-linux/release/libskinfixer.so
+    #- name: Rename artifact
+    #  run: mv lib/target/aarch64-unknown-linux/release/linux-aarch64.so lib/target/aarch64-unknown-linux/release/libskinfixer.so
 
     - name: Download Linux armhf artifact
       uses: actions/download-artifact@v2
       with:
         name: linux-armhf.so
         path: lib/target/arm-unknown-linux-gnueabihf/release/
-    - name: Rename artifact
-      run: mv lib/target/arm-unknown-linux-gnueabihf/release/linux-x86_64.so lib/target/arm-unknown-linux-gnueabihf/release/libskinfixer.so
+    #- name: Rename artifact
+    #  run: mv lib/target/arm-unknown-linux-gnueabihf/release/linux-x86_64.so lib/target/arm-unknown-linux-gnueabihf/release/libskinfixer.so
 
     - name: Download Windows x86_64 artifact
       uses: actions/download-artifact@v2
       with:
         name: windows-x86_64.dll
         path: lib/target/x86_64-pc-windows-gnu/release/
-    - name: Rename artifact
-      run: mv lib/target/x86_64-pc-windows-gnu/release/windows-x86_64.dll lib/target/x86_64-pc-windows-gnu/release/libskinfixer.dll
+    #- name: Rename artifact
+    #  run: mv lib/target/x86_64-pc-windows-gnu/release/windows-x86_64.dll lib/target/x86_64-pc-windows-gnu/release/libskinfixer.dll
 
     - name: Download Apple Darwin x86_64 artifact
       uses: actions/download-artifact@v2
       with:
         name: darwin-x86_64.dylib
         path: lib/target/x86_64-apple-darwin/release/
-    - name: Rename artifact
-      run: mv lib/target/x86_64-apple-darwin/release/darwin-x86_64.dylib lib/target/x86_64-apple-darwin/release/libskinfixer.dylib
+    #- name: Rename artifact
+    #  run: mv lib/target/x86_64-apple-darwin/release/darwin-x86_64.dylib lib/target/x86_64-apple-darwin/release/libskinfixer.dylib
 
     # Build JAR
     - name: Gradlew permissions
