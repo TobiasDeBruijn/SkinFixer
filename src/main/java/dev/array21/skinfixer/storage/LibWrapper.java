@@ -9,8 +9,10 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 
 import dev.array21.skinfixer.SkinFixer;
+import dev.array21.skinfixer.annotations.Nullable;
 import dev.array21.skinfixer.config.ConfigManifest;
 import dev.array21.skinfixer.config.SqlSettings;
+import dev.array21.skinfixer.util.Pair;
 
 public class LibWrapper {
 	
@@ -51,40 +53,93 @@ public class LibWrapper {
 				break saveLib;
 			}
 			
-			URL libUrl = LibWrapper.class.getResource(libName);
-			File tmpDir;
-			try {
-				tmpDir = Files.createTempDirectory("libskinfixer").toFile();
-			} catch(IOException e) {
-				SkinFixer.logWarn("Failed to create temporary directory for library: " + e.getMessage());
+			Pair<File, File> pairedFile = saveLib(libName);
+			if(pairedFile == null) {
 				break saveLib;
 			}
 			
-			String[] libNameParts = libName.split(Pattern.quote("/"));
-			File libTmpFile = new File(tmpDir, libNameParts[libNameParts.length -1]);
-			try {
-				InputStream is = libUrl.openStream();
-				Files.copy(is, libTmpFile.toPath());
-			} catch(IOException e) {
-				SkinFixer.logWarn("Failed to save library to temporary directory: " + e.getMessage());
-				tmpDir.delete();
-				break saveLib;
-			}
-			
-			libTmpFile.deleteOnExit();
-			tmpDir.deleteOnExit();
+			File tmpDir = pairedFile.getA();
+			File libTmpFile = pairedFile.getB();
 			
 			try {
 				System.load(libTmpFile.getAbsolutePath());
 			} catch(UnsatisfiedLinkError e) {
-				SkinFixer.logWarn("Failed to load library: " + e.getMessage());
-				libTmpFile.delete();
-				tmpDir.delete();
-				break saveLib;
+				if(osName.contains("linux")) {
+					SkinFixer.logWarn("Failed to load library: " + e.getMessage());
+					SkinFixer.logWarn("Attempting to load library linked against an older version of GLIBC (Compiled on Ubuntu Xenial)");
+					
+					libTmpFile.delete();
+					tmpDir.delete();
+					
+					Pair<File, File> pairedFileXenial = saveLib("/x86_64/linux/libskinfixer-xenial.so");
+					if(pairedFileXenial == null) {
+						break saveLib;
+					}
+					
+					File tmpFolderXenial = pairedFileXenial.getA();
+					File libTmpFileXenial = pairedFileXenial.getB();
+					
+					try {
+						System.load(libTmpFileXenial.getAbsolutePath());
+					} catch(UnsatisfiedLinkError e1) {
+						libTmpFileXenial.delete();
+						tmpFolderXenial.delete();
+						
+						SkinFixer.logWarn("Failed to load library linked to older version of GLIBC (Compiled on Ubuntu Xenial): " + e1.getMessage());
+						printLibDebugHelp();
+					}
+				} else {
+					SkinFixer.logWarn("Failed to load library: " + e.getMessage());
+					libTmpFile.delete();
+					tmpDir.delete();
+					
+					printLibDebugHelp();
+					break saveLib;
+				}
 			}
 			
 			LIB_LOADED = true;
 		}
+	}
+	
+	private static void printLibDebugHelp() {
+		SkinFixer.logWarn("Check that all required dependencies are installed.");
+		SkinFixer.logWarn("You should make sure that you are using GLIBC >=2.23.");
+		SkinFixer.logWarn("If you are using GLIBC =< 2.23, make sure that you have libssl 1.0.0 AND libcrypto 1.0.0 installed.");
+		SkinFixer.logWarn("If you are using GLIBC >= 2.31, make sure that you have OpenSSL (libssl 1.1 AND libcrypto 1.1)installed.");
+		SkinFixer.logWarn("For more help you can join Dutchy76's Discord: https://discord.com/invite/xE3FcGj");
+		SkinFixer.logWarn("Alternatively, you can open an issue on GitHub: https://github.com/TheDutchMC/SkinFixer/issues/new/choose");
+		SkinFixer.logWarn("In either case, please include your Operating System, OS version, architecture, Minecraft version and the version of SkinFixer you are using");
+	}
+	
+	@Nullable
+	private static Pair<File, File> saveLib(String libName) {
+		URL libUrl = LibWrapper.class.getResource(libName);
+		File tmpDir;
+		try {
+			tmpDir = Files.createTempDirectory("libskinfixer").toFile();
+		} catch (IOException e) {
+			SkinFixer.logWarn("Failed to create temporary directory: " + e);
+			return null;
+		}
+		
+		String[] libNameParts = libName.split(Pattern.quote("/"));
+		File libTmpFile = new File(tmpDir, libNameParts[libNameParts.length -1]);
+		
+		try {
+			InputStream is = libUrl.openStream();
+			Files.copy(is, libTmpFile.toPath());
+		} catch(IOException e) {
+			tmpDir.delete();
+			
+			SkinFixer.logWarn("Failed to save dynamic library as temporay file: " + e);
+			return null;
+		}
+		
+		libTmpFile.deleteOnExit();
+		tmpDir.deleteOnExit();
+		
+		return new Pair<File, File>(tmpDir, libTmpFile);
 	}
 	
 	private SkinFixer plugin;

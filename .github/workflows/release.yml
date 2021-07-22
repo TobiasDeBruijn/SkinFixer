@@ -6,7 +6,7 @@ on:
       - '**'
 
 jobs:
-  build-linux-x86_64:
+  build-linux-x86_64-xenial:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -29,7 +29,34 @@ jobs:
     - name: 'Upload Artifact'
       uses: actions/upload-artifact@v2
       with:
-        name: linux-x86_64.so
+        name: linux-x86_64-xenial.so
+        path: librconsole/target/x86_64-unknown-linux-gnu/release/libskinfixer.so
+        retention-days: 1
+
+  build-linux-x86_64-focal:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    # Dependencies
+    - name: Install dependencies
+      run: sudo apt-get update && sudo apt-get install -y make gcc libssl-dev
+    - name: Install Rust
+      run: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    - name: Add Rust binaries to path
+      run: export PATH="$HOME/.cargo/bin:$PATH"
+    - name: Add target
+      run: rustup target add x86_64-unknown-linux-gnu
+
+    # Build
+    - name: Build library
+      run: make lib/target/x86_64-unknown-linux-gnu/release/libskinfixer.so
+
+    #Upload file
+    - name: 'Upload Artifact'
+      uses: actions/upload-artifact@v2
+      with:
+        name: linux-x86_64-focal.so
         path: librconsole/target/x86_64-unknown-linux-gnu/release/libskinfixer.so
         retention-days: 1
 
@@ -178,7 +205,8 @@ jobs:
   build-jar:
     runs-on: ubuntu-latest
     needs:
-    - build-linux-x86_64
+    - build-linux-x86_64-xenial
+    - build-linux-x86_64-focal
     - build-linux-aarch64
     - build-linux-armhf
     - build-windows-x86_64
@@ -195,13 +223,21 @@ jobs:
       run: sudo apt-get install -y make
     
     #Download artifacts
-    - name: Download Linux x86_64 artifact
+    - name: Download Linux x86_64 Xenial artifact
       uses: actions/download-artifact@v2
       with:
-        name: linux-x86_64.so
+        name: linux-x86_64-xenial.so
         path: lib/target/x86_64-unknown-linux/release/
     - name: Rename artifact
-      run: mv lib/target/x86_64-unknown-linux/release/linux-x86_64.so lib/target/x86_64-unknown-linux/release/libskinfixer.so
+      run: mv lib/target/x86_64-unknown-linux/release/linux-x86_64-xenial.so lib/target/x86_64-unknown-linux/release/libskinfixer-xenial.so
+
+    - name: Download Linux x86_64 Focal artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: linux-x86_64-focal.so
+        path: lib/target/x86_64-unknown-linux/release/
+    - name: Rename artifact
+      run: mv lib/target/x86_64-unknown-linux/release/linux-x86_64-focal.so lib/target/x86_64-unknown-linux/release/libskinfixer.so
 
     - name: Download Linux aarch64 artifact
       uses: actions/download-artifact@v2
