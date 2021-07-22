@@ -34,7 +34,7 @@ jobs:
         retention-days: 1
 
   build-linux-x86_64-focal:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
 
@@ -50,7 +50,7 @@ jobs:
 
     # Build
     - name: Build library
-      run: make lib/target/x86_64-unknown-linux-gnu/release/libskinfixer.so
+      run: cd lib && cargo build --lib --release --target x86_64-unknown-linux-gnu
 
     #Upload file
     - name: 'Upload Artifact'
