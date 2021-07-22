@@ -65,32 +65,15 @@ jobs:
     steps:
     - uses: actions/checkout@v2
   
-    # Dependencies
-    - name: Change Apt Azure repositories
-      run: sudo sed -i 's|deb http://azure.archive.ubuntu.com/ubuntu/|deb [arch=amd64] http://archive.ubuntu.com/ubuntu/|' /etc/apt/sources.list
-    - name: Change Apt Security repositories
-      run: sudo sed -i 's|deb http://security.ubuntu.com/ubuntu|deb [arch=amd64] http://security.ubuntu.com/ubuntu|' /etc/apt/sources.list
-    - name: Add ARM repos
-      run: |
-        sudo tee -a /etc/apt/sources.list.d/arm.list <<EOF
-        deb [arch=arm64,armhf] http://ports.ubuntu.com/ubuntu-ports focal main restricted
-        deb [arch=arm64,armhf] http://ports.ubuntu.com/ubuntu-ports focal-updates main restricted
-        deb [arch=arm64,armhf] http://ports.ubuntu.com/ubuntu-ports focal universe
-        deb [arch=arm64,armhf] http://ports.ubuntu.com/ubuntu-ports focal-updates universe
-        deb [arch=arm64,armhf] http://ports.ubuntu.com/ubuntu-ports focal multiverse
-        deb [arch=arm64,armhf] http://ports.ubuntu.com/ubuntu-ports focal-updates multiverse
-        deb [arch=arm64,armhf] http://ports.ubuntu.com/ubuntu-ports focal-backports main restricted universe multiverse
-        EOF
-    - name: Add dpkg arch
-      run: sudo dpkg --add-architecture arm64
-    - name: Install dependencies
-      run: sudo apt-get update && sudo apt-get install -y make gcc libssl-dev gcc-aarch64-linux-gnu libssl-dev:arm64 pkg-config
-    - name: Install Rust
-      run: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-    - name: Add Rust binaries to path
-      run: export PATH="$HOME/.cargo/bin:$PATH"
-    - name: Add aarch64 target
-      run: rustup target add aarch64-unknown-linux-gnu
+    # Docker
+    - name: Install dependencies for Docker
+      run: sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release make
+    - name: Docker GPG Key
+      run: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+    - name: Docker APT repository
+      run: echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    - name: Install Docker
+      run: sudo apt-get update -y && sudo apt-get install -y docker-ce docker-ce-cli containerd.io
 
     # Build
     - name: Build library
@@ -109,32 +92,15 @@ jobs:
     steps:
     - uses: actions/checkout@v2
   
-    # Dependencies
-    - name: Change Apt Azure repositories
-      run: sudo sed -i 's|deb http://azure.archive.ubuntu.com/ubuntu/|deb [arch=amd64] http://archive.ubuntu.com/ubuntu/|' /etc/apt/sources.list
-    - name: Change Apt Security repositories
-      run: sudo sed -i 's|deb http://security.ubuntu.com/ubuntu|deb [arch=amd64] http://security.ubuntu.com/ubuntu|' /etc/apt/sources.list
-    - name: Add ARM repos
-      run: |
-        sudo tee -a /etc/apt/sources.list.d/arm.list <<EOF
-        deb [arch=arm64,armhf] http://ports.ubuntu.com/ubuntu-ports focal main restricted
-        deb [arch=arm64,armhf] http://ports.ubuntu.com/ubuntu-ports focal-updates main restricted
-        deb [arch=arm64,armhf] http://ports.ubuntu.com/ubuntu-ports focal universe
-        deb [arch=arm64,armhf] http://ports.ubuntu.com/ubuntu-ports focal-updates universe
-        deb [arch=arm64,armhf] http://ports.ubuntu.com/ubuntu-ports focal multiverse
-        deb [arch=arm64,armhf] http://ports.ubuntu.com/ubuntu-ports focal-updates multiverse
-        deb [arch=arm64,armhf] http://ports.ubuntu.com/ubuntu-ports focal-backports main restricted universe multiverse
-        EOF
-    - name: Add dpkg arch
-      run: sudo dpkg --add-architecture armhf
-    - name: Install dependencies
-      run: sudo apt-get update && sudo apt-get install -y make gcc libssl-dev gcc-arm-linux-gnueabihf libssl-dev:armhf pkg-config
-    - name: Install Rust
-      run: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-    - name: Add Rust binaries to path
-      run: export PATH="$HOME/.cargo/bin:$PATH"
-    - name: Add armhf target
-      run: rustup target add arm-unknown-linux-gnueabihf
+    # Docker
+    - name: Install dependencies for Docker
+      run: sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release make
+    - name: Docker GPG Key
+      run: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+    - name: Docker APT repository
+      run: echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    - name: Install Docker
+      run: sudo apt-get update -y && sudo apt-get install -y docker-ce docker-ce-cli containerd.io
 
     # Build
     - name: Build library

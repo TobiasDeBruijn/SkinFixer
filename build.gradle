@@ -81,7 +81,9 @@ task copyDependenciesDebug() {
 }
 
 task copyDependenciesRelease() {
-	dependsOn('copyLinuxLibraryReleaseX86')
+	dependsOn('copyLinuxLibraryReleaseX86Focal')
+	dependsOn('copyLinuxLibraryReleaseX86Xenial')
+	
 	dependsOn('copyLinuxLibraryReleaseAarch64')
 	dependsOn('copyLinuxLibraryReleaseArmhf')
 
@@ -90,11 +92,18 @@ task copyDependenciesRelease() {
 	dependsOn('copyWindowsLibraryRelease')
 }
 
-// Linux X86 - Release
-task copyLinuxLibraryReleaseX86(type: Copy) {
+// Linux X86 Focal - Release
+task copyLinuxLibraryReleaseX86Focal(type: Copy) {
 	from "$rootDir/lib/target/x86_64-unknown-linux-gnu/release/libskinfixer.so"
 	into "$buildDir/resources/main/x86_64/linux"
 }
+
+// Linux X86 Xenial - Release
+task copyLinuxLibraryReleaseX86Xenial(type: Copy) {
+	from "$rootDir/lib/target/x86_64-unknown-linux-gnu/release/libskinfixer-xenial.so"
+	into "$buildDir/resources/main/x86_64/linux"
+}
+
 
 // Linux Aarch64 - Release
 task copyLinuxLibraryReleaseAarch64(type: Copy) {

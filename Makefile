@@ -11,12 +11,12 @@ lib/target/x86_64-unknown-linux-gnu/release/libskinfixer.so: ${RUST_SOURCE_FILES
 # Release - Linux aarch64
 lib/target/aarch64-unknown-linux-gnu/release/libskinfixer.so: ${RUST_SOURCE_FILES}
 	cd lib; \
-		PKG_CONFIG_SYSROOT_DIR=/usr/lib/aarch64-linux-gnu/ cargo build --release --target aarch64-unknown-linux-gnu
+		docker run -v "${PWD}/lib/:/code/" docker-registry.k8s.array21.dev/rust-aarch64-builder release
 
 # Release - Linux armhf
 lib/target/arm-unknown-linux-gnueabihf/release/libskinfixer.so: ${RUST_SOURCE_FILES}
 	cd lib; \
-		PKG_CONFIG_SYSROOT_DIR=/usr/lib/arm-linux-gnueabihf/ cargo build --release --target arm-unknown-linux-gnueabihf
+		docker run -v "${PWD}/lib/:/code/" docker-registry.k8s.array21.dev/rust-armhf-builder release
 
 # Release - Windows x86_64
 lib/target/x86_64-pc-windows-gnu/release/libskinfixer.dll: ${RUST_SOURCE_FILES}
@@ -37,12 +37,12 @@ lib/target/x86_64-unknown-linux-gnu/debug/libskinfixer.so: ${RUST_SOURCE_FILES}
 # Debug - Linux aarch64
 lib/target/aarch64-unknown-linux-gnu/debug/libskinfixer.so: ${RUST_SOURCE_FILES}
 	cd lib; \
-		PKG_CONFIG_SYSROOT_DIR=/usr/lib/aarch64-linux-gnu/ cargo build --target aarch64-unknown-linux-gnu
+		docker run -v "${PWD}/lib/:/code/" docker-registry.k8s.array21.dev/rust-aarch64-builder
 
 # Debug - Linux armhf
 lib/target/arm-unknown-linux-gnueabihf/debug/libskinfixer.so: ${RUST_SOURCE_FILES}
 	cd lib; \
-		PKG_CONFIG_SYSROOT_DIR=/usr/lib/arm-linux-gnueabihf/ cargo build --target arm-unknown-linux-gnueabihf
+		docker run -v "${PWD}/lib/:/code/" docker-registry.k8s.array21.dev/rust-armhf-builder
 
 # Debug - Windows x86_64
 lib/target/x86_64-pc-windows-gnu/debug/libskinfixer.dll: ${RUST_SOURCE_FILES}
