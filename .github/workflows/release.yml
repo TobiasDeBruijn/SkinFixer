@@ -84,7 +84,7 @@ jobs:
     - name: Add dpkg arch
       run: sudo dpkg --add-architecture arm64
     - name: Install dependencies
-      run: sudo apt-get update && sudo apt-get install -y make gcc libssl-dev gcc-aarch64-linux-gnu libssl-dev:arm64 pkg-config:arm64
+      run: sudo apt-get update && sudo apt-get install -y make gcc libssl-dev gcc-aarch64-linux-gnu libssl-dev:arm64 pkg-config
     - name: Install Rust
       run: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
     - name: Add Rust binaries to path
@@ -128,7 +128,7 @@ jobs:
     - name: Add dpkg arch
       run: sudo dpkg --add-architecture armhf
     - name: Install dependencies
-      run: sudo apt-get update && sudo apt-get install -y make gcc libssl-dev gcc-arm-linux-gnueabihf libssl-dev:armhf pkg-config:armhf
+      run: sudo apt-get update && sudo apt-get install -y make gcc libssl-dev gcc-arm-linux-gnueabihf libssl-dev:armhf pkg-config
     - name: Install Rust
       run: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
     - name: Add Rust binaries to path
