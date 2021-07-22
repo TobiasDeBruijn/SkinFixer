@@ -72,7 +72,7 @@ jobs:
       run: sudo sed -i 's|deb http://security.ubuntu.com/ubuntu|deb [arch=amd64] http://security.ubuntu.com/ubuntu|' /etc/apt/sources.list
     - name: Add ARM repos
       run: |
-        sudo tee -a /etc/apt/sources.list.d/arm.list1 <<EOF
+        sudo tee -a /etc/apt/sources.list.d/arm.list <<EOF
         deb [arch=arm64,armhf] http://ports.ubuntu.com/ubuntu-ports focal main restricted
         deb [arch=arm64,armhf] http://ports.ubuntu.com/ubuntu-ports focal-updates main restricted
         deb [arch=arm64,armhf] http://ports.ubuntu.com/ubuntu-ports focal universe
@@ -116,7 +116,7 @@ jobs:
       run: sudo sed -i 's|deb http://security.ubuntu.com/ubuntu|deb [arch=amd64] http://security.ubuntu.com/ubuntu|' /etc/apt/sources.list
     - name: Add ARM repos
       run: |
-        sudo tee -a /etc/apt/sources.list.d/arm.list1 <<EOF
+        sudo tee -a /etc/apt/sources.list.d/arm.list <<EOF
         deb [arch=arm64,armhf] http://ports.ubuntu.com/ubuntu-ports focal main restricted
         deb [arch=arm64,armhf] http://ports.ubuntu.com/ubuntu-ports focal-updates main restricted
         deb [arch=arm64,armhf] http://ports.ubuntu.com/ubuntu-ports focal universe
