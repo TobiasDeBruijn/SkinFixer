@@ -35,7 +35,7 @@ allprojects {
 dependencies {
 	compileOnly 'org.spigotmc:spigot-api:1.17-R0.1-SNAPSHOT'
 
-    implementation 'com.github.TheDutchMC:HttpLib:1.1'
+	implementation 'com.github.TheDutchMC:HttpLib:1.1'
 	implementation 'dev.array21:classvalidator:1.0.0'
 	implementation 'dev.array21:pluginstatlib:1.0.5'
 
@@ -82,6 +82,7 @@ task copyDependenciesDebug() {
 
 task copyDependenciesRelease() {
 	dependsOn('copyLinuxLibraryReleaseX86Focal')
+	dependsOn('copyLinuxLibraryReleaseX86Bionic')
 	dependsOn('copyLinuxLibraryReleaseX86Xenial')
 	
 	dependsOn('copyLinuxLibraryReleaseAarch64')
@@ -94,8 +95,14 @@ task copyDependenciesRelease() {
 
 // Linux X86 Focal - Release
 task copyLinuxLibraryReleaseX86Focal(type: Copy) {
-	from "$rootDir/lib/target/x86_64-unknown-linux-gnu/release/libskinfixer.so"
+	from "$rootDir/lib/target/x86_64-unknown-linux-gnu/release/libskinfixer-focal.so"
 	into "$buildDir/resources/main/x86_64/linux"
+}
+
+// Linux X86 Bionic - Release
+task copyLinuxLibraryReleaseX86Bionic(type: Copy) {
+        from "$rootDir/lib/target/x86_64-unknown-linux-gnu/release/libskinfixer-bionic.so"
+        into "$buildDir/resources/main/x86_64/linux"
 }
 
 // Linux X86 Xenial - Release

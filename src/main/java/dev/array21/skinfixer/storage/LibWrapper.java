@@ -13,6 +13,7 @@ import dev.array21.skinfixer.annotations.Nullable;
 import dev.array21.skinfixer.config.ConfigManifest;
 import dev.array21.skinfixer.config.SqlSettings;
 import dev.array21.skinfixer.util.Pair;
+import dev.array21.skinfixer.util.Utils;
 
 public class LibWrapper {
 	
@@ -25,7 +26,7 @@ public class LibWrapper {
 			String osName = System.getProperty("os.name").toLowerCase();
 			if(osName.contains("linux")) {
 				switch(System.getProperty("os.arch")) {
-				case "amd64": libName = "/x86_64/linux/libskinfixer.so"; break;
+				case "amd64": libName = "/x86_64/linux/libskinfixer-focal.so"; break;
 				case "arm": libName = "/armhf/linux/libskinfixer.so"; break;
 				case "aarch64": libName = "/aarch64/linux/libskinfixer.so"; break;
 				default:
@@ -65,28 +66,19 @@ public class LibWrapper {
 				System.load(libTmpFile.getAbsolutePath());
 			} catch(UnsatisfiedLinkError e) {
 				if(osName.contains("linux")) {
-					SkinFixer.logWarn("Failed to load library: " + e.getMessage());
-					SkinFixer.logWarn("Attempting to load library linked against an older version of GLIBC (Compiled on Ubuntu Xenial)");
+					SkinFixer.logWarn("Failed to load libskinfixer Focal. Trying Bionic.");
 					
-					libTmpFile.delete();
-					tmpDir.delete();
-					
-					Pair<File, File> pairedFileXenial = saveLib("/x86_64/linux/libskinfixer-xenial.so");
-					if(pairedFileXenial == null) {
-						break saveLib;
-					}
-					
-					File tmpFolderXenial = pairedFileXenial.getA();
-					File libTmpFileXenial = pairedFileXenial.getB();
-					
-					try {
-						System.load(libTmpFileXenial.getAbsolutePath());
-					} catch(UnsatisfiedLinkError e1) {
-						libTmpFileXenial.delete();
-						tmpFolderXenial.delete();
+					String loadBionicError = tryLoadAmd64Linux("bionic");
+					if(loadBionicError != null) {
+						SkinFixer.logWarn(loadBionicError);
+						SkinFixer.logWarn("Failed to load libskinfixer Bionic. Trying Xenial.");					
 						
-						SkinFixer.logWarn("Failed to load library linked to older version of GLIBC (Compiled on Ubuntu Xenial): " + e1.getMessage());
-						printLibDebugHelp();
+						String loadXenialError = tryLoadAmd64Linux("xenial");
+						if(loadXenialError != null) {
+							SkinFixer.logWarn(loadXenialError);
+							SkinFixer.logWarn("Failed to load libskinfixer Focal.");
+							printLibDebugHelp();
+						}
 					}
 				} else {
 					SkinFixer.logWarn("Failed to load library: " + e.getMessage());
@@ -98,8 +90,30 @@ public class LibWrapper {
 				}
 			}
 			
+			SkinFixer.logInfo("libskinfixer loaded.");
 			LIB_LOADED = true;
 		}
+	}
+	
+	private static String tryLoadAmd64Linux(String distro) {
+		String name = String.format("/x86_64/linux/libskinfixer-%s.so", distro);
+		Pair<File, File> pairedFile = saveLib(name);
+		if(pairedFile == null) {
+			return String.format("Failed to save library libskinfixer-%.so", distro);
+		}
+		
+		File tmpFolder = pairedFile.getA();
+		File libTmpFile = pairedFile.getB();
+		
+		try {
+			System.load(libTmpFile.getAbsolutePath());
+		} catch(UnsatisfiedLinkError e) {
+			libTmpFile.delete();
+			tmpFolder.delete();
+			return String.format("Failed to load library libskinfixer-%.so: %s", distro, Utils.getStackTrace(e));
+		}
+		
+		return null;
 	}
 	
 	private static void printLibDebugHelp() {
