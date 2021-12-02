@@ -11,9 +11,9 @@ import dev.array21.skinfixer.apis.gson.GetSkinResponse;
 import dev.array21.skinfixer.apis.gson.GetUuidResponse;
 import dev.array21.skinfixer.util.Triple;
 import dev.array21.skinfixer.util.Utils;
-import nl.thedutchmc.httplib.Http;
-import nl.thedutchmc.httplib.Http.RequestMethod;
-import nl.thedutchmc.httplib.Http.ResponseObject;
+import dev.array21.httplib.Http;
+import dev.array21.httplib.Http.RequestMethod;
+import dev.array21.httplib.Http.ResponseObject;
 
 public class SkinFixerApi {
 	

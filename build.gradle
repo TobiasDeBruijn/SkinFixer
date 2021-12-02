@@ -18,11 +18,11 @@ allprojects {
 		mavenCentral()
   	  	maven{ url "https://hub.spigotmc.org/nexus/content/repositories/snapshots" }
    	 	maven{ url "https://oss.sonatype.org/content/repositories/snapshots" }
-   	 	maven{ url 'https://jitpack.io' }
         maven {
             name 'm2-dv8tion'
             url 'https://m2.dv8tion.net/releases'
         }
+		mavenLocal()
     }
     
 	processResources {
@@ -35,9 +35,9 @@ allprojects {
 dependencies {
 	compileOnly 'org.spigotmc:spigot-api:1.17-R0.1-SNAPSHOT'
 
-	implementation 'com.github.TheDutchMC:HttpLib:1.1'
+	implementation 'dev.array21:httplib:1.2.2'
 	implementation 'dev.array21:classvalidator:1.0.0'
-	implementation 'dev.array21:pluginstatlib:1.0.5'
+	implementation 'dev.array21:bukkit-reflection-util:1.1.1'
 
 	// JDA and related dependencies
 	implementation 'org.slf4j:slf4j-log4j12:1.7.29'
@@ -81,33 +81,16 @@ task copyDependenciesDebug() {
 }
 
 task copyDependenciesRelease() {
-	dependsOn('copyLinuxLibraryReleaseX86Focal')
-	dependsOn('copyLinuxLibraryReleaseX86Bionic')
-	dependsOn('copyLinuxLibraryReleaseX86Xenial')
-	
+	dependsOn('copyLinuxLibraryReleaseX86')
 	dependsOn('copyLinuxLibraryReleaseAarch64')
 	dependsOn('copyLinuxLibraryReleaseArmhf')
-
 	dependsOn('copyDarwinLibraryReleaseX86')
-
 	dependsOn('copyWindowsLibraryRelease')
 }
 
-// Linux X86 Focal - Release
-task copyLinuxLibraryReleaseX86Focal(type: Copy) {
-	from "$rootDir/lib/target/x86_64-unknown-linux-gnu/release/libskinfixer-focal.so"
-	into "$buildDir/resources/main/x86_64/linux"
-}
-
-// Linux X86 Bionic - Release
-task copyLinuxLibraryReleaseX86Bionic(type: Copy) {
-        from "$rootDir/lib/target/x86_64-unknown-linux-gnu/release/libskinfixer-bionic.so"
-        into "$buildDir/resources/main/x86_64/linux"
-}
-
 // Linux X86 Xenial - Release
-task copyLinuxLibraryReleaseX86Xenial(type: Copy) {
-	from "$rootDir/lib/target/x86_64-unknown-linux-gnu/release/libskinfixer-xenial.so"
+task copyLinuxLibraryReleaseX86(type: Copy) {
+	from "$rootDir/lib/target/x86_64-unknown-linux-gnu/release/libskinfixer.so"
 	into "$buildDir/resources/main/x86_64/linux"
 }
 

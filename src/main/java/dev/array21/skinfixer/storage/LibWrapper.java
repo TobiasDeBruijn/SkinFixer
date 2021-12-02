@@ -26,7 +26,7 @@ public class LibWrapper {
 			String osName = System.getProperty("os.name").toLowerCase();
 			if(osName.contains("linux")) {
 				switch(System.getProperty("os.arch")) {
-				case "amd64": libName = "/x86_64/linux/libskinfixer-focal.so"; break;
+				case "amd64": libName = "/x86_64/linux/libskinfixer.so"; break;
 				case "arm": libName = "/armhf/linux/libskinfixer.so"; break;
 				case "aarch64": libName = "/aarch64/linux/libskinfixer.so"; break;
 				default:
@@ -65,65 +65,13 @@ public class LibWrapper {
 			try {
 				System.load(libTmpFile.getAbsolutePath());
 			} catch(UnsatisfiedLinkError e) {
-				if(osName.contains("linux")) {
-					SkinFixer.logWarn("Failed to load libskinfixer Focal. Trying Bionic.");
-					
-					String loadBionicError = tryLoadAmd64Linux("bionic");
-					if(loadBionicError != null) {
-						SkinFixer.logWarn(loadBionicError);
-						SkinFixer.logWarn("Failed to load libskinfixer Bionic. Trying Xenial.");					
-						
-						String loadXenialError = tryLoadAmd64Linux("xenial");
-						if(loadXenialError != null) {
-							SkinFixer.logWarn(loadXenialError);
-							SkinFixer.logWarn("Failed to load libskinfixer Focal.");
-							printLibDebugHelp();
-						}
-					}
-				} else {
-					SkinFixer.logWarn("Failed to load library: " + e.getMessage());
-					libTmpFile.delete();
-					tmpDir.delete();
-					
-					printLibDebugHelp();
-					break saveLib;
-				}
+				SkinFixer.logWarn("Failed to load libskinfixer. Please open an issue at https://github.com/TheDutchMC/SkinFixer/issues and include your OS, architecture and SkinFixer version. Thanks!");
+				SkinFixer.logWarn(Utils.getStackTrace(e));
 			}
 			
 			SkinFixer.logInfo("libskinfixer loaded.");
 			LIB_LOADED = true;
 		}
-	}
-	
-	private static String tryLoadAmd64Linux(String distro) {
-		String name = String.format("/x86_64/linux/libskinfixer-%s.so", distro);
-		Pair<File, File> pairedFile = saveLib(name);
-		if(pairedFile == null) {
-			return String.format("Failed to save library libskinfixer-%.so", distro);
-		}
-		
-		File tmpFolder = pairedFile.getA();
-		File libTmpFile = pairedFile.getB();
-		
-		try {
-			System.load(libTmpFile.getAbsolutePath());
-		} catch(UnsatisfiedLinkError e) {
-			libTmpFile.delete();
-			tmpFolder.delete();
-			return String.format("Failed to load library libskinfixer-%.so: %s", distro, Utils.getStackTrace(e));
-		}
-		
-		return null;
-	}
-	
-	private static void printLibDebugHelp() {
-		SkinFixer.logWarn("Check that all required dependencies are installed.");
-		SkinFixer.logWarn("You should make sure that you are using GLIBC >=2.23.");
-		SkinFixer.logWarn("If you are using GLIBC =< 2.23, make sure that you have libssl 1.0.0 AND libcrypto 1.0.0 installed.");
-		SkinFixer.logWarn("If you are using GLIBC >= 2.31, make sure that you have OpenSSL (libssl 1.1 AND libcrypto 1.1)installed.");
-		SkinFixer.logWarn("For more help you can join Dutchy76's Discord: https://discord.com/invite/xE3FcGj");
-		SkinFixer.logWarn("Alternatively, you can open an issue on GitHub: https://github.com/TheDutchMC/SkinFixer/issues/new/choose");
-		SkinFixer.logWarn("In either case, please include your Operating System, OS version, architecture, Minecraft version and the version of SkinFixer you are using");
 	}
 	
 	@Nullable
@@ -134,6 +82,7 @@ public class LibWrapper {
 			tmpDir = Files.createTempDirectory("libskinfixer").toFile();
 		} catch (IOException e) {
 			SkinFixer.logWarn("Failed to create temporary directory: " + e);
+			SkinFixer.logWarn(Utils.getStackTrace(e));
 			return null;
 		}
 		
@@ -145,15 +94,15 @@ public class LibWrapper {
 			Files.copy(is, libTmpFile.toPath());
 		} catch(IOException e) {
 			tmpDir.delete();
-			
 			SkinFixer.logWarn("Failed to save dynamic library as temporay file: " + e);
+			SkinFixer.logWarn(Utils.getStackTrace(e));
 			return null;
 		}
 		
 		libTmpFile.deleteOnExit();
 		tmpDir.deleteOnExit();
 		
-		return new Pair<File, File>(tmpDir, libTmpFile);
+		return new Pair<>(tmpDir, libTmpFile);
 	}
 	
 	private SkinFixer plugin;

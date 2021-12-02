@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import dev.array21.bukkitreflectionlib.ReflectionUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -19,7 +20,6 @@ import dev.array21.skinfixer.apis.SkinFixerApi;
 import dev.array21.skinfixer.apis.gson.GetSkinResponse;
 import dev.array21.skinfixer.language.LangHandler;
 import dev.array21.skinfixer.storage.SkinData;
-import dev.array21.skinfixer.util.ReflectionUtil;
 import dev.array21.skinfixer.util.Triple;
 import net.md_5.bungee.api.ChatColor;
 
@@ -115,7 +115,161 @@ public class SkinChangeHandler {
 			player.sendMessage(ChatColor.GOLD + LangHandler.model.skinApplied);
 		}
 	}
-	
+
+	private void applySkin1_16(Player player, String skinValue, String skinSignature) throws Exception {
+		Class<?> craftPlayerClass = ReflectionUtil.getBukkitClass("entity.CraftPlayer");
+		Object entityPlayer = ReflectionUtil.invokeMethod(craftPlayerClass, player, "getHandle");
+		Class<?> entityHumanClass = ReflectionUtil.getNmsClass("EntityHuman");
+
+		Object gameProfile = ReflectionUtil.invokeMethod(entityHumanClass, entityPlayer, "getProfile");
+		Object propertyMap = ReflectionUtil.invokeMethod(gameProfile, "getProperties");
+
+		//Check if the PropertyMap contains the 'textures' property
+		//If so remove it
+		//The containsKey method is in the ForwardingMultimap class, which PropertyMap extends
+		Class<?> forwardingMultimapClass = com.google.common.collect.ForwardingMultimap.class;
+		Boolean containsKeyTextures = (Boolean) ReflectionUtil.invokeMethod(forwardingMultimapClass, propertyMap, "containsKey", new Class<?>[] { Object.class }, new Object[] { "textures" });
+		if(containsKeyTextures) {
+			Object textures = ReflectionUtil.invokeMethod(forwardingMultimapClass, propertyMap, "get", new Class<?>[] { Object.class }, new Object[] { "textures" });
+			Object texturesIter = ReflectionUtil.invokeMethod(Collection.class, textures, "iterator");
+			Object iterNext = ReflectionUtil.invokeMethod(texturesIter, "next");
+
+			ReflectionUtil.invokeMethod(forwardingMultimapClass, propertyMap, "remove", new Class<?>[] { Object.class, Object.class }, new Object[] { "textures", iterNext });
+		}
+
+		//Create a new 'textures' Property with the new skinValue and skinSignature
+		//and put it in the PropertyMap
+		Class<?> propertyClass = Class.forName("com.mojang.authlib.properties.Property");
+		Object newProperty = ReflectionUtil.invokeConstructor(propertyClass, "textures", skinValue, skinSignature);
+		ReflectionUtil.invokeMethod(forwardingMultimapClass, propertyMap, "put", new Class<?>[] { Object.class, Object.class }, new Object[] { "textures", newProperty });
+
+		Class<?> packetPlayOutPlayerInfoClass = ReflectionUtil.getNmsClass("PacketPlayOutPlayerInfo");
+
+		Object removePlayerEnumConstant = ReflectionUtil.getEnum(packetPlayOutPlayerInfoClass, "EnumPlayerInfoAction", "REMOVE_PLAYER");
+		Object addPlayerEnumConstant = ReflectionUtil.getEnum(packetPlayOutPlayerInfoClass, "EnumPlayerInfoAction", "ADD_PLAYER");
+
+		//Create an Array of EntityPlayer with size = 1 and add our player to it
+		Object entityPlayerArr = Array.newInstance(entityPlayer.getClass(), 1);
+		Array.set(entityPlayerArr, 0, entityPlayer);
+
+		Object packetPlayOutPlayerInfoRemovePlayer = ReflectionUtil.invokeConstructor(packetPlayOutPlayerInfoClass, removePlayerEnumConstant, entityPlayerArr);
+		Object packetPlayOutPlayerInfoAddPlayer = ReflectionUtil.invokeConstructor(packetPlayOutPlayerInfoClass, addPlayerEnumConstant, entityPlayerArr);
+
+		Object playerConnection = ReflectionUtil.getObject(entityPlayer, "playerConnection");
+		Class<?> packetClass = ReflectionUtil.getNmsClass("Packet");
+
+		//Send the two Packets
+		ReflectionUtil.invokeMethod(playerConnection, "sendPacket", new Class<?>[] { packetClass }, new Object[] { packetPlayOutPlayerInfoRemovePlayer });
+		ReflectionUtil.invokeMethod(playerConnection, "sendPacket", new Class<?>[] { packetClass }, new Object[] { packetPlayOutPlayerInfoAddPlayer });
+	}
+
+	private void applySkin1_17(Player player, String skinValue, String skinSignature) throws Exception {
+		Class<?> craftPlayerClass = ReflectionUtil.getBukkitClass("entity.CraftPlayer");
+		Object entityPlayer = ReflectionUtil.invokeMethod(craftPlayerClass, player, "getHandle");
+
+		Class<?> entityHumanClass = ReflectionUtil.getMinecraftClass("world.entity.player.EntityHuman");
+
+		Object gameProfile = ReflectionUtil.invokeMethod(entityHumanClass, entityPlayer, "getProfile");
+		Object propertyMap = ReflectionUtil.invokeMethod(gameProfile, "getProperties");
+
+		//Check if the PropertyMap contains the 'textures' property
+		//If so remove it
+		//The containsKey method is in the ForwardingMultimap class, which PropertyMap extends
+		Class<?> forwardingMultimapClass = com.google.common.collect.ForwardingMultimap.class;
+		Boolean containsKeyTextures = (Boolean) ReflectionUtil.invokeMethod(forwardingMultimapClass, propertyMap, "containsKey", new Class<?>[] { Object.class }, new Object[] { "textures" });
+		if(containsKeyTextures) {
+			Object textures = ReflectionUtil.invokeMethod(forwardingMultimapClass, propertyMap, "get", new Class<?>[] { Object.class }, new Object[] { "textures" });
+			Object texturesIter = ReflectionUtil.invokeMethod(Collection.class, textures, "iterator");
+			Object iterNext = ReflectionUtil.invokeMethod(texturesIter, "next");
+
+			ReflectionUtil.invokeMethod(forwardingMultimapClass, propertyMap, "remove", new Class<?>[] { Object.class, Object.class }, new Object[] { "textures", iterNext });
+		}
+
+		//Create a new 'textures' Property with the new skinValue and skinSignature
+		//and put it in the PropertyMap
+		Class<?> propertyClass = Class.forName("com.mojang.authlib.properties.Property");
+		Object newProperty = ReflectionUtil.invokeConstructor(propertyClass, "textures", skinValue, skinSignature);
+		ReflectionUtil.invokeMethod(forwardingMultimapClass, propertyMap, "put", new Class<?>[] { Object.class, Object.class }, new Object[] { "textures", newProperty });
+
+		Class<?> packetPlayOutPlayerInfoClass = ReflectionUtil.getMinecraftClass("network.protocol.game.PacketPlayOutPlayerInfo");
+		Object removePlayerEnumConstant = ReflectionUtil.getEnum(packetPlayOutPlayerInfoClass, "EnumPlayerInfoAction", "REMOVE_PLAYER");
+		Object addPlayerEnumConstant = ReflectionUtil.getEnum(packetPlayOutPlayerInfoClass, "EnumPlayerInfoAction", "ADD_PLAYER");
+
+		//Create an Array of EntityPlayer with size = 1 and add our player to it
+		Object entityPlayerArr = Array.newInstance(entityPlayer.getClass(), 1);
+		Array.set(entityPlayerArr, 0, entityPlayer);
+
+		Class<?> enumPlayerInfoActionClass = ReflectionUtil.getMinecraftClass("network.protocol.game.PacketPlayOutPlayerInfo$EnumPlayerInfoAction");
+
+		Object packetPlayOutPlayerInfoRemovePlayer = ReflectionUtil.invokeConstructor(packetPlayOutPlayerInfoClass,
+				new Class<?>[] { enumPlayerInfoActionClass, entityPlayerArr.getClass() },
+				new Object[] { removePlayerEnumConstant, entityPlayerArr });
+
+		Object packetPlayOutPlayerInfoAddPlayer = ReflectionUtil.invokeConstructor(packetPlayOutPlayerInfoClass,
+				new Class<?>[] { enumPlayerInfoActionClass, entityPlayerArr.getClass() },
+				new Object[] { removePlayerEnumConstant, entityPlayerArr });
+
+		Object playerConnection = ReflectionUtil.getObject(entityPlayer, "b");
+		Class<?> packetClass = ReflectionUtil.getMinecraftClass("network.protocol.Packet");
+
+		//Send the two Packets
+		ReflectionUtil.invokeMethod(playerConnection, "sendPacket", new Class<?>[] { packetClass }, new Object[] { packetPlayOutPlayerInfoRemovePlayer });
+		ReflectionUtil.invokeMethod(playerConnection, "sendPacket", new Class<?>[] { packetClass }, new Object[] { packetPlayOutPlayerInfoAddPlayer });
+	}
+
+	private void applySkin1_18(Player player, String skinValue, String skinSignature) throws Exception {
+		Class<?> craftPlayerClass = ReflectionUtil.getBukkitClass("entity.CraftPlayer");
+		Object entityPlayer = ReflectionUtil.invokeMethod(craftPlayerClass, player, "getHandle");
+
+		Class<?> entityHumanClass = ReflectionUtil.getMinecraftClass("world.entity.player.EntityHuman");
+		Object gameProfile = ReflectionUtil.invokeMethod(entityHumanClass, entityPlayer, "fp");
+		Object propertyMap = ReflectionUtil.invokeMethod(gameProfile, "getProperties");
+
+		//Check if the PropertyMap contains the 'textures' property
+		//If so remove it
+		//The containsKey method is in the ForwardingMultimap class, which PropertyMap extends
+		Class<?> forwardingMultimapClass = com.google.common.collect.ForwardingMultimap.class;
+		Boolean containsKeyTextures = (Boolean) ReflectionUtil.invokeMethod(forwardingMultimapClass, propertyMap, "containsKey", new Class<?>[] { Object.class }, new Object[] { "textures" });
+		if(containsKeyTextures) {
+			Object textures = ReflectionUtil.invokeMethod(forwardingMultimapClass, propertyMap, "get", new Class<?>[] { Object.class }, new Object[] { "textures" });
+			Object texturesIter = ReflectionUtil.invokeMethod(Collection.class, textures, "iterator");
+			Object iterNext = ReflectionUtil.invokeMethod(texturesIter, "next");
+
+			ReflectionUtil.invokeMethod(forwardingMultimapClass, propertyMap, "remove", new Class<?>[] { Object.class, Object.class }, new Object[] { "textures", iterNext });
+		}
+
+		//Create a new 'textures' Property with the new skinValue and skinSignature
+		//and put it in the PropertyMap
+		Class<?> propertyClass = Class.forName("com.mojang.authlib.properties.Property");
+		Object newProperty = ReflectionUtil.invokeConstructor(propertyClass, "textures", skinValue, skinSignature);
+		ReflectionUtil.invokeMethod(forwardingMultimapClass, propertyMap, "put", new Class<?>[] { Object.class, Object.class }, new Object[] { "textures", newProperty });
+
+		Class<?> packetPlayOutPlayerInfoClass = ReflectionUtil.getMinecraftClass("network.protocol.game.PacketPlayOutPlayerInfo");
+		Object removePlayerEnumConstant = ReflectionUtil.getEnum(packetPlayOutPlayerInfoClass, "EnumPlayerInfoAction", "REMOVE_PLAYER");
+		Object addPlayerEnumConstant = ReflectionUtil.getEnum(packetPlayOutPlayerInfoClass, "EnumPlayerInfoAction", "ADD_PLAYER");
+
+		//Create an Array of EntityPlayer with size = 1 and add our player to it
+		Object entityPlayerArr = Array.newInstance(entityPlayer.getClass(), 1);
+		Array.set(entityPlayerArr, 0, entityPlayer);
+
+		Class<?> enumPlayerInfoActionClass = ReflectionUtil.getMinecraftClass("network.protocol.game.PacketPlayOutPlayerInfo$EnumPlayerInfoAction");
+
+		Object packetPlayOutPlayerInfoRemovePlayer = ReflectionUtil.invokeConstructor(packetPlayOutPlayerInfoClass,
+				new Class<?>[] { enumPlayerInfoActionClass, entityPlayerArr.getClass() },
+				new Object[] { removePlayerEnumConstant, entityPlayerArr });
+
+		Object packetPlayOutPlayerInfoAddPlayer = ReflectionUtil.invokeConstructor(packetPlayOutPlayerInfoClass,
+				new Class<?>[] { enumPlayerInfoActionClass, entityPlayerArr.getClass() },
+				new Object[] { removePlayerEnumConstant, entityPlayerArr });
+
+		Object playerConnection = ReflectionUtil.getObject(entityPlayer, "b");
+		Class<?> packetClass = ReflectionUtil.getMinecraftClass("network.protocol.Packet");
+
+		//Send the two Packets
+		ReflectionUtil.invokeMethod(playerConnection, "a", new Class<?>[] { packetClass }, new Object[] { packetPlayOutPlayerInfoRemovePlayer });
+		ReflectionUtil.invokeMethod(playerConnection, "a", new Class<?>[] { packetClass }, new Object[] { packetPlayOutPlayerInfoAddPlayer });
+	}
+
 	@SuppressWarnings("deprecation")
 	private void applySkin(Player player, String skinValue, String skinSignature) {
 		new BukkitRunnable() {
@@ -123,95 +277,17 @@ public class SkinChangeHandler {
 			@Override
 			public void run() {
 				try {
-					Class<?> craftPlayerClass = ReflectionUtil.getBukkitClass("entity.CraftPlayer");
-					Object entityPlayer = ReflectionUtil.invokeMethod(craftPlayerClass, player, "getHandle");
-					
-					//Get the GameProfile and the PropertyMap inside the Profile
-					Class<?> entityHumanClass;
-					if(ReflectionUtil.isUseNewSpigotPackaging()) {
-						entityHumanClass = ReflectionUtil.getMinecraftClass("world.entity.player.EntityHuman");
-					} else {
-						entityHumanClass = ReflectionUtil.getNmsClass("EntityHuman");
-					}
-					
-					Object gameProfile = ReflectionUtil.invokeMethod(entityHumanClass, entityPlayer, "getProfile");
-					Object propertyMap = ReflectionUtil.invokeMethod(gameProfile, "getProperties");
-					
-					//Check if the PropertyMap contains the 'textures' property
-					//If so remove it
-					//The containsKey method is in the ForwardingMultimap class, which PropertyMap extends
-					Class<?> forwardingMultimapClass = com.google.common.collect.ForwardingMultimap.class;
-					Boolean containsKeyTextures = (Boolean) ReflectionUtil.invokeMethod(forwardingMultimapClass, propertyMap, "containsKey", new Class<?>[] { Object.class }, new Object[] { "textures" });
-					if(containsKeyTextures) {						
-						Object textures = ReflectionUtil.invokeMethod(forwardingMultimapClass, propertyMap, "get", new Class<?>[] { Object.class }, new Object[] { "textures" });
-						Object texturesIter = ReflectionUtil.invokeMethod(Collection.class, textures, "iterator");
-						Object iterNext = ReflectionUtil.invokeMethod(texturesIter, "next");
-						
-						ReflectionUtil.invokeMethod(forwardingMultimapClass, propertyMap, "remove", new Class<?>[] { Object.class, Object.class }, new Object[] { "textures", iterNext });
-					}
-					
-					//Create a new 'textures' Property with the new skinValue and skinSignature
-					//and put it in the PropertyMap
-					Class<?> propertyClass = Class.forName("com.mojang.authlib.properties.Property");
-					Object newProperty = ReflectionUtil.invokeConstructor(propertyClass, "textures", skinValue, skinSignature);
-					ReflectionUtil.invokeMethod(forwardingMultimapClass, propertyMap, "put", new Class<?>[] { Object.class, Object.class }, new Object[] { "textures", newProperty });
-					
-					//Get the Enum constants REMOVE_PLAYER and ADD_PLAYER
-					Class<?> packetPlayOutPlayerInfoClass;
-					if(ReflectionUtil.isUseNewSpigotPackaging()) {
-						packetPlayOutPlayerInfoClass = ReflectionUtil.getMinecraftClass("network.protocol.game.PacketPlayOutPlayerInfo");
-					} else {
-						packetPlayOutPlayerInfoClass = ReflectionUtil.getNmsClass("PacketPlayOutPlayerInfo");
-					}
-					Object removePlayerEnumConstant = ReflectionUtil.getEnum(packetPlayOutPlayerInfoClass, "EnumPlayerInfoAction", "REMOVE_PLAYER");
-					Object addPlayerEnumConstant = ReflectionUtil.getEnum(packetPlayOutPlayerInfoClass, "EnumPlayerInfoAction", "ADD_PLAYER");
-									    
-				    //Create an Array of EntityPlayer with size = 1 and add our player to it
-				    Object entityPlayerArr = Array.newInstance(entityPlayer.getClass(), 1);
-				    Array.set(entityPlayerArr, 0, entityPlayer);
-				    
-					//Create two PacketPlayOutPlayerInfo packets, one for removing the player and one for re-adding the player
-				    Object packetPlayOutPlayerInfoRemovePlayer;
-				    if(ReflectionUtil.isUseNewSpigotPackaging()) {
-				    	Class<?> enumPlayerInfoActionClass = ReflectionUtil.getMinecraftClass("network.protocol.game.PacketPlayOutPlayerInfo$EnumPlayerInfoAction");
-				    	
-				    	packetPlayOutPlayerInfoRemovePlayer = ReflectionUtil.invokeConstructor(packetPlayOutPlayerInfoClass, 
-					    		new Class<?>[] { enumPlayerInfoActionClass, entityPlayerArr.getClass() },
-					    		new Object[] { removePlayerEnumConstant, entityPlayerArr });
-				    } else {
-				    	packetPlayOutPlayerInfoRemovePlayer = ReflectionUtil.invokeConstructor(packetPlayOutPlayerInfoClass, removePlayerEnumConstant, entityPlayerArr);
-				    }
-				    
-					Object packetPlayOutPlayerInfoAddPlayer;
-					if(ReflectionUtil.isUseNewSpigotPackaging()) {
-				    	Class<?> enumPlayerInfoActionClass = ReflectionUtil.getMinecraftClass("network.protocol.game.PacketPlayOutPlayerInfo$EnumPlayerInfoAction");
-
-						packetPlayOutPlayerInfoAddPlayer = ReflectionUtil.invokeConstructor(packetPlayOutPlayerInfoClass,
-								new Class<?>[] { enumPlayerInfoActionClass, entityPlayerArr.getClass() },
-								new Object[] { removePlayerEnumConstant, entityPlayerArr }
-								);
-					} else {
-						packetPlayOutPlayerInfoAddPlayer = ReflectionUtil.invokeConstructor(packetPlayOutPlayerInfoClass, addPlayerEnumConstant, entityPlayerArr);
-					}
-					
-					//Get the Player's connection and the generic Packet class
-					Object playerConnection;
-					if(ReflectionUtil.isUseNewSpigotPackaging()) {
-						playerConnection = ReflectionUtil.getObject(entityPlayer, "b");
-					} else {
-						playerConnection = ReflectionUtil.getObject(entityPlayer, "playerConnection");
-					}
-					
-					Class<?> packetClass;
-					if(ReflectionUtil.isUseNewSpigotPackaging()) {
-						packetClass = ReflectionUtil.getMinecraftClass("network.protocol.Packet");
-					} else {
-						packetClass = ReflectionUtil.getNmsClass("Packet");
+					if(!ReflectionUtil.isUseNewSpigotPackaging()) {
+						applySkin1_16(player, skinValue, skinSignature);
+						return;
 					}
 
-				    //Send the two Packets
-				    ReflectionUtil.invokeMethod(playerConnection, "sendPacket", new Class<?>[] { packetClass }, new Object[] { packetPlayOutPlayerInfoRemovePlayer });
-				    ReflectionUtil.invokeMethod(playerConnection, "sendPacket", new Class<?>[] { packetClass }, new Object[] { packetPlayOutPlayerInfoAddPlayer });
+					switch(ReflectionUtil.getMajorVersion()) {
+						case 17: applySkin1_17(player, skinValue, skinSignature); break;
+						default:
+							applySkin1_18(player, skinValue, skinSignature); break;
+					}
+
 				} catch(Exception e) {
 					e.printStackTrace();
 				}
@@ -256,9 +332,16 @@ public class SkinChangeHandler {
 				    } else {
 				    	playerIntManager = ReflectionUtil.getObject(entityPlayer, "playerInteractManager");
 				    }
-				    
-				    Enum<?> enumGamemode = (Enum<?>) ReflectionUtil.invokeMethod(playerIntManager, "getGameMode");
-				    int gamemodeId = (int) ReflectionUtil.invokeMethod(enumGamemode, "getId");
+
+					Enum<?> enumGamemode;
+					int gamemodeId;
+					if(ReflectionUtil.getMajorVersion() >= 18) {
+						enumGamemode = (Enum<?>) ReflectionUtil.invokeMethod(playerIntManager, "b");
+						gamemodeId = (int) ReflectionUtil.invokeMethod(enumGamemode, "a");
+					} else {
+						enumGamemode = (Enum<?>) ReflectionUtil.invokeMethod(playerIntManager, "getGameMode");
+						gamemodeId = (int) ReflectionUtil.invokeMethod(enumGamemode, "getId");
+					}
 				    
 				    //Get the World's seed, and hash it with sha256
 				    Object seed = ReflectionUtil.invokeMethod(playerLocation.getWorld(), "getSeed");
@@ -267,7 +350,12 @@ public class SkinChangeHandler {
 				    //Get the EnumGamemode value from the gamemode ID.
 				    //We can't use ReflectionUtil to invoke the method because that convert
 				    //the primitive int to it's wrapper Integer.
-			    	Method getGamemodeByIdMethod = ReflectionUtil.getMethod(enumGamemode.getClass(), "getById", int.class);
+					Method getGamemodeByIdMethod;
+					if(ReflectionUtil.getMajorVersion() >= 18) {
+						getGamemodeByIdMethod = ReflectionUtil.getMethod(enumGamemode.getClass(), "a", int.class);
+					} else {
+						getGamemodeByIdMethod = ReflectionUtil.getMethod(enumGamemode.getClass(), "getById", int.class);
+					}
 			    	Object gamemodeEnumConst = getGamemodeByIdMethod.invoke(null, gamemodeId);
 				    
 			    	//PacketPlayOutRespawn Class
@@ -277,9 +365,8 @@ public class SkinChangeHandler {
 				    } else {
 				    	playPacketOutRespawnClass = ReflectionUtil.getNmsClass("PacketPlayOutRespawn");
 				    }
-				    
 
-				    //Instantiate the PacketPlayOutRespawn packet,
+					//Instantiate the PacketPlayOutRespawn packet,
 				    //Different Minecraft versions have slightly different constructors, so we have multiple
 				    Object packetPlayOutRespawn;
 				    try {
@@ -288,7 +375,7 @@ public class SkinChangeHandler {
 				    	//TypeKey and DimensionKey
 				    	Object typeKey = ReflectionUtil.invokeMethod(worldServer.getClass().getSuperclass(), worldServer, "getTypeKey");
 				    	Object dimensionKey = ReflectionUtil.invokeMethod(worldServer.getClass().getSuperclass(), worldServer, "getDimensionKey");
-				    	
+
 				    	//Instantiate the Packet
 				    	packetPlayOutRespawn = ReflectionUtil.invokeConstructor(playPacketOutRespawnClass,
 			    			new Class<?>[] {
@@ -318,9 +405,14 @@ public class SkinChangeHandler {
 				    } catch(Exception ignored) {
 				    	// 1.16.2+
 
-				    	// DimensionManager and DimensionKey
-                        Object dimensionManager = ReflectionUtil.invokeMethod(worldServer.getClass().getSuperclass(), worldServer, "getDimensionManager");
-                        Object dimensionKey = ReflectionUtil.invokeMethod(worldServer.getClass().getSuperclass(), worldServer, "getDimensionKey");
+						Object dimensionManager, dimensionKey;
+						if(ReflectionUtil.getMajorVersion() >= 18) {
+							dimensionManager = ReflectionUtil.invokeMethod(worldServer.getClass().getSuperclass(), worldServer, "q_");
+							dimensionKey = ReflectionUtil.invokeMethod(worldServer.getClass().getSuperclass(), worldServer, "aa");
+						} else {
+							dimensionManager = ReflectionUtil.invokeMethod(worldServer.getClass().getSuperclass(), worldServer, "getDimensionManager");
+							dimensionKey = ReflectionUtil.invokeMethod(worldServer.getClass().getSuperclass(), worldServer, "getDimensionKey");
+						}
                         
     				    /* PacketPlayOutRespawn: 
     				     * Mojang's variable names to their 'I know what this is'-name 
@@ -333,7 +425,7 @@ public class SkinChangeHandler {
     				     * g: (boolean) isFlat
     				     * h: (boolean) keepAllPlayerData 
     				     * */
-				    	packetPlayOutRespawn = ReflectionUtil.invokeConstructor(playPacketOutRespawnClass,
+						packetPlayOutRespawn = ReflectionUtil.invokeConstructor(playPacketOutRespawnClass,
 			    			new Class<?>[] {
 			    				dimensionManager.getClass(), 
 			    				dimensionKey.getClass(), 
@@ -351,10 +443,14 @@ public class SkinChangeHandler {
 				    			gamemodeEnumConst,
 				    			
 				    			//isDebugWorld is in the nms class World, which WorldServer extends
-				    			ReflectionUtil.invokeMethod(worldServer.getClass().getSuperclass(), worldServer, "isDebugWorld"),
+								(ReflectionUtil.getMajorVersion() >= 18) ?
+										ReflectionUtil.invokeMethod(worldServer.getClass().getSuperclass(), worldServer, "ad")
+										: ReflectionUtil.invokeMethod(worldServer.getClass().getSuperclass(), worldServer, "isDebugWorld"),
 				    			
 				    			//isFlatWorld is in the nms class WorldServer for some reason (I expected it in the nms class World)
-				    			ReflectionUtil.invokeMethod(worldServer, "isFlatWorld"),
+								(ReflectionUtil.getMajorVersion() >= 18) ?
+										ReflectionUtil.invokeMethod(worldServer, "D")
+										: ReflectionUtil.invokeMethod(worldServer, "isFlatWorld"),
 				    			true
 				    		});
 			    	}
@@ -447,25 +543,40 @@ public class SkinChangeHandler {
 						packetClass = ReflectionUtil.getMinecraftClass("network.protocol.Packet");
 					} else {
 						packetClass = ReflectionUtil.getNmsClass("Packet");
-					}				    
-				    //Send both the PacketPlayOutPlayerInfo packets
-				    ReflectionUtil.invokeMethod(playerConnection, "sendPacket", new Class<?>[] { packetClass }, new Object[] { packetPlayOutRemovePlayer });
-				    ReflectionUtil.invokeMethod(playerConnection, "sendPacket", new Class<?>[] { packetClass }, new Object[] { packetPlayOutAddPlayer });
-				    
-				    //Send the PacketPlayOutRespawn packet
-				    ReflectionUtil.invokeMethod(playerConnection, "sendPacket", new Class<?>[] { packetClass }, new Object[] { packetPlayOutRespawn });
-				    
-				    //Update the Player's abilities
-				    ReflectionUtil.invokeMethod(entityPlayer, "updateAbilities");
-				    
-				    //Send both the PacketPlayOutPosition and PacketPlayOutHeldItem packets
-				    ReflectionUtil.invokeMethod(playerConnection, "sendPacket", new Class<?>[] { packetClass }, new Object[] {packetPlayOutPosition});
-				    ReflectionUtil.invokeMethod(playerConnection, "sendPacket", new Class<?>[] { packetClass }, new Object[] {packetPlayOutHeldItemSlot});
-				    
-				    //Update the Player's healthbar and inventory
-		            ReflectionUtil.invokeMethod(player, "updateScaledHealth");
-		            ReflectionUtil.invokeMethod(player, "updateInventory");
-		            ReflectionUtil.invokeMethod(entityPlayer, "triggerHealthUpdate");
+					}
+
+					if(ReflectionUtil.getMajorVersion() >= 18) {
+						ReflectionUtil.invokeMethod(playerConnection, "a", new Class<?>[] { packetClass }, new Object[] { packetPlayOutRemovePlayer }); // Send packet
+						ReflectionUtil.invokeMethod(playerConnection, "a", new Class<?>[] { packetClass }, new Object[] { packetPlayOutAddPlayer });
+						ReflectionUtil.invokeMethod(playerConnection, "a", new Class<?>[] { packetClass }, new Object[] { packetPlayOutRespawn });
+						ReflectionUtil.invokeMethod(entityPlayer, "w"); // onUpdateAbilities
+						ReflectionUtil.invokeMethod(playerConnection, "a", new Class<?>[] { packetClass }, new Object[] {packetPlayOutPosition});
+						ReflectionUtil.invokeMethod(playerConnection, "a", new Class<?>[] { packetClass }, new Object[] {packetPlayOutHeldItemSlot});
+					} else {
+						ReflectionUtil.invokeMethod(playerConnection, "sendPacket", new Class<?>[]{packetClass}, new Object[]{packetPlayOutRemovePlayer});
+						ReflectionUtil.invokeMethod(playerConnection, "sendPacket", new Class<?>[]{packetClass}, new Object[]{packetPlayOutAddPlayer});
+						ReflectionUtil.invokeMethod(playerConnection, "sendPacket", new Class<?>[] { packetClass }, new Object[] { packetPlayOutRespawn });
+						ReflectionUtil.invokeMethod(entityPlayer, "updateAbilities");
+						ReflectionUtil.invokeMethod(playerConnection, "sendPacket", new Class<?>[] { packetClass }, new Object[] {packetPlayOutPosition});
+						ReflectionUtil.invokeMethod(playerConnection, "sendPacket", new Class<?>[] { packetClass }, new Object[] {packetPlayOutHeldItemSlot});
+					}
+
+					//Update the Player's healthbar and inventory
+					ReflectionUtil.invokeMethod(player, "updateScaledHealth");
+					ReflectionUtil.invokeMethod(player, "updateInventory");
+
+					if(ReflectionUtil.getMajorVersion() >= 18) {
+						Class<?> packetPlayOutUpdateHealthClass = ReflectionUtil.getMinecraftClass("network.protocol.game.PacketPlayOutUpdateHealth");
+						Object packetPlayOutUpdateHealth = ReflectionUtil.invokeConstructor(
+								packetPlayOutUpdateHealthClass,
+								new Class<?>[] { float.class, int.class, float.class },
+								new Object[] { (float) player.getHealth() ,player.getFoodLevel(), player.getSaturation() }
+						);
+
+						ReflectionUtil.invokeMethod(playerConnection, "a", new Class<?>[] { packetClass}, new Object[] { packetPlayOutUpdateHealth });
+					} else {
+						ReflectionUtil.invokeMethod(entityPlayer, "triggerHealthUpdate");
+					}
 
 		            //If the Player is OP, we have to toggle it off and back on really quickly for it to work
 		            if(player.isOp()) {

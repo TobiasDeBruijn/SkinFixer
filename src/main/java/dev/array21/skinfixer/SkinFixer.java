@@ -7,8 +7,6 @@ import org.apache.log4j.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import dev.array21.pluginstatlib.PluginStat;
-import dev.array21.pluginstatlib.PluginStat.PluginStatBuilder;
 import dev.array21.skinfixer.annotations.Nullable;
 import dev.array21.skinfixer.commands.CommandHandler;
 import dev.array21.skinfixer.config.ConfigHandler;
@@ -25,7 +23,6 @@ public class SkinFixer extends JavaPlugin {
 	private static SkinFixer INSTANCE;
 	public static String PLUGIN_VERSION;
 	public static final Logger LOGGER = LogManager.getLogger(SkinFixer.class);
-	
 	
 	private HashMap<Integer, String> skinUuidCodes = new HashMap<>();
 	private HashMap<Integer, String> skinUrlCodes = new HashMap<>();
@@ -44,7 +41,7 @@ public class SkinFixer extends JavaPlugin {
 		//Read the configuration
 		this.configHandler = new ConfigHandler(this);
 		ConfigManifest configManifest = configHandler.read();
-	
+
 		if(configManifest.updateCheck) {
 			new Thread(new Runnable() {
 				@Override
@@ -54,7 +51,7 @@ public class SkinFixer extends JavaPlugin {
 				}
 			}, "SkinFixer UpdateChecker Thread").start();
 		}
-		
+
 		this.libWrapper = new LibWrapper(this);
 		this.libWrapper.init();
 		
@@ -64,16 +61,6 @@ public class SkinFixer extends JavaPlugin {
 		} else {
 			SkinFixer.logWarn("Configuration entry 'language' is missing. Using English as default.");
 			langHandler.loadLang("en");
-		}
-		
-		if(configManifest.sendMetrics) {
-			PluginStat stat = PluginStatBuilder.createDefault()
-					.setLogErrFn(SkinFixer::logWarn)
-					.setSetUuidFn(configHandler::setStatUuid)
-					.setUuid(configManifest.metricsUuid)
-					.build();
-			
-			stat.start();
 		}
 		
 		CommandHandler commandHandler = new CommandHandler(this);

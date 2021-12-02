@@ -8,9 +8,9 @@ import com.google.gson.Gson;
 
 import dev.array21.skinfixer.SkinFixer;
 import dev.array21.skinfixer.util.Pair;
-import nl.thedutchmc.httplib.Http;
-import nl.thedutchmc.httplib.Http.RequestMethod;
-import nl.thedutchmc.httplib.Http.ResponseObject;
+import dev.array21.httplib.Http;
+import dev.array21.httplib.Http.RequestMethod;
+import dev.array21.httplib.Http.ResponseObject;
 
 public class UpdateChecker {
 	
