@@ -27,7 +27,8 @@ public class GetCommand implements Subcommand {
 		}
 		
 		if(args[0].contains("https://") || args[0].contains("http://")) {
-			String url = args[0].substring(0, args[0].indexOf('?'));
+			int indexOfQuery = args[0].indexOf('?');
+			String url = args[0].substring(0, indexOfQuery > 0 ? indexOfQuery : args[0].length());
 
 			int code = new AddNewSkin(plugin).addByUrl(url);
 			sender.sendMessage(ChatColor.GOLD + LangHandler.model.getCodeSkinAdded.replaceAll("%CODE%", ChatColor.RED + String.valueOf(code) + ChatColor.GOLD));

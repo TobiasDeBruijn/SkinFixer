@@ -33,3 +33,7 @@ default-features = false
 
 [patch.crates-io.mysql]
 git = "https://github.com/TheDutchMC/rust-mysql-simple"
+
+[profile.release]
+lto = true
+panic = "abort"
