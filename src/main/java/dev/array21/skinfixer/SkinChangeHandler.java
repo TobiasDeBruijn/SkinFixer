@@ -549,12 +549,18 @@ public class SkinChangeHandler {
 						ReflectionUtil.invokeMethod(playerConnection, "a", new Class<?>[] { packetClass }, new Object[] { packetPlayOutRemovePlayer }); // Send packet
 						ReflectionUtil.invokeMethod(playerConnection, "a", new Class<?>[] { packetClass }, new Object[] { packetPlayOutAddPlayer });
 						ReflectionUtil.invokeMethod(playerConnection, "a", new Class<?>[] { packetClass }, new Object[] { packetPlayOutRespawn });
-						ReflectionUtil.invokeMethod(entityPlayer, "w"); // onUpdateAbilities
-						ReflectionUtil.invokeMethod(playerConnection, "a", new Class<?>[] { packetClass }, new Object[] {packetPlayOutPosition});
-						ReflectionUtil.invokeMethod(playerConnection, "a", new Class<?>[] { packetClass }, new Object[] {packetPlayOutHeldItemSlot});
+
+						Class<?> packetPlaytOutExperienceClass = ReflectionUtil.getMinecraftClass("network.protocol.game.PacketPlayOutExperience");
+						Object packetPlayOutExperience = ReflectionUtil.invokeConstructor(packetPlaytOutExperienceClass,
+								new Class<?>[] { float.class, int.class, int.class },
+								new Object[] { player.getExp(), player.getTotalExperience(), player.getLevel() });
+						ReflectionUtil.invokeMethod(playerConnection, "a", new Class<?>[] { packetClass }, new Object[] { packetPlayOutExperience });
+
+						ReflectionUtil.invokeMethod(playerConnection, "a", new Class<?>[] { packetClass }, new Object[] { packetPlayOutPosition });
+						ReflectionUtil.invokeMethod(playerConnection, "a", new Class<?>[] { packetClass }, new Object[] { packetPlayOutHeldItemSlot });
 					} else {
-						ReflectionUtil.invokeMethod(playerConnection, "sendPacket", new Class<?>[]{packetClass}, new Object[]{packetPlayOutRemovePlayer});
-						ReflectionUtil.invokeMethod(playerConnection, "sendPacket", new Class<?>[]{packetClass}, new Object[]{packetPlayOutAddPlayer});
+						ReflectionUtil.invokeMethod(playerConnection, "sendPacket", new Class<?>[] { packetClass }, new Object[] { packetPlayOutRemovePlayer });
+						ReflectionUtil.invokeMethod(playerConnection, "sendPacket", new Class<?>[] { packetClass }, new Object[] { packetPlayOutAddPlayer });
 						ReflectionUtil.invokeMethod(playerConnection, "sendPacket", new Class<?>[] { packetClass }, new Object[] { packetPlayOutRespawn });
 						ReflectionUtil.invokeMethod(entityPlayer, "updateAbilities");
 						ReflectionUtil.invokeMethod(playerConnection, "sendPacket", new Class<?>[] { packetClass }, new Object[] {packetPlayOutPosition});
