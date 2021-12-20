@@ -23,15 +23,11 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
-
-**Smartphone (please complete the following information):**
+**Version information (please complete the following information):**
  - Minecraft version: [e.g. 1.16.2]
  - SkinFixer version: [e.g. 1.0]
- - Version [e.g. 22]
+ - Operating system and OS version: [e.g Ubuntu 20.04 LTS or Windows 10]
+ - Architecture: [e.g. x86_64]
 
 **Additional context**
 Add any other context about the problem here.
