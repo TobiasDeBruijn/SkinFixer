@@ -71,7 +71,7 @@ public class SetCommand implements Subcommand {
 	 * @return True if it is valid, false if it is not
 	 */
 	private boolean isValidInt(String s) {
-		if(!s.matches("(\\d*.)")) {
+		if(!s.matches("^\\d*$")) {
 			return false;
 		}
 				
