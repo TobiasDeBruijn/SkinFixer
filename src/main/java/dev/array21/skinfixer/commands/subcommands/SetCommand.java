@@ -40,7 +40,7 @@ public class SetCommand implements Subcommand {
 			slim = true;
 		}
 		
-		int code = Integer.valueOf(args[0]);
+		int code = Integer.parseInt(args[0]);
 		Player p = (Player) sender;
 		SkinChangeHandler sck = new SkinChangeHandler(plugin);
 
@@ -76,7 +76,7 @@ public class SetCommand implements Subcommand {
 		}
 				
 		BigInteger bi = new BigInteger(s);
-		if(bi.compareTo(BigInteger.valueOf((long) Integer.MAX_VALUE)) > 0) {
+		if(bi.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > 0) {
 			return false;
 		}
 		

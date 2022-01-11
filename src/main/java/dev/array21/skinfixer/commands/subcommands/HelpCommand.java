@@ -12,7 +12,7 @@ import net.md_5.bungee.api.ChatColor;
 @CommandInfo(name = "help", description = "Get information about the commands SkinFixer has and how to use them")
 public class HelpCommand implements Subcommand {
 
-	private HashMap<String, String> helpMessages;
+	private final HashMap<String, String> helpMessages;
 	public HelpCommand(HashMap<String, String> helpMessages) {
 		this.helpMessages = helpMessages;
 	}
