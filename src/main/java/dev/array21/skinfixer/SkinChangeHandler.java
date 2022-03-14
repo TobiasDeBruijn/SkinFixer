@@ -222,7 +222,14 @@ public class SkinChangeHandler {
 		Object entityPlayer = ReflectionUtil.invokeMethod(craftPlayerClass, player, "getHandle");
 
 		Class<?> entityHumanClass = ReflectionUtil.getMinecraftClass("world.entity.player.EntityHuman");
-		Object gameProfile = ReflectionUtil.invokeMethod(entityHumanClass, entityPlayer, "fp");
+
+		Object gameProfile;
+		if(ReflectionUtil.getMinorVersion() >= 2) {
+			gameProfile = ReflectionUtil.invokeMethod(entityHumanClass, entityPlayer, "fq");
+		} else {
+			gameProfile = ReflectionUtil.invokeMethod(entityHumanClass, entityPlayer, "fp");
+		}
+
 		Object propertyMap = ReflectionUtil.invokeMethod(gameProfile, "getProperties");
 
 		//Check if the PropertyMap contains the 'textures' property
@@ -413,10 +420,40 @@ public class SkinChangeHandler {
 							dimensionManager = ReflectionUtil.invokeMethod(worldServer.getClass().getSuperclass(), worldServer, "getDimensionManager");
 							dimensionKey = ReflectionUtil.invokeMethod(worldServer.getClass().getSuperclass(), worldServer, "getDimensionKey");
 						}
-                        
-    				    /* PacketPlayOutRespawn: 
+
+						Class<?> argumentAClass;
+						Object argumentAValue;
+						if((ReflectionUtil.getMajorVersion() == 18 && ReflectionUtil.getMinorVersion() >= 2) || ReflectionUtil.getMajorVersion() > 18) {
+							Class<?> holderClass = ReflectionUtil.getMinecraftClass("core.Holder");
+							Object dimensionManagerHolder = ReflectionUtil.invokeMethod(holderClass, null, "a", new Class<?>[] { Object.class }, new Object[] { dimensionManager });
+
+							argumentAClass = holderClass;
+							argumentAValue = holderClass.cast(dimensionManagerHolder);
+						} else {
+							argumentAClass = dimensionManager.getClass();
+							argumentAValue = dimensionManager;
+						}
+
+						boolean isDebugWorld;
+						if(ReflectionUtil.getMajorVersion() >= 18) {
+							isDebugWorld = (boolean) ReflectionUtil.invokeMethod(worldServer.getClass().getSuperclass(), worldServer, "ad");
+						} else {
+							isDebugWorld = (boolean) ReflectionUtil.invokeMethod(worldServer.getClass().getSuperclass(), worldServer, "isDebugWorld");
+						}
+
+						// I hate obfuscations
+						boolean isFlatWorld;
+						if((ReflectionUtil.getMajorVersion() == 18 && ReflectionUtil.getMinorVersion() >= 2) || ReflectionUtil.getMajorVersion() > 18) {
+							isFlatWorld = (boolean) ReflectionUtil.invokeMethod(worldServer, "C");
+						} else if(ReflectionUtil.getMajorVersion() == 18) {
+							isFlatWorld = (boolean) ReflectionUtil.invokeMethod(worldServer, "D");
+						} else {
+							isFlatWorld = (boolean) ReflectionUtil.invokeMethod(worldServer, "isFlatWorld");
+						}
+
+						/* PacketPlayOutRespawn:
     				     * Mojang's variable names to their 'I know what this is'-name 
-    				     * a: (DimensionManager) DimensionManager
+    				     * a: 1.18.1- (DimensionManager) DimensionManager ; 1.18.2+ (Holder<DimensionManager>)
     				     * b: (ResourceKey) ResourceKey<World>
     				     * c: (long) Sha256 of the seed
     				     * d: (GameType) PlayerGameType
@@ -427,7 +464,7 @@ public class SkinChangeHandler {
     				     * */
 						packetPlayOutRespawn = ReflectionUtil.invokeConstructor(playPacketOutRespawnClass,
 			    			new Class<?>[] {
-			    				dimensionManager.getClass(), 
+								argumentAClass,
 			    				dimensionKey.getClass(), 
 			    				long.class, 
 			    				enumGamemode.getClass(), 
@@ -436,21 +473,13 @@ public class SkinChangeHandler {
 			    				boolean.class, 
 			    				boolean.class
 			    			}, new Object[] {
-				    			dimensionManager,
+								argumentAValue,
 				    			dimensionKey,
 				    			seedHashed,
 				    			gamemodeEnumConst,
 				    			gamemodeEnumConst,
-				    			
-				    			//isDebugWorld is in the nms class World, which WorldServer extends
-								(ReflectionUtil.getMajorVersion() >= 18) ?
-										ReflectionUtil.invokeMethod(worldServer.getClass().getSuperclass(), worldServer, "ad")
-										: ReflectionUtil.invokeMethod(worldServer.getClass().getSuperclass(), worldServer, "isDebugWorld"),
-				    			
-				    			//isFlatWorld is in the nms class WorldServer for some reason (I expected it in the nms class World)
-								(ReflectionUtil.getMajorVersion() >= 18) ?
-										ReflectionUtil.invokeMethod(worldServer, "D")
-										: ReflectionUtil.invokeMethod(worldServer, "isFlatWorld"),
+								isDebugWorld,
+								isFlatWorld,
 				    			true
 				    		});
 			    	}

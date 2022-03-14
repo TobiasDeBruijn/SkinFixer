@@ -15,6 +15,14 @@ postgres = "0.19.1"
 bincode = "1.3.3"
 lazy_static = "1.4.0"
 
+[dependencies.mysql]
+version = "22.0.0"
+default-features = false
+
+[dependencies.flate2]
+version = "1.0.22"
+features = ["zlib"]
+
 [dependencies.rusqlite]
 version = "0.25.1"
 features = ["bundled"]
@@ -26,13 +34,6 @@ features = ["derive"]
 [dependencies.typenum]
 version = "1.14.0"
 features = ["no_std"]
-
-[dependencies.mysql]
-version = "21.0.2"
-default-features = false
-
-[patch.crates-io.mysql]
-git = "https://github.com/TheDutchMC/rust-mysql-simple"
 
 [profile.release]
 lto = true

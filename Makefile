@@ -3,10 +3,10 @@ all: releasejar
 
 RUST_SOURCE_FILES := $(shell find lib/src -type f)
 
-# Release - Linux x86_64 Xenial
+# Release - Linux x86_64 centos7
 lib/target/x86_64-unknown-linux-gnu/release/libskinfixer.so: ${RUST_SOURCE_FILES}
 	mkdir -p lib/target/x86_64-unknown-linux-gnu/release
-	docker run -v "${CURDIR}/lib/:/code/" docker-registry.k8s.array21.dev/rust-amd64-xenial release
+	docker run -v "${CURDIR}/lib/:/code/" docker-registry.k8s.array21.dev/rust-amd64-centos7 release
 
 # Release - Linux aarch64
 lib/target/aarch64-unknown-linux-gnu/release/libskinfixer.so: ${RUST_SOURCE_FILES}
