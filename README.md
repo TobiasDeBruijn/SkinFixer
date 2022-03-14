@@ -80,7 +80,7 @@ SkinFixer relies only on the [SkinFixer API](https://github.com/TheDutchMC/SkinF
 - Mojang API
 - [MineSkin API](https://github.com/MineSkin/api.mineskin.org)
 
-The SkinFixer API was introduced as of v2.5.1 due to changes in the MineSkin API requiring authentication with an API key.  
+The SkinFixer API was introduced as of v1.5.1 due to changes in the MineSkin API requiring authentication with an API key.  
 The Mojang API was moved from being on the plugin side to being on the API side as of v1.7.0 to allow for easy cross-server caching
 
 ## Contributing
