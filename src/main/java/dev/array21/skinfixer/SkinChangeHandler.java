@@ -1,12 +1,10 @@
 package dev.array21.skinfixer;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import dev.array21.bukkitreflectionlib.ReflectionUtil;
 import org.bukkit.Bukkit;
@@ -217,11 +215,79 @@ public class SkinChangeHandler {
 		ReflectionUtil.invokeMethod(playerConnection, "sendPacket", new Class<?>[] { packetClass }, new Object[] { packetPlayOutPlayerInfoAddPlayer });
 	}
 
+	private void applySkinNew(Player player, String skinValue, String skinSignature) throws Exception {
+		Class<?> craftPlayerClass = ReflectionUtil.getBukkitClass("entity.CraftPlayer");
+		Object entityPlayer = ReflectionUtil.invokeMethod(craftPlayerClass, player, "getHandle");
+
+		Object gameProfile = getGameProfile(entityPlayer);
+		Object propertyMap = ReflectionUtil.invokeMethod(gameProfile, "getProperties");
+
+		//Check if the PropertyMap contains the 'textures' property
+		//If so remove it
+		//The containsKey method is in the ForwardingMultimap class, which PropertyMap extends
+		Class<?> forwardingMultimapClass = com.google.common.collect.ForwardingMultimap.class;
+		Boolean containsKeyTextures = (Boolean) ReflectionUtil.invokeMethod(forwardingMultimapClass, propertyMap, "containsKey", new Class<?>[] { Object.class }, new Object[] { "textures" });
+		if(containsKeyTextures) {
+			Object textures = ReflectionUtil.invokeMethod(forwardingMultimapClass, propertyMap, "get", new Class<?>[] { Object.class }, new Object[] { "textures" });
+			Object texturesIter = ReflectionUtil.invokeMethod(Collection.class, textures, "iterator");
+			Object iterNext = ReflectionUtil.invokeMethod(texturesIter, "next");
+
+			ReflectionUtil.invokeMethod(forwardingMultimapClass, propertyMap, "remove", new Class<?>[] { Object.class, Object.class }, new Object[] { "textures", iterNext });
+		}
+
+		//Create a new 'textures' Property with the new skinValue and skinSignature
+		//and put it in the PropertyMap
+		Class<?> propertyClass = Class.forName("com.mojang.authlib.properties.Property");
+		Object newProperty = ReflectionUtil.invokeConstructor(propertyClass, "textures", skinValue, skinSignature);
+		ReflectionUtil.invokeMethod(forwardingMultimapClass, propertyMap, "put", new Class<?>[] { Object.class, Object.class }, new Object[] { "textures", newProperty });
+
+		Class<?> packetPlayOutPlayerInfoClass = ReflectionUtil.getMinecraftClass("network.protocol.game.PacketPlayOutPlayerInfo");
+		Object removePlayerEnumConstant = ReflectionUtil.getEnum(packetPlayOutPlayerInfoClass, "EnumPlayerInfoAction", "REMOVE_PLAYER");
+		Object addPlayerEnumConstant = ReflectionUtil.getEnum(packetPlayOutPlayerInfoClass, "EnumPlayerInfoAction", "ADD_PLAYER");
+
+		//Create an Array of EntityPlayer with size = 1 and add our player to it
+		Object entityPlayerArr = Array.newInstance(entityPlayer.getClass(), 1);
+		Array.set(entityPlayerArr, 0, entityPlayer);
+
+		Class<?> enumPlayerInfoActionClass = ReflectionUtil.getMinecraftClass("network.protocol.game.PacketPlayOutPlayerInfo$EnumPlayerInfoAction");
+
+		Object packetPlayOutPlayerInfoRemovePlayer = ReflectionUtil.invokeConstructor(packetPlayOutPlayerInfoClass,
+				new Class<?>[] { enumPlayerInfoActionClass, entityPlayerArr.getClass() },
+				new Object[] { removePlayerEnumConstant, entityPlayerArr });
+
+		Object packetPlayOutPlayerInfoAddPlayer = ReflectionUtil.invokeConstructor(packetPlayOutPlayerInfoClass,
+				new Class<?>[] { enumPlayerInfoActionClass, entityPlayerArr.getClass() },
+				new Object[] { removePlayerEnumConstant, entityPlayerArr });
+
+		Object playerConnection = ReflectionUtil.getObject(entityPlayer, "b");
+		Class<?> packetClass = ReflectionUtil.getMinecraftClass("network.protocol.Packet");
+
+		//Send the two Packets
+		ReflectionUtil.invokeMethod(playerConnection, "a", new Class<?>[] { packetClass }, new Object[] { packetPlayOutPlayerInfoRemovePlayer });
+		ReflectionUtil.invokeMethod(playerConnection, "a", new Class<?>[] { packetClass }, new Object[] { packetPlayOutPlayerInfoAddPlayer });
+	}
+
+	private Object getGameProfile(Object entityPlayer) throws Exception {
+		Class<?> entityHumanClass = ReflectionUtil.getMinecraftClass("world.entity.player.EntityHuman");
+
+		return switch(ReflectionUtil.getMajorVersion()) {
+			case 19 -> ReflectionUtil.invokeMethod(entityHumanClass, entityPlayer, "fz");
+			case 18 -> switch(ReflectionUtil.getMinorVersion()) {
+				case 2 -> ReflectionUtil.invokeMethod(entityHumanClass, entityPlayer, "fq");
+				default -> ReflectionUtil.invokeMethod(entityHumanClass, entityPlayer, "fp");
+			};
+			case 16, 17 -> ReflectionUtil.invokeMethod(entityHumanClass, entityPlayer, "getProfile");
+			default -> throw new RuntimeException("Unsupported Minecraft version!");
+		};
+	}
+
 	private void applySkin1_18(Player player, String skinValue, String skinSignature) throws Exception {
 		Class<?> craftPlayerClass = ReflectionUtil.getBukkitClass("entity.CraftPlayer");
 		Object entityPlayer = ReflectionUtil.invokeMethod(craftPlayerClass, player, "getHandle");
 
 		Class<?> entityHumanClass = ReflectionUtil.getMinecraftClass("world.entity.player.EntityHuman");
+
+		System.out.println("entityPlayer: " + entityHumanClass.toString());
 
 		Object gameProfile;
 		if(ReflectionUtil.getMinorVersion() >= 2) {
@@ -230,6 +296,7 @@ public class SkinChangeHandler {
 			gameProfile = ReflectionUtil.invokeMethod(entityHumanClass, entityPlayer, "fp");
 		}
 
+		System.out.println("gameProfile: " + gameProfile.getClass().toString());
 		Object propertyMap = ReflectionUtil.invokeMethod(gameProfile, "getProperties");
 
 		//Check if the PropertyMap contains the 'textures' property
@@ -291,10 +358,9 @@ public class SkinChangeHandler {
 
 					switch(ReflectionUtil.getMajorVersion()) {
 						case 17: applySkin1_17(player, skinValue, skinSignature); break;
-						default:
-							applySkin1_18(player, skinValue, skinSignature); break;
+						case 18: applySkin1_18(player, skinValue, skinSignature); break;
+						default: applySkinNew(player, skinValue, skinSignature); break;
 					}
-
 				} catch(Exception e) {
 					e.printStackTrace();
 				}
@@ -312,7 +378,7 @@ public class SkinChangeHandler {
 			@Override
 			public void run() {
 				Location playerLocation = player.getLocation().clone();
-				
+
 			    //Reload the player for all online players
 				//This is so all other Players can see the new skin
 			    Bukkit.getOnlinePlayers().forEach(p -> {
@@ -412,76 +478,105 @@ public class SkinChangeHandler {
 				    } catch(Exception ignored) {
 				    	// 1.16.2+
 
-						Object dimensionManager, dimensionKey;
-						if(ReflectionUtil.getMajorVersion() >= 18) {
-							dimensionManager = ReflectionUtil.invokeMethod(worldServer.getClass().getSuperclass(), worldServer, "q_");
-							dimensionKey = ReflectionUtil.invokeMethod(worldServer.getClass().getSuperclass(), worldServer, "aa");
-						} else {
-							dimensionManager = ReflectionUtil.invokeMethod(worldServer.getClass().getSuperclass(), worldServer, "getDimensionManager");
-							dimensionKey = ReflectionUtil.invokeMethod(worldServer.getClass().getSuperclass(), worldServer, "getDimensionKey");
-						}
+						// ResourceKey<DimensionManager> for 1.19
+						Object dimensionManager = switch(ReflectionUtil.getMajorVersion()) {
+							case 19 -> {
+								Field f = worldServer.getClass().getSuperclass().getDeclaredField("D");
+								f.setAccessible(true);
+								yield f.get(worldServer);
+							}
+							case 18 -> {
+								Object dimensionManagerRaw = ReflectionUtil.invokeMethod(worldServer.getClass().getSuperclass(), worldServer, "q_");
+								Class<?> holderClass = ReflectionUtil.getMinecraftClass("core.Holder");
+								yield ReflectionUtil.invokeMethod(holderClass, null, "a", new Class<?>[] { Object.class }, new Object[] { dimensionManagerRaw});
+							}
+							default -> ReflectionUtil.invokeMethod(worldServer.getClass().getSuperclass(), worldServer, "getDimensionManager");
+						};
 
-						Class<?> argumentAClass;
-						Object argumentAValue;
-						if((ReflectionUtil.getMajorVersion() == 18 && ReflectionUtil.getMinorVersion() >= 2) || ReflectionUtil.getMajorVersion() > 18) {
-							Class<?> holderClass = ReflectionUtil.getMinecraftClass("core.Holder");
-							Object dimensionManagerHolder = ReflectionUtil.invokeMethod(holderClass, null, "a", new Class<?>[] { Object.class }, new Object[] { dimensionManager });
+						// ResourceKey<World> for 1.19
+						Object dimensionKey = switch(ReflectionUtil.getMajorVersion()) {
+							case 19 -> {
+								Field f = worldServer.getClass().getSuperclass().getDeclaredField("I");
+								f.setAccessible(true);
+								yield f.get(worldServer);
+							}
+							case 18 -> ReflectionUtil.invokeMethod(worldServer.getClass().getSuperclass(), worldServer, "aa");
+							default -> ReflectionUtil.invokeMethod(worldServer.getClass().getSuperclass(), worldServer, "getDimensionKey");
+						};
 
-							argumentAClass = holderClass;
-							argumentAValue = holderClass.cast(dimensionManagerHolder);
-						} else {
-							argumentAClass = dimensionManager.getClass();
-							argumentAValue = dimensionManager;
-						}
+						boolean isDebugWorld = switch(ReflectionUtil.getMajorVersion()) {
+							case 19 -> (boolean) ReflectionUtil.invokeMethod(worldServer.getClass().getSuperclass(), worldServer, "ae");
+							case 18 -> (boolean) ReflectionUtil.invokeMethod(worldServer.getClass().getSuperclass(), worldServer, "ad");
+							default -> (boolean) ReflectionUtil.invokeMethod(worldServer.getClass().getSuperclass(), worldServer, "isDebugWorld");
+						};
 
-						boolean isDebugWorld;
-						if(ReflectionUtil.getMajorVersion() >= 18) {
-							isDebugWorld = (boolean) ReflectionUtil.invokeMethod(worldServer.getClass().getSuperclass(), worldServer, "ad");
-						} else {
-							isDebugWorld = (boolean) ReflectionUtil.invokeMethod(worldServer.getClass().getSuperclass(), worldServer, "isDebugWorld");
-						}
+						boolean isFlatWorld = switch(ReflectionUtil.getMajorVersion()) {
+							case 19 -> (boolean) ReflectionUtil.invokeMethod(worldServer, "A");
+							case 18 -> switch(ReflectionUtil.getMinorVersion()) {
+								case 2 -> (boolean) ReflectionUtil.invokeMethod(worldServer, "C");
+								default -> (boolean) ReflectionUtil.invokeMethod(worldServer, "D");
+							};
+							default -> (boolean) ReflectionUtil.invokeMethod(worldServer, "isFlatWorld");
+						};
 
-						// I hate obfuscations
-						boolean isFlatWorld;
-						if((ReflectionUtil.getMajorVersion() == 18 && ReflectionUtil.getMinorVersion() >= 2) || ReflectionUtil.getMajorVersion() > 18) {
-							isFlatWorld = (boolean) ReflectionUtil.invokeMethod(worldServer, "C");
-						} else if(ReflectionUtil.getMajorVersion() == 18) {
-							isFlatWorld = (boolean) ReflectionUtil.invokeMethod(worldServer, "D");
-						} else {
-							isFlatWorld = (boolean) ReflectionUtil.invokeMethod(worldServer, "isFlatWorld");
-						}
+						System.out.println("dimensionKey::getClass " + dimensionKey.getClass());
 
 						/* PacketPlayOutRespawn:
-    				     * Mojang's variable names to their 'I know what this is'-name 
-    				     * a: 1.18.1- (DimensionManager) DimensionManager ; 1.18.2+ (Holder<DimensionManager>)
-    				     * b: (ResourceKey) ResourceKey<World>
-    				     * c: (long) Sha256 of the seed
-    				     * d: (GameType) PlayerGameType
-    				     * e: (GameType) previousPlayerGameType
-    				     * f: (boolean) isDebug
-    				     * g: (boolean) isFlat
-    				     * h: (boolean) keepAllPlayerData 
-    				     * */
-						packetPlayOutRespawn = ReflectionUtil.invokeConstructor(playPacketOutRespawnClass,
-			    			new Class<?>[] {
-								argumentAClass,
-			    				dimensionKey.getClass(), 
-			    				long.class, 
-			    				enumGamemode.getClass(), 
-			    				enumGamemode.getClass(), 
-			    				boolean.class, 
-			    				boolean.class, 
-			    				boolean.class
-			    			}, new Object[] {
-								argumentAValue,
-				    			dimensionKey,
-				    			seedHashed,
-				    			gamemodeEnumConst,
-				    			gamemodeEnumConst,
-								isDebugWorld,
-								isFlatWorld,
-				    			true
-				    		});
+						 * Mojang's variable names to their 'I know what this is'-name
+						 * a: 1.18.1- (DimensionManager) DimensionManager ; 1.18.2+ (Holder<DimensionManager>)
+						 * b: (ResourceKey) ResourceKey<World>
+						 * c: (long) Sha256 of the seed
+						 * d: (GameType) PlayerGameType
+						 * e: (GameType) previousPlayerGameType
+						 * f: (boolean) isDebug
+						 * g: (boolean) isFlat
+						 * h: (boolean) keepAllPlayerData
+						 * */
+
+						packetPlayOutRespawn = switch(ReflectionUtil.getMajorVersion()) {
+							case 19 -> ReflectionUtil.invokeConstructor(playPacketOutRespawnClass,
+								new Class<?>[] {
+										dimensionManager.getClass(),
+										dimensionKey.getClass(),
+										long.class,
+										enumGamemode.getClass(),
+										enumGamemode.getClass(),
+										boolean.class,
+										boolean.class,
+										boolean.class,
+										Optional.class
+								}, new Object[] {
+										dimensionManager,
+										dimensionKey,
+										seedHashed,
+										gamemodeEnumConst,
+										gamemodeEnumConst,
+										isDebugWorld,
+										isFlatWorld,
+										true,
+										Optional.empty(),
+								});
+							default -> ReflectionUtil.invokeConstructor(playPacketOutRespawnClass,
+								new Class<?>[] {
+										dimensionManager.getClass(),
+										dimensionKey.getClass(),
+										long.class,
+										enumGamemode.getClass(),
+										enumGamemode.getClass(),
+										boolean.class,
+										boolean.class,
+										boolean.class,
+								}, new Object[] {
+										dimensionManager,
+										dimensionKey,
+										seedHashed,
+										gamemodeEnumConst,
+										gamemodeEnumConst,
+										isDebugWorld,
+										isFlatWorld,
+										true,
+								});
+						};
 			    	}
 				    
 				    //PacketPlayOutPosition
