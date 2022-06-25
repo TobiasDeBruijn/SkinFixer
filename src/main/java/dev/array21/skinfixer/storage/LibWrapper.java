@@ -45,6 +45,7 @@ public class LibWrapper {
 			} else if(osName.contains("mac")) {
 				switch(System.getProperty("os.arch")) {
 				case "amd64": libName = "/x86_64/darwin/libskinfixer.dylib";; break;
+				case "aarch64": libName = "/aarch64/darwin/libskinfixer.dylib";; break;
 				default:
 					SkinFixer.logWarn(String.format("Your architecture is not supported. Please open a request here: https://github.com/TheDutchMC/SkinFixer/issues/new/choose. Your Arch is '%s' running on MacOS (Apple Darwin), make sure you mention this in your request!", System.getProperty("os.arch")));
 					break saveLib;

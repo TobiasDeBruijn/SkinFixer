@@ -76,6 +76,7 @@ task copyDependenciesDebug() {
 	dependsOn('copyLinuxLibraryDebugArmhf')
 
 	dependsOn('copyDarwinLibraryDebugX86')
+	dependsOn('copyDarwinLibraryDebugAarch64')
 
 	dependsOn('copyWindowsLibraryDebug')
 }
@@ -84,7 +85,10 @@ task copyDependenciesRelease() {
 	dependsOn('copyLinuxLibraryReleaseX86')
 	dependsOn('copyLinuxLibraryReleaseAarch64')
 	dependsOn('copyLinuxLibraryReleaseArmhf')
+
 	dependsOn('copyDarwinLibraryReleaseX86')
+	dependsOn('copyDarwinLibraryReleaseAarch64')
+
 	dependsOn('copyWindowsLibraryRelease')
 }
 
@@ -107,10 +111,16 @@ task copyLinuxLibraryReleaseArmhf(type: Copy) {
 	into "$buildDir/resources/main/armhf/linux"
 }
 
-// Darwin - Release
+// Darwin x86_64 - Release
 task copyDarwinLibraryReleaseX86(type: Copy) {
 	from "$rootDir/lib/target/x86_64-apple-darwin/release/libskinfixer.dylib"
 	into "$buildDir/resources/main/x86_64/darwin"
+}
+
+// Darwin Aarch64 - Release
+task copyDarwinLibraryReleaseAarch64(type: Copy) {
+	from "$rootDir/lib/target/aarch64-apple-darwin/release/libskinfixer.dylib"
+	into "$buildDir/resources/main/aarch64/darwin"
 }
 
 // Windows - Release
@@ -137,10 +147,16 @@ task copyLinuxLibraryDebugArmhf(type: Copy) {
 	into "$buildDir/resources/main/armhf/linux"
 }
 
-// Darwin - Debug
+// Darwin x86_64 - Debug
 task copyDarwinLibraryDebugX86(type: Copy) {
 	from "$rootDir/lib/target/x86_64-apple-darwin/debug/libskinfixer.dylib"
 	into "$buildDir/resources/main/x86_64/darwin"
+}
+
+// Darwin Aarch64 - Debug
+task copyDarwinLibraryDebugAarch64(type: Copy) {
+	from "$rootDir/lib/target/aarch64-apple-darwin/debug/libskinfixer.dylib"
+	into "$buildDir/resources/main/aarch64/darwin"
 }
 
 // Windows - Debug

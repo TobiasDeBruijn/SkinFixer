@@ -32,6 +32,11 @@ lib/target/x86_64-apple-darwin/release/libskinfixer.dylib: ${RUST_SOURCE_FILES}
 	mkdir -p lib/target/x86_64-apple-darwin/release
 	docker run -v "${CURDIR}/lib/:/code/" docker-registry.k8s.array21.dev/rust-amd64-darwin release
 
+# Release - Darwin aarch64
+lib/target/aarch64-apple-darwin/release/libskinfixer.dylib: ${RUST_SOURCE_FILES}
+	mkdir -p lib/target/aarch64-apple-darwin/release
+	docker run -v "${CURDIR}/lib/:/code/" docker-registry.k8s.array21.dev/rust-aarch64-darwin release
+
 # Debug - Linux x86_64
 lib/target/x86_64-unknown-linux-gnu/debug/libskinfixer.so: ${RUST_SOURCE_FILES}
 	docker run -v "${CURDIR}/lib/:/code/" docker-registry.k8s.array21.dev/rust-amd64-xenial
@@ -54,6 +59,10 @@ lib/target/x86_64-pc-windows-gnu/debug/libskinfixer.dll: ${RUST_SOURCE_FILES}
 # Debug - Darwin x86_64
 lib/target/x86_64-apple-darwin/debug/libskinfixer.dylib: ${RUST_SOURCE_FILES}
 	docker run -v "${CURDIR}/lib/:/code/" docker-registry.k8s.array21.dev/rust-amd64-darwin
+
+# Debug - Darwin aarch64
+lib/target/aarch64-apple-darwin/debug/libskinfixer.dylib: ${RUST_SOURCE_FILES}
+	docker run -v "${CURDIR}/lib/:/code/" docker-registry.k8s.array21.dev/rust-aarch64-darwin
 
 testjar: lib/target/x86_64-unknown-linux-gnu/debug/libskinfixer.so lib/target/aarch64-unknown-linux-gnu/debug/libskinfixer.so lib/target/arm-unknown-linux-gnueabihf/debug/libskinfixer.so lib/target/x86_64-pc-windows-gnu/debug/libskinfixer.dll lib/target/x86_64-apple-darwin/debug/libskinfixer.dylib
 	chmod +x gradlew;
