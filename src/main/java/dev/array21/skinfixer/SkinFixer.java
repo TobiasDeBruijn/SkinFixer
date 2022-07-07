@@ -1,9 +1,9 @@
 package dev.array21.skinfixer;
 
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -19,14 +19,11 @@ import dev.array21.skinfixer.updatechecker.UpdateChecker;
 import net.md_5.bungee.api.ChatColor;
 
 public class SkinFixer extends JavaPlugin {
-
 	private static SkinFixer INSTANCE;
 	public static String PLUGIN_VERSION;
-	public static final Logger LOGGER = LogManager.getLogger(SkinFixer.class);
-	
-	private HashMap<Integer, String> skinUuidCodes = new HashMap<>();
-	private HashMap<Integer, String> skinUrlCodes = new HashMap<>();
-	
+	public static Logger LOGGER;
+	private final HashMap<Integer, String> skinUuidCodes = new HashMap<>();
+	private final HashMap<Integer, String> skinUrlCodes = new HashMap<>();
 	private ConfigHandler configHandler;
 	private JdaHandler jdaHandler;
 	private LibWrapper libWrapper;
@@ -35,7 +32,8 @@ public class SkinFixer extends JavaPlugin {
 	public void onEnable() {
 		INSTANCE = this;
 		PLUGIN_VERSION = this.getDescription().getVersion();
-		
+		LOGGER = this.getLogger();
+
 		SkinFixer.logInfo("Welcome to SkinFixer version " + PLUGIN_VERSION + " by TheDutchMC!");
 		
 		//Read the configuration
@@ -43,13 +41,7 @@ public class SkinFixer extends JavaPlugin {
 		ConfigManifest configManifest = configHandler.read();
 
 		if(configManifest.updateCheck) {
-			new Thread(new Runnable() {
-				@Override
-				public void run() {
-					new UpdateChecker(SkinFixer.this).checkUpdate();
-
-				}
-			}, "SkinFixer UpdateChecker Thread").start();
+			new Thread(() -> new UpdateChecker(SkinFixer.this).checkUpdate(), "SkinFixer UpdateChecker Thread").start();
 		}
 
 		this.libWrapper = new LibWrapper(this);
@@ -78,11 +70,11 @@ public class SkinFixer extends JavaPlugin {
 	}
 	
 	public static void logInfo(Object log) {
-		Bukkit.getLogger().info("[" + SkinFixer.INSTANCE.getDescription().getName() + "] " + log.toString());	
+		LOGGER.info("[" + SkinFixer.INSTANCE.getDescription().getName() + "] " + log.toString());
 	}
 	
 	public static void logWarn(Object log) {
-		Bukkit.getLogger().warning("[" + SkinFixer.INSTANCE.getDescription().getName() + "] " + log.toString());	
+		LOGGER.warning("[" + SkinFixer.INSTANCE.getDescription().getName() + "] " + log.toString());
 	}
 
 	/**
@@ -102,7 +94,7 @@ public class SkinFixer extends JavaPlugin {
 		if(this.jdaHandler != null) {
 			try {
 				this.jdaHandler.shutdownJda();
-			} catch(Exception e) {}
+			} catch(Exception ignored) {}
 			this.jdaHandler.setupJda();
 		}
 	}
@@ -134,7 +126,7 @@ public class SkinFixer extends JavaPlugin {
 	
 	/**
 	 * Get the Skin Code HashMap, where K is the code, and V is the URL associated with the code
-	 * @return
+	 * @return The Skin URL codes
 	 */
 	public HashMap<Integer, String> getSkinCodeUrlMap() {
 		return this.skinUrlCodes;

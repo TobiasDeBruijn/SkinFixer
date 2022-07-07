@@ -519,8 +519,6 @@ public class SkinChangeHandler {
 							default -> (boolean) ReflectionUtil.invokeMethod(worldServer, "isFlatWorld");
 						};
 
-						System.out.println("dimensionKey::getClass " + dimensionKey.getClass());
-
 						/* PacketPlayOutRespawn:
 						 * Mojang's variable names to their 'I know what this is'-name
 						 * a: 1.18.1- (DimensionManager) DimensionManager ; 1.18.2+ (Holder<DimensionManager>)
