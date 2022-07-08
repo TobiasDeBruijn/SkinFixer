@@ -40,21 +40,23 @@ public class SkinFixer extends JavaPlugin {
 		this.configHandler = new ConfigHandler(this);
 		ConfigManifest configManifest = configHandler.read();
 
-		if(configManifest.updateCheck) {
-			new Thread(() -> new UpdateChecker(SkinFixer.this).checkUpdate(), "SkinFixer UpdateChecker Thread").start();
-		}
-
 		this.libWrapper = new LibWrapper(this);
 		this.libWrapper.init();
 		
 		LangHandler langHandler = new LangHandler(this);
 		if(configManifest.language != null) {
-			langHandler.loadLang(configManifest.language);
+			if(!langHandler.loadLang(configManifest.language)) {
+				return;
+			}
 		} else {
 			SkinFixer.logWarn("Configuration entry 'language' is missing. Using English as default.");
 			langHandler.loadLang("en");
 		}
-		
+
+		if(configManifest.updateCheck) {
+			new Thread(() -> new UpdateChecker(SkinFixer.this).checkUpdate(), "SkinFixer UpdateChecker Thread").start();
+		}
+
 		CommandHandler commandHandler = new CommandHandler(this);
 		this.getCommand("skin").setExecutor(commandHandler);
 		this.getCommand("skin").setTabCompleter(commandHandler);

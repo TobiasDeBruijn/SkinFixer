@@ -32,7 +32,7 @@ public class LangHandler {
 		}
 	}
 	
-	public void loadLang(String lang) {
+	public boolean loadLang(String lang) {
 		File langFile = new File(this.plugin.getDataFolder() + File.separator + "langs", lang + ".yml");
 		if(!langFile.exists()) {
 			SkinFixer.logWarn("Failed to load language model " + lang + ".yml!");
@@ -40,7 +40,12 @@ public class LangHandler {
 		}
 		
 		LanguageModel model = loadModel(langFile);
+		if(model == null) {
+			return false;
+		}
+
 		LangHandler.model = model;
+		return true;
 	}
 	
 	private File getEngModel() {

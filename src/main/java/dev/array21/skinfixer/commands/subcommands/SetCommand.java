@@ -3,6 +3,7 @@ package dev.array21.skinfixer.commands.subcommands;
 import java.math.BigInteger;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -15,10 +16,9 @@ import net.md_5.bungee.api.ChatColor;
 
 @CommandInfo(name = "set", description = "Set your skin from a code.", permission = "skinfixer.set")
 public class SetCommand implements Subcommand {
-
 	@Override
 	public void onSubcommand(SkinFixer plugin, CommandSender sender, String[] args) {
-		
+
 		if(!(sender instanceof Player)) {
 			sender.sendMessage(SkinFixer.getPrefix() + ChatColor.RED + LangHandler.model.commandPlayerOnly);
 			return;
@@ -33,28 +33,36 @@ public class SetCommand implements Subcommand {
 			sender.sendMessage(SkinFixer.getPrefix() + ChatColor.RED + LangHandler.model.setSkinCodeNotANumber);
 			return;
 		}
-		
-		
-		boolean slim = false;
-		if(args.length == 2 && args[1].equalsIgnoreCase("true")) {
-			slim = true;
+
+		boolean slim = args.length >= 2 && args[1].equalsIgnoreCase("true");
+
+		Player targetPlayer = (Player) sender;
+		if(args.length == 3) {
+			if(!sender.hasPermission("skinfixer.set.other")) {
+				sender.sendMessage(SkinFixer.getPrefix() + ChatColor.RED + LangHandler.model.commandNoPermission);
+				return;
+			}
+
+			targetPlayer = Bukkit.getPlayer(args[2]);
+			if(targetPlayer == null) {
+				sender.sendMessage(SkinFixer.getPrefix() + ChatColor.RED + LangHandler.model.playerNotFound);
+				return;
+			}
 		}
-		
+
 		int code = Integer.parseInt(args[0]);
-		Player p = (Player) sender;
 		SkinChangeHandler sck = new SkinChangeHandler(plugin);
 
 		if(plugin.getSkinCodeUrlMap().containsKey(code)) {
 			String url = plugin.getSkinCodeUrlMap().remove(code);			
-			sck.changeSkinJson(url, p.getUniqueId(), null, slim, false, false);
-			
+			sck.changeSkinJson(url, targetPlayer.getUniqueId(), null, slim, false, false);
+
 		} else if(plugin.getSkinCodeUuidMap().containsKey(code)) {
 			String externalUuid = plugin.getSkinCodeUuidMap().remove(code);
-			sck.changeSkinFromUuid(UUID.fromString(externalUuid), p.getUniqueId(), slim);
-		
+			sck.changeSkinFromUuid(UUID.fromString(externalUuid), targetPlayer.getUniqueId(), slim);
+
 		} else {
 			sender.sendMessage(SkinFixer.getPrefix() + ChatColor.RED + LangHandler.model.setSkinCodeUnknown);
-			return;
 		}
 	}
 

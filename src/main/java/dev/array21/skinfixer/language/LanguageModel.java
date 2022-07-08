@@ -43,7 +43,10 @@ public class LanguageModel {
 	@Required
 	//Variable: %VERSION%
 	public String skinFixerVersion;
-	
+
+	@Required
+	public String playerNotFound;
+
 	//MessageReceivedEventListener
 	@Required
 	//Variable: %CODE%

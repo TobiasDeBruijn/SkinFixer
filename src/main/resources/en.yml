@@ -5,6 +5,7 @@ skinApplied: Done.
 
 commandPlayerOnly: This command is for players only!
 commandNoPermission: You don't have permission to use this command!
+playerNotFound: Player not found!
 
 getCodeArgumentRequired: You need to provide either a URL linking directly to the image you want as skin, or provide a nickname!
 getCodeSkinAdded: Your skin has been added! You can apply it with /skin set %CODE%.

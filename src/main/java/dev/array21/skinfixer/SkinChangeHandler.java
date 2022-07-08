@@ -287,8 +287,6 @@ public class SkinChangeHandler {
 
 		Class<?> entityHumanClass = ReflectionUtil.getMinecraftClass("world.entity.player.EntityHuman");
 
-		System.out.println("entityPlayer: " + entityHumanClass.toString());
-
 		Object gameProfile;
 		if(ReflectionUtil.getMinorVersion() >= 2) {
 			gameProfile = ReflectionUtil.invokeMethod(entityHumanClass, entityPlayer, "fq");
@@ -296,7 +294,6 @@ public class SkinChangeHandler {
 			gameProfile = ReflectionUtil.invokeMethod(entityHumanClass, entityPlayer, "fp");
 		}
 
-		System.out.println("gameProfile: " + gameProfile.getClass().toString());
 		Object propertyMap = ReflectionUtil.invokeMethod(gameProfile, "getProperties");
 
 		//Check if the PropertyMap contains the 'textures' property
