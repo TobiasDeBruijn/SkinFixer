@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 
 import dev.array21.skinfixer.SkinFixer;
+import dev.array21.skinfixer.commands.subcommands.DirectCommand;
 import dev.array21.skinfixer.commands.subcommands.GetCommand;
 import dev.array21.skinfixer.commands.subcommands.HelpCommand;
 import dev.array21.skinfixer.commands.subcommands.ReloadCommand;
@@ -36,6 +37,7 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 		registerCommand(new SetCommand());
 		registerCommand(new GetCommand());
 		registerCommand(new ReloadCommand());
+		registerCommand(new DirectCommand());
 	}
 	
 	/**
@@ -45,7 +47,7 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 	 */
 	private void registerCommand(Subcommand cmd) throws IllegalArgumentException {
 		if(!cmd.getClass().isAnnotationPresent(CommandInfo.class)) {
-			throw new IllegalArgumentException("Provided Subcommand is not annotateddw with CommandInfo");
+			throw new IllegalArgumentException("Provided Subcommand is not annotated with CommandInfo");
 		}
 		
 		CommandInfo info = cmd.getClass().getAnnotation(CommandInfo.class);

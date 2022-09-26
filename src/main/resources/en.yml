@@ -1,7 +1,7 @@
 skinFetching: Fetching skin value and signature...
 skinApplyFailed: Something went wrong applying your skin %ERROR%
 skinApplying: Applying skin...
-skinApplied: Done.
+skinApplied: Done. Other players can now see your skin.
 
 commandPlayerOnly: This command is for players only!
 commandNoPermission: You don't have permission to use this command!

@@ -5,6 +5,9 @@ SkinFixer aims to make skins possible for Offline-mode servers, and allow for us
 
 SkinFixer also works with Discord. You can upload your skin to a designated Discord channel, and get a code.
 
+## Disclaimer
+Hi. Sw3d15h_F1s4 here. Most of this code isn't mine. I forked this project to add a command that sets skins directly from one command, since I want to use this plugin in a GUI menu in game, as well as use command blocks to set skins. In these cases, its not feasible to use two separate commands, so I just hacked apart and glued together the get and set command to form the direct command. The rest of the commands should function as normal.
+
 ## Commands
 - `/skin get <Nickname OR URL>` Get a token to set your skin. You can pass in either a URL which points directly at the image, or the username of a Minecraft player
 - `/skin set <code>` Set the skin associated with the token
@@ -12,6 +15,7 @@ SkinFixer also works with Discord. You can upload your skin to a designated Disc
 - `/skin reload` Reload SkinFixer's configuration
 - `/skin reset` Reset your skin back to defaults. This will remove it from the local storage. Relog to see the effects
 - `/skin version` Perform an update check
+- `/skin direct <url>` Fetches and immediately applies skin from URL. Useful for automated server-side skin management when reading a code from chat isn't feasible. 
 ## Permissions
 - `skinfixer.get` Allows the use of the `get` subcommand. Default: ALL
 - `skinfixer.reload` Allows the use of the `reload` subcommand. Default: OP
