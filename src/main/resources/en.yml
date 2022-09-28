@@ -1,7 +1,7 @@
 skinFetching: Fetching skin value and signature...
 skinApplyFailed: Something went wrong applying your skin %ERROR%
 skinApplying: Applying skin...
-skinApplied: Done.
+skinApplied: Done. Other players can now see your skin.
 
 commandPlayerOnly: This command is for players only!
 commandNoPermission: You don't have permission to use this command!
@@ -23,3 +23,6 @@ skinReset: Your skin has been reset! SkinFixer will fetch a new skin, if it is a
 
 unknownCommand: The command provided was not recognized. Use /skin help to see a list of available commands.
 reloadSuccessful: SkinFixer was reloaded successfully.
+
+missingUrlArgument: You must provide a URL from where to load the new skin. The URL must point directly to an image file
+invalidUrlArgument: The provided URL is not valid. It must start wih http:// or https://

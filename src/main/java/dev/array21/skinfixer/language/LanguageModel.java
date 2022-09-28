@@ -61,4 +61,10 @@ public class LanguageModel {
 	
 	@Required
 	public String reloadSuccessful;
+
+	@Required
+	public String missingUrlArgument;
+
+	@Required
+	public String invalidUrlArguemnt;
 }

@@ -16,4 +16,5 @@ public @interface CommandInfo {
 	public String name();
 	public String description();
 	public String permission() default "";
+	public String globalCommand() default "";
 }

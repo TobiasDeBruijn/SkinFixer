@@ -16,3 +16,9 @@ releases
 bin/
 
 actions/
+
+# IntelliJ
+.idea/
+
+# Vscode
+.vscode/
