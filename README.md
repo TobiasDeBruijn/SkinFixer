@@ -12,11 +12,15 @@ SkinFixer also works with Discord. You can upload your skin to a designated Disc
 - `/skin reset` Reset your skin back to defaults. This will remove it from the local storage. Relog to see the effects
 - `/skin version` Perform an update check
 - `/skin direct <url>` Fetches and immediately applies skin from URL. Useful for automated server-side skin management when reading a code from chat isn't feasible. 
+
+
+- `/setskin <url>` Same as `/skin direct <url>`
+
 ## Permissions
 - `skinfixer.get` Allows the use of the `get` subcommand. Default: ALL
 - `skinfixer.reload` Allows the use of the `reload` subcommand. Default: OP
 - `skinfixer.reset` Allows the use of the `reset` subcommand. Default: ALL
-- `skinfixer.set` Allows the use of the `set` subcommand. Default: ALL
+- `skinfixer.set` Allows the use of the `set` and `direct` subcommand (and thus also `/setskin`). Default: ALL
 - `skinfixer.version` Allows the use of the `version` subcommand. Default: OP
 
 ## Features
