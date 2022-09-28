@@ -51,11 +51,34 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 		}
 		
 		CommandInfo info = cmd.getClass().getAnnotation(CommandInfo.class);
+		if(this.subcommands.containsKey(info.name())) {
+			throw new IllegalStateException(String.format("Command with name '%s' is already registered.", info.name()));
+		}
+
 		this.subcommands.put(info.name(), cmd);
 		this.helpMessages.put(info.name(), info.description());
 		this.subcommandPermissions.put(cmd, info.permission());
+
+		if(!info.globalCommand().equals("")) {
+			if(this.plugin.getCommand(info.globalCommand()) == null) {
+				throw new IllegalStateException(String.format("Subcommand '%s' called for '%s' to be registered as a global command, however the command is not registered in 'plugin.yml'", info.name(), info.globalCommand()));
+			}
+
+			this.plugin.getCommand(info.globalCommand()).setExecutor((sender, command, label, args) -> CommandHandler.this.onCommandHandler(sender, args, cmd));
+
+			this.plugin.getCommand(info.globalCommand()).setTabCompleter((sender, command, alias, args) -> CommandHandler.this.onTabCompleteHandler(sender, args, cmd));
+		}
 	}
 
+	private boolean onCommandHandler(CommandSender sender, String[] args, Subcommand subcommand) {
+		if(!this.subcommandPermissions.get(subcommand).isEmpty() && !sender.hasPermission(this.subcommandPermissions.get(subcommand))) {
+			sender.sendMessage(SkinFixer.getPrefix() + ChatColor.GOLD + LangHandler.model.commandNoPermission);
+			return true;
+		}
+
+		subcommand.onSubcommand(this.plugin, sender, Arrays.copyOfRange(args, 1, args.length));
+		return true;
+	}
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if(args.length == 0) {
@@ -69,15 +92,13 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 			return true;
 		}
 		
-		if(!this.subcommandPermissions.get(exec).isEmpty() && !sender.hasPermission(this.subcommandPermissions.get(exec))) {
-			sender.sendMessage(SkinFixer.getPrefix() + ChatColor.GOLD + LangHandler.model.commandNoPermission);
-			return true;
-		}
-		
-		exec.onSubcommand(this.plugin, sender, Arrays.copyOfRange(args, 1, args.length));
-		return true;
+		return this.onCommandHandler(sender, args, exec);
 	}
-	
+
+	private List<String> onTabCompleteHandler(CommandSender sender, String[] args, Subcommand subcommand) {
+		return Arrays.asList(subcommand.onSubcommandComplete(this.plugin, sender, Arrays.copyOfRange(args, 1, args.length)));
+	}
+
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {		
 		if(args.length == 1) {
@@ -88,7 +109,7 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 		if(exec == null) {
 			return null;
 		}
-		
-		return Arrays.asList(exec.onSubcommandComplete(this.plugin, sender, Arrays.copyOfRange(args, 1, args.length)));
+
+		return this.onTabCompleteHandler(sender, args, exec);
 	}
 }

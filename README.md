@@ -2,11 +2,7 @@
 Minecraft Spigot
 
 SkinFixer aims to make skins possible for Offline-mode servers, and allow for users to change their skin in-game.
-
 SkinFixer also works with Discord. You can upload your skin to a designated Discord channel, and get a code.
-
-## Disclaimer
-Hi. Sw3d15h_F1s4 here. Most of this code isn't mine. I forked this project to add a command that sets skins directly from one command, since I want to use this plugin in a GUI menu in game, as well as use command blocks to set skins. In these cases, its not feasible to use two separate commands, so I just hacked apart and glued together the get and set command to form the direct command. The rest of the commands should function as normal.
 
 ## Commands
 - `/skin get <Nickname OR URL>` Get a token to set your skin. You can pass in either a URL which points directly at the image, or the username of a Minecraft player
@@ -80,7 +76,7 @@ sendMetrics: true
 ```
 
 ## APIs
-SkinFixer relies only on the [SkinFixer API](https://github.com/TheDutchMC/SkinFixer-API). This API relies on two other APIs under the hood
+SkinFixer relies only on the [SkinFixer API](https://github.com/TobiasDeBruijn/SkinFixer-API). This API relies on two other APIs under the hood
 - Mojang API
 - [MineSkin API](https://github.com/MineSkin/api.mineskin.org)
 
@@ -91,7 +87,7 @@ The Mojang API was moved from being on the plugin side to being on the API side 
 Please try to follow my codestyle, I don't yet follow any guideline myself.
 
 ## Issues
-Issues can be reported [here](https://github.com/TheDutchMC/SkinFixer/issues)
+Issues can be reported [here](https://github.com/TobiasDeBruijn/SkinFixer/issues)
 
 ## Building
 Refer to [this document](BUILDING.md)
