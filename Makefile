@@ -69,7 +69,7 @@ testjar: lib/target/x86_64-unknown-linux-gnu/debug/libskinfixer.so lib/target/aa
 	rm -rf ./build/resources
 	./gradlew testjar
 
-releasejar: lib/target/x86_64-unknown-linux-gnu/release/libskinfixer.so lib/target/aarch64-unknown-linux-gnu/release/libskinfixer.so lib/target/arm-unknown-linux-gnueabihf/release/libskinfixer.so lib/target/x86_64-pc-windows-gnu/release/libskinfixer.dll lib/target/x86_64-apple-darwin/release/libskinfixer.dylib
+releasejar: lib/target/x86_64-unknown-linux-gnu/release/libskinfixer.so lib/target/aarch64-unknown-linux-gnu/release/libskinfixer.so lib/target/arm-unknown-linux-gnueabihf/release/libskinfixer.so lib/target/x86_64-pc-windows-gnu/release/libskinfixer.dll lib/target/x86_64-apple-darwin/release/libskinfixer.dylib lib/target/aarch64-apple-darwin/release/libskinfixer.dylib
 	chmod +x gradlew
 	rm -rf ./build/resources
 	./gradlew releasejar
