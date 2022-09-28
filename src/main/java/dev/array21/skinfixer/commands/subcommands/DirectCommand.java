@@ -34,7 +34,7 @@ public class DirectCommand implements Subcommand {
 
         // Check that the user actually supplied a URL
         if (!(args[0].contains("https://") || args[0].contains("http://"))) {
-            sender.sendMessage(ChatColor.RED + LangHandler.model.invalidUrlArguemnt);
+            sender.sendMessage(ChatColor.RED + LangHandler.model.invalidUrlArgument);
         }
 
         // Filter off the query parameters

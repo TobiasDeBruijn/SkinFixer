@@ -271,7 +271,10 @@ public class SkinChangeHandler {
 		Class<?> entityHumanClass = ReflectionUtil.getMinecraftClass("world.entity.player.EntityHuman");
 
 		return switch(ReflectionUtil.getMajorVersion()) {
-			case 19 -> ReflectionUtil.invokeMethod(entityHumanClass, entityPlayer, "fz");
+			case 19 -> switch(ReflectionUtil.getMinorVersion()) {
+				case 1, 2 -> ReflectionUtil.invokeMethod(entityHumanClass, entityPlayer, "fy");
+				default -> ReflectionUtil.invokeMethod(entityHumanClass, entityPlayer, "fz");
+			};
 			case 18 -> switch(ReflectionUtil.getMinorVersion()) {
 				case 2 -> ReflectionUtil.invokeMethod(entityHumanClass, entityPlayer, "fq");
 				default -> ReflectionUtil.invokeMethod(entityHumanClass, entityPlayer, "fp");

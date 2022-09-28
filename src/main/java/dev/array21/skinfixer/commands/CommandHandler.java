@@ -76,7 +76,7 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 			return true;
 		}
 
-		subcommand.onSubcommand(this.plugin, sender, Arrays.copyOfRange(args, 1, args.length));
+		subcommand.onSubcommand(this.plugin, sender, args);
 		return true;
 	}
 	@Override
@@ -92,11 +92,11 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 			return true;
 		}
 		
-		return this.onCommandHandler(sender, args, exec);
+		return this.onCommandHandler(sender, Arrays.copyOfRange(args, 1, args.length), exec);
 	}
 
 	private List<String> onTabCompleteHandler(CommandSender sender, String[] args, Subcommand subcommand) {
-		return Arrays.asList(subcommand.onSubcommandComplete(this.plugin, sender, Arrays.copyOfRange(args, 1, args.length)));
+		return Arrays.asList(subcommand.onSubcommandComplete(this.plugin, sender, args));
 	}
 
 	@Override
@@ -110,6 +110,6 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 			return null;
 		}
 
-		return this.onTabCompleteHandler(sender, args, exec);
+		return this.onTabCompleteHandler(sender, Arrays.copyOfRange(args, 1, args.length), exec);
 	}
 }

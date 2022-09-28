@@ -66,5 +66,5 @@ public class LanguageModel {
 	public String missingUrlArgument;
 
 	@Required
-	public String invalidUrlArguemnt;
+	public String invalidUrlArgument;
 }
