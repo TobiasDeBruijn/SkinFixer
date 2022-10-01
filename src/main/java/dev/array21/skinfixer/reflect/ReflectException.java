@@ -1,7 +1,5 @@
 package dev.array21.skinfixer.reflect;
 
-import dev.array21.bukkitreflectionlib.ReflectionUtil;
-
 public class ReflectException extends Exception {
     private final Exception inner;
 
@@ -18,4 +16,4 @@ public class ReflectException extends Exception {
     public String toString() {
         return this.inner.toString();
     }
-};
+}
