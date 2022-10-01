@@ -64,7 +64,7 @@ lib/target/x86_64-apple-darwin/debug/libskinfixer.dylib: ${RUST_SOURCE_FILES}
 lib/target/aarch64-apple-darwin/debug/libskinfixer.dylib: ${RUST_SOURCE_FILES}
 	docker run -v "${CURDIR}/lib/:/code/" docker-registry.k8s.array21.dev/rust-aarch64-darwin
 
-testjar: lib/target/x86_64-unknown-linux-gnu/debug/libskinfixer.so lib/target/aarch64-unknown-linux-gnu/debug/libskinfixer.so lib/target/arm-unknown-linux-gnueabihf/debug/libskinfixer.so lib/target/x86_64-pc-windows-gnu/debug/libskinfixer.dll lib/target/x86_64-apple-darwin/debug/libskinfixer.dylib
+testjar: lib/target/x86_64-unknown-linux-gnu/debug/libskinfixer.so
 	chmod +x gradlew;
 	rm -rf ./build/resources
 	./gradlew testjar
