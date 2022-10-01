@@ -13,16 +13,7 @@ import dev.array21.skinfixer.reflect.abstractions.world.CraftWorld;
 import dev.array21.skinfixer.reflect.abstractions.world.SeedHash;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
-
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
 
 public class PlayerManager {
 
