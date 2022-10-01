@@ -1,7 +1,6 @@
 package dev.array21.skinfixer.reflect.abstractions.world;
 
 import dev.array21.bukkitreflectionlib.ReflectionUtil;
-import dev.array21.skinfixer.reflect.PlayerManager;
 import dev.array21.skinfixer.reflect.ReflectException;
 
 import java.lang.reflect.Field;
