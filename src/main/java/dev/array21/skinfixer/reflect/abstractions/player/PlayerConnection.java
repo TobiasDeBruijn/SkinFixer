@@ -5,7 +5,7 @@ import dev.array21.skinfixer.reflect.ReflectException;
 
 public record PlayerConnection(Object inner) {
 
-    public static PlayerConnection getInstance(CraftPlayer craftPlayer) throws ReflectException {
+    static PlayerConnection getInstance(CraftPlayer craftPlayer) throws ReflectException {
         try {
             Object inner;
 

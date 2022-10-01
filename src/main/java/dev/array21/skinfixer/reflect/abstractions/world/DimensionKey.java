@@ -6,7 +6,7 @@ import dev.array21.skinfixer.reflect.ReflectException;
 import java.lang.reflect.Field;
 
 public record DimensionKey(Object inner) {
-    public static DimensionKey getInstance(CraftWorld craftWorld) throws ReflectException {
+    static DimensionKey getInstance(CraftWorld craftWorld) throws ReflectException {
         try {
             Object inner = switch(ReflectionUtil.getMajorVersion()) {
                 case 16, 17 -> ReflectionUtil.invokeMethod(craftWorld.inner().getClass().getSuperclass(), craftWorld.inner(), "getDimensionKey");

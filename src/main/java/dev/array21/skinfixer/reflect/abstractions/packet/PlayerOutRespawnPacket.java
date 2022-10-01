@@ -3,8 +3,8 @@ package dev.array21.skinfixer.reflect.abstractions.packet;
 import dev.array21.bukkitreflectionlib.ReflectionUtil;
 import dev.array21.skinfixer.annotations.Nullable;
 import dev.array21.skinfixer.reflect.ReflectException;
-import dev.array21.skinfixer.reflect.abstractions.gamemode.EnumGamemode;
-import dev.array21.skinfixer.reflect.abstractions.gamemode.Gamemode;
+import dev.array21.skinfixer.reflect.abstractions.player.EnumGamemode;
+import dev.array21.skinfixer.reflect.abstractions.player.Gamemode;
 import dev.array21.skinfixer.reflect.abstractions.player.PlayerInteractManager;
 import dev.array21.skinfixer.reflect.abstractions.world.*;
 
@@ -19,8 +19,8 @@ public record PlayerOutRespawnPacket(Object inner) implements Packet{
 
     public static PlayerOutRespawnPacket getInstance(CraftWorld craftWorld, PlayerInteractManager playerInteractManager, Gamemode gamemode, SeedHash seedHash) throws ReflectException {
         Class<?> packetClass = getPacketOutRespawnClass();
-        DimensionKey dimensionKey = DimensionKey.getInstance(craftWorld);
-        EnumGamemode enumGamemode = EnumGamemode.getInstance(playerInteractManager);
+        DimensionKey dimensionKey = craftWorld.getDimensionKey();
+        EnumGamemode enumGamemode = playerInteractManager.getEnumGamemode();
         try {
             Object packet = switch(ReflectionUtil.getMajorVersion()) {
                 case 16 -> switch (ReflectionUtil.getMinorVersion()) {
@@ -31,12 +31,12 @@ public record PlayerOutRespawnPacket(Object inner) implements Packet{
                     default -> ReflectionUtil.invokeConstructor(
                             packetClass,
                             getPlayerRespawnPacketConstructorClasses(craftWorld, dimensionKey, enumGamemode),
-                            getPlayerRespawnPacketConstructorArguments(craftWorld, gamemode, dimensionKey, DimensionManager.getInstance(craftWorld), seedHash));
+                            getPlayerRespawnPacketConstructorArguments(craftWorld, gamemode, dimensionKey, craftWorld.getDimensionManager(), seedHash));
                 };
                 case 17, 18, 19 -> ReflectionUtil.invokeConstructor(
                         packetClass,
                         getPlayerRespawnPacketConstructorClasses(craftWorld, dimensionKey, enumGamemode),
-                        getPlayerRespawnPacketConstructorArguments(craftWorld, gamemode, dimensionKey, DimensionManager.getInstance(craftWorld), seedHash));
+                        getPlayerRespawnPacketConstructorArguments(craftWorld, gamemode, dimensionKey, craftWorld.getDimensionManager(), seedHash));
                 default -> throw new RuntimeException("Unsupported version");
             };
 
@@ -79,7 +79,7 @@ public record PlayerOutRespawnPacket(Object inner) implements Packet{
                         };
                     }
                     default -> {
-                        DimensionManager dimensionManager = DimensionManager.getInstance(craftWorld);
+                        DimensionManager dimensionManager = craftWorld.getDimensionManager();
                         yield new Class<?>[] {
                                 dimensionManager.inner().getClass(),
                                 dimensionKey.inner().getClass(),
@@ -93,7 +93,7 @@ public record PlayerOutRespawnPacket(Object inner) implements Packet{
                     }
                 };
                 case 17, 18 -> {
-                    DimensionManager dimensionManager = DimensionManager.getInstance(craftWorld);
+                    DimensionManager dimensionManager = craftWorld.getDimensionManager();
                     yield new Class<?>[] {
                             dimensionManager.inner().getClass(),
                             dimensionKey.inner().getClass(),
@@ -106,7 +106,7 @@ public record PlayerOutRespawnPacket(Object inner) implements Packet{
                     };
                 }
                 case 19 -> {
-                    DimensionManager dimensionManager = DimensionManager.getInstance(craftWorld);
+                    DimensionManager dimensionManager = craftWorld.getDimensionManager();
                     yield new Class<?>[] {
                             dimensionManager.inner().getClass(),
                             dimensionKey.inner().getClass(),
@@ -128,8 +128,8 @@ public record PlayerOutRespawnPacket(Object inner) implements Packet{
 
     private static Object[] getPlayerRespawnPacketConstructorArguments(CraftWorld craftWorld, Gamemode gamemode, DimensionKey dimensionKey, @Nullable DimensionManager dimensionManager, SeedHash seedHash) throws ReflectException {
         try {
-            boolean isDebugWorld = WorldOptions.isDebugWorld(craftWorld);
-            boolean isFlatWorld = WorldOptions.isFlatWorld(craftWorld);
+            boolean isDebugWorld = craftWorld.isDebugWorld();
+            boolean isFlatWorld = craftWorld.isFlatWorld();
 
             return switch (ReflectionUtil.getMajorVersion()) {
                 case 16 -> switch(ReflectionUtil.getMinorVersion()) {

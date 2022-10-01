@@ -1,14 +1,9 @@
 package dev.array21.skinfixer.reflect;
 
-import com.google.common.hash.Hashing;
 import dev.array21.bukkitreflectionlib.ReflectionUtil;
 import dev.array21.skinfixer.SkinFixer;
-import dev.array21.skinfixer.annotations.Nullable;
-import dev.array21.skinfixer.reflect.abstractions.gamemode.Gamemode;
+import dev.array21.skinfixer.reflect.abstractions.player.*;
 import dev.array21.skinfixer.reflect.abstractions.packet.*;
-import dev.array21.skinfixer.reflect.abstractions.player.CraftPlayer;
-import dev.array21.skinfixer.reflect.abstractions.player.PlayerConnection;
-import dev.array21.skinfixer.reflect.abstractions.player.PlayerInteractManager;
 import dev.array21.skinfixer.reflect.abstractions.world.CraftWorld;
 import dev.array21.skinfixer.reflect.abstractions.world.SeedHash;
 import org.bukkit.Bukkit;
@@ -28,8 +23,8 @@ public class PlayerManager {
 
         CraftPlayer craftPlayer = CraftPlayer.getInstance(player);
         CraftWorld craftWorld = CraftWorld.getInstance(currentLoc.getWorld());
-        PlayerInteractManager playerInteractManager = PlayerInteractManager.getInstance(craftPlayer);
-        Gamemode gamemode = Gamemode.getInstance(playerInteractManager);
+        PlayerInteractManager playerInteractManager = craftPlayer.getPlayerInteractManager();
+        Gamemode gamemode = playerInteractManager.getGamemode();
         SeedHash seedHash = SeedHash.getInstance(currentLoc.getWorld());
 
         PlayerOutRespawnPacket playerOutRespawnPacket = PlayerOutRespawnPacket.getInstance(craftWorld, playerInteractManager, gamemode, seedHash);
@@ -39,7 +34,7 @@ public class PlayerManager {
         PlayerOutInfoPacket playerOutInfoRemovePacket = PlayerOutInfoPacket.getInstance(craftPlayer, PlayerOutInfoPacket.PlayerInfoAction.REMOVE_PLAYER);
         PlayerOutInfoPacket playerOutInfoAddPacket = PlayerOutInfoPacket.getInstance(craftPlayer, PlayerOutInfoPacket.PlayerInfoAction.ADD_PLAYER);
 
-        PlayerConnection playerConnection = PlayerConnection.getInstance(craftPlayer);
+        PlayerConnection playerConnection = craftPlayer.getPlayerConnection();
 
         // Remove and add the player back in
         playerOutInfoRemovePacket.send(playerConnection);
@@ -80,5 +75,18 @@ public class PlayerManager {
                 player.setOp(true);
             });
         }
+    }
+
+    public static void setSkin(Player player, String skinValue, String skinSignature) throws ReflectException {
+        CraftPlayer craftPlayer = CraftPlayer.getInstance(player);
+
+        GameProfile gameProfile = craftPlayer.getGameProfile();
+        PropertyMap propertyMap = gameProfile.getProperties();
+
+        if(propertyMap.containsTexturesKey()) {
+            propertyMap.removeTexturesKey();
+        }
+
+        propertyMap.putSkinProperty(skinValue, skinSignature);
     }
 }

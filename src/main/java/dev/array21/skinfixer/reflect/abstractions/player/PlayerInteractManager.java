@@ -4,7 +4,7 @@ import dev.array21.bukkitreflectionlib.ReflectionUtil;
 import dev.array21.skinfixer.reflect.ReflectException;
 
 public record PlayerInteractManager(Object inner) {
-    public static PlayerInteractManager getInstance(CraftPlayer craftPlayer) throws ReflectException {
+    static PlayerInteractManager getInstance(CraftPlayer craftPlayer) throws ReflectException {
         Object o;
 
         try {
@@ -18,5 +18,13 @@ public record PlayerInteractManager(Object inner) {
         }
 
         return new PlayerInteractManager(o);
+    }
+
+    public Gamemode getGamemode() throws ReflectException {
+        return Gamemode.getInstance(this);
+    }
+
+    public EnumGamemode getEnumGamemode() throws ReflectException {
+        return EnumGamemode.getInstance(this);
     }
 }

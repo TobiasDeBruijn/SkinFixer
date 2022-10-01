@@ -1,13 +1,12 @@
-package dev.array21.skinfixer.reflect.abstractions.gamemode;
+package dev.array21.skinfixer.reflect.abstractions.player;
 
 import dev.array21.bukkitreflectionlib.ReflectionUtil;
 import dev.array21.skinfixer.reflect.ReflectException;
-import dev.array21.skinfixer.reflect.abstractions.player.PlayerInteractManager;
 
 import java.lang.reflect.Method;
 
 public record Gamemode(Object inner) {
-    public static Gamemode getInstance(PlayerInteractManager playerInteractManager) throws ReflectException {
+    static Gamemode getInstance(PlayerInteractManager playerInteractManager) throws ReflectException {
         Object gamemodeEnumConst;
         try {
             EnumGamemode enumGamemode = EnumGamemode.getInstance(playerInteractManager);

@@ -7,7 +7,7 @@ import dev.array21.skinfixer.reflect.ReflectException;
 import java.lang.reflect.Field;
 
 public record DimensionManager(Object inner) {
-    public static DimensionManager getInstance(CraftWorld craftWorld) throws ReflectException {
+    static DimensionManager getInstance(CraftWorld craftWorld) throws ReflectException {
         try {
             Object inner = switch(ReflectionUtil.getMajorVersion()) {
                 case 18 -> {

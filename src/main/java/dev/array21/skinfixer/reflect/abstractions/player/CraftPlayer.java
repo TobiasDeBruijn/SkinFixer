@@ -16,6 +16,14 @@ public record CraftPlayer(Object inner) {
         }
     }
 
+    public PlayerConnection getPlayerConnection() throws ReflectException {
+        return PlayerConnection.getInstance(this);
+    }
+
+    public PlayerInteractManager getPlayerInteractManager() throws ReflectException {
+        return PlayerInteractManager.getInstance(this);
+    }
+
     public void updatePlayerAbilities() throws ReflectException {
         try {
             ReflectionUtil.invokeMethod(this.inner, "updateAbilities");
@@ -46,5 +54,9 @@ public record CraftPlayer(Object inner) {
         } catch (Exception e) {
             throw new ReflectException(e);
         }
+    }
+
+    public GameProfile getGameProfile() throws ReflectException {
+        return GameProfile.getInstance(this);
     }
 }
