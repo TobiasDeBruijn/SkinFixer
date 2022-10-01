@@ -32,22 +32,6 @@ public record CraftPlayer(Object inner) {
         }
     }
 
-    public void updatePlayerScaledHealth() throws  ReflectException {
-        try {
-            ReflectionUtil.invokeMethod(this.inner, "updateScaledHealth");
-        } catch (Exception e) {
-            throw new ReflectException(e);
-        }
-    }
-
-    public void updatePlayerInventory() throws ReflectException {
-        try {
-            ReflectionUtil.invokeMethod(this.inner, "updateInventory");
-        } catch (Exception e) {
-            throw new ReflectException(e);
-        }
-    }
-
     public void triggerPlayerHealthUpdate() throws ReflectException {
         try {
             ReflectionUtil.invokeMethod(this.inner, "triggerHealthUpdate");

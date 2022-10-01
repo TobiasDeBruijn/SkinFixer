@@ -22,9 +22,9 @@ public record Gamemode(Object inner) {
             // Fetch the enum constant associated with the gamemode
             Method getGamemodeByIdMethod;
             if(ReflectionUtil.getMajorVersion() >= 18) {
-                getGamemodeByIdMethod = ReflectionUtil.getMethod(enumGamemode.getClass(), "a", int.class);
+                getGamemodeByIdMethod = ReflectionUtil.getMethod(enumGamemode.inner().getClass(), "a", int.class);
             } else {
-                getGamemodeByIdMethod = ReflectionUtil.getMethod(enumGamemode.getClass(), "getById", int.class);
+                getGamemodeByIdMethod = ReflectionUtil.getMethod(enumGamemode.inner().getClass(), "getById", int.class);
             }
 
             gamemodeEnumConst = getGamemodeByIdMethod.invoke(null, gamemodeId);

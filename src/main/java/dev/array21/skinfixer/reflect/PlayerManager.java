@@ -55,8 +55,8 @@ public class PlayerManager {
         playerOutPositionPacket.send(playerConnection);
         playerOutHeldItemSlotPacket.send(playerConnection);
 
-        craftPlayer.updatePlayerScaledHealth();
-        craftPlayer.updatePlayerInventory();
+        PlayerUtil.updatePlayerScaledHealth(player);
+        PlayerUtil.updatePlayerInventory(player);
 
         if(ReflectionUtil.getMajorVersion() >= 18) {
             PlayerOutUpdateHealthPacket playerOutUpdateHealthPacket = PlayerOutUpdateHealthPacket.getInstance(player);

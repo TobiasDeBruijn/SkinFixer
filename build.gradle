@@ -72,13 +72,6 @@ task releaseJar(type: ShadowJar) {
 
 task copyDependenciesDebug() {
 	dependsOn('copyLinuxLibraryDebugX86')
-	dependsOn('copyLinuxLibraryDebugAarch64')
-	dependsOn('copyLinuxLibraryDebugArmhf')
-
-	dependsOn('copyDarwinLibraryDebugX86')
-	dependsOn('copyDarwinLibraryDebugAarch64')
-
-	dependsOn('copyWindowsLibraryDebug')
 }
 
 task copyDependenciesRelease() {
