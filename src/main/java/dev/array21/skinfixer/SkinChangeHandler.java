@@ -2,8 +2,8 @@ package dev.array21.skinfixer;
 
 import java.util.*;
 
+import dev.array21.bukkitreflectionlib.exceptions.ReflectException;
 import dev.array21.skinfixer.reflect.PlayerManager;
-import dev.array21.skinfixer.reflect.ReflectException;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
