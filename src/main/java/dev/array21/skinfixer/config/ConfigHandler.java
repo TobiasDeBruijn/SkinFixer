@@ -19,7 +19,7 @@ import dev.array21.skinfixer.util.Utils;
 
 public class ConfigHandler {
 
-	private SkinFixer plugin;
+	private final SkinFixer plugin;
 	private ConfigManifest manifest;
 	
 	private final static Yaml YAML = new Yaml();
@@ -58,9 +58,9 @@ public class ConfigHandler {
 			Bukkit.getPluginManager().disablePlugin(this.plugin);
 			return null;
 		}
-		
-		if(manifest.metricsUuid == null) {
-			manifest.metricsUuid = "";
+
+		if(manifest.applySkinOnJoin == null) {
+			manifest.applySkinOnJoin = true;
 		}
 		
 		if(manifest.useDiscord) {
@@ -82,7 +82,7 @@ public class ConfigHandler {
 				return null;
 			}
 		}
-		
+
 		this.manifest = manifest;
 		return manifest;
 	}
@@ -91,18 +91,4 @@ public class ConfigHandler {
 		return this.manifest;
 	}
 	
-	public void setStatUuid(String uuid) {
-		this.manifest.metricsUuid = uuid;
-		String yaml = YAML.dumpAsMap(this.manifest);
-		try {
-			File configFile = new File(this.plugin.getDataFolder(), "config.yml");
-			BufferedWriter bw = new BufferedWriter(new FileWriter(configFile));
-			bw.write(yaml);
-			bw.flush();
-			bw.close();
-		} catch(IOException e) {
-			SkinFixer.logWarn(String.format("Failed to write statUuid to disk: %s", e.getMessage()));
-			SkinFixer.logWarn(Utils.getStackTrace(e));
-		}
-	}
 }

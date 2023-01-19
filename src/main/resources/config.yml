@@ -40,6 +40,6 @@ updateCheck: true
 # This however does not suppress any error message that might be send to the player
 disableSkinApplyOnLoginMessage: false
 
-# Should anonymous metrics be send to Dutchy76 (The author of SkinFixer)
-# These metrics are used to get insights on what kind of systems SkinFixer is running
-sendMetrics: true
+# Whether the stored skin, if any, should be automatically applied when a player joins.
+# Default: true
+applySkinOnJoin: true

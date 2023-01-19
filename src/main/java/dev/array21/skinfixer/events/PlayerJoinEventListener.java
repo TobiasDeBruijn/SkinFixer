@@ -16,14 +16,18 @@ import dev.array21.skinfixer.util.Utils;
 
 public class PlayerJoinEventListener implements Listener {
 
-	private SkinFixer plugin;
+	private final SkinFixer plugin;
 	
 	public PlayerJoinEventListener(SkinFixer plugin) {
 		this.plugin = plugin;
 	}
 	
 	@EventHandler
-	public void onPlayerJoinEvent(PlayerJoinEvent event) {		
+	public void onPlayerJoinEvent(PlayerJoinEvent event) {
+		if(!this.plugin.getConfigManifest().applySkinOnJoin) {
+			return;
+		}
+
 		new BukkitRunnable() {
 			
 			@Override
@@ -47,7 +51,6 @@ public class PlayerJoinEventListener implements Listener {
 				} else if(mojangApiResponse.getB() != null) {
 					String uuidDashedStr = Utils.insertDashUUID(mojangApiResponse.getB());
 					new SkinChangeHandler(PlayerJoinEventListener.this.plugin).changeSkinJson(null, event.getPlayer().getUniqueId(), UUID.fromString(uuidDashedStr), false, true, true);
-					return;
 				}
 			}
 		}.runTaskAsynchronously(this.plugin);

@@ -22,12 +22,9 @@ public class ConfigManifest {
 	
 	@Required
 	public Boolean updateCheck;
-	
-	@Required
-	public Boolean sendMetrics;
-	
-	public String metricsUuid;
-	
+
 	@Required
 	public Boolean disableSkinApplyOnLoginMessage;
+
+	public Boolean applySkinOnJoin;
 }
