@@ -36,7 +36,7 @@ public class PlayerJoinEventListener implements Listener {
 						public void run() {
 							new SkinChangeHandler(PlayerJoinEventListener.this.plugin).changeSkinFromObject(sd.into(), true);
 						}
-					}.runTaskLater(PlayerJoinEventListener.this.plugin, 5L);
+					}.runTaskLater(PlayerJoinEventListener.this.plugin, 20L);
 					
 					return;
 				}

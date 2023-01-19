@@ -32,14 +32,23 @@ public class PlayerManager {
         PlayerOutPositionPacket playerOutPositionPacket = PlayerOutPositionPacket.getInstance(player.getLocation());
         PlayerOutHeldItemSlotPacket playerOutHeldItemSlotPacket = PlayerOutHeldItemSlotPacket.getInstance(player);
 
-        PlayerOutInfoPacket playerOutInfoRemovePacket = PlayerOutInfoPacket.getInstance(craftPlayer, PlayerOutInfoPacket.PlayerInfoAction.REMOVE_PLAYER);
-        PlayerOutInfoPacket playerOutInfoAddPacket = PlayerOutInfoPacket.getInstance(craftPlayer, PlayerOutInfoPacket.PlayerInfoAction.ADD_PLAYER);
-
         PlayerConnection playerConnection = craftPlayer.getPlayerConnection();
 
-        // Remove and add the player back in
-        playerOutInfoRemovePacket.send(playerConnection);
-        playerOutInfoAddPacket.send(playerConnection);
+        // PlayerOutInfoPacket no longer exists as of 1.19.3
+        if(ReflectionUtil.getMajorVersion() > 19 || (ReflectionUtil.getMajorVersion() == 19 && ReflectionUtil.getMinorVersion() == 3)) {
+            ClientboundPlayerInfoRemovePacket removePacket = ClientboundPlayerInfoRemovePacket.getInstance(craftPlayer);
+            ClientboundPlayerInfoUpdatePacket addPacket = ClientboundPlayerInfoUpdatePacket.createPlayerInitializing(craftPlayer);
+
+            removePacket.send(playerConnection);
+            addPacket.send(playerConnection);
+        } else {
+            PlayerOutInfoPacket playerOutInfoRemovePacket = PlayerOutInfoPacket.getInstance(craftPlayer, PlayerOutInfoPacket.PlayerInfoAction.REMOVE_PLAYER);
+            PlayerOutInfoPacket playerOutInfoAddPacket = PlayerOutInfoPacket.getInstance(craftPlayer, PlayerOutInfoPacket.PlayerInfoAction.ADD_PLAYER);
+
+            // Remove and add the player back in
+            playerOutInfoRemovePacket.send(playerConnection);
+            playerOutInfoAddPacket.send(playerConnection);
+        }
 
         // Respawn the player
         playerOutRespawnPacket.send(playerConnection);
