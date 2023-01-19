@@ -3,7 +3,8 @@ package dev.array21.skinfixer;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
-import org.apache.log4j.LogManager;
+import dev.array21.skinfixer.apis.RemotePluginInfo;
+import dev.array21.skinfixer.apis.gson.RemoteInfoManifest;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -27,6 +28,8 @@ public class SkinFixer extends JavaPlugin {
 	private ConfigHandler configHandler;
 	private JdaHandler jdaHandler;
 	private LibWrapper libWrapper;
+
+	public RemoteInfoManifest remoteInfoManifest;
 	
 	@Override
 	public void onEnable() {
@@ -39,6 +42,8 @@ public class SkinFixer extends JavaPlugin {
 		//Read the configuration
 		this.configHandler = new ConfigHandler(this);
 		ConfigManifest configManifest = configHandler.read();
+
+		this.remoteInfoManifest = RemotePluginInfo.getManifest(this);
 
 		this.libWrapper = new LibWrapper(this);
 		this.libWrapper.init();
@@ -69,14 +74,18 @@ public class SkinFixer extends JavaPlugin {
 
 		//Register event listeners
 		Bukkit.getPluginManager().registerEvents(new PlayerJoinEventListener(this), this);
+
+		for(RemoteInfoManifest.Message remoteMessage : this.remoteInfoManifest.messages) {
+			logInfo(remoteMessage.text);
+		}
 	}
 	
 	public static void logInfo(Object log) {
-		LOGGER.info("[" + SkinFixer.INSTANCE.getDescription().getName() + "] " + log.toString());
+		LOGGER.info(log.toString());
 	}
 	
 	public static void logWarn(Object log) {
-		LOGGER.warning("[" + SkinFixer.INSTANCE.getDescription().getName() + "] " + log.toString());
+		LOGGER.warning(log.toString());
 	}
 
 	/**

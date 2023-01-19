@@ -27,4 +27,6 @@ public class ConfigManifest {
 	public Boolean disableSkinApplyOnLoginMessage;
 
 	public Boolean applySkinOnJoin;
+
+	public String remotePluginInfoUrl;
 }

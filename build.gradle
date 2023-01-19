@@ -37,7 +37,7 @@ dependencies {
 
 	implementation 'dev.array21:httplib:1.2.2'
 	implementation 'dev.array21:classvalidator:1.0.0'
-	implementation 'dev.array21:bukkit-reflection-util:1.2.1'
+	implementation 'dev.array21:bukkit-reflection-util:1.3.0'
 
 	// JDA and related dependencies
 	implementation 'org.slf4j:slf4j-log4j12:1.7.29'

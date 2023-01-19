@@ -62,6 +62,10 @@ public class ConfigHandler {
 		if(manifest.applySkinOnJoin == null) {
 			manifest.applySkinOnJoin = true;
 		}
+
+		if(manifest.remotePluginInfoUrl == null) {
+			manifest.remotePluginInfoUrl = "https://raw.githubusercontent.com/TobiasDeBruijn/SkinFixer/master/plugininfo.json";
+		}
 		
 		if(manifest.useDiscord) {
 			if(manifest.discordSettings == null) {
@@ -90,5 +94,5 @@ public class ConfigHandler {
 	public ConfigManifest getConfigManifest() {
 		return this.manifest;
 	}
-	
+
 }

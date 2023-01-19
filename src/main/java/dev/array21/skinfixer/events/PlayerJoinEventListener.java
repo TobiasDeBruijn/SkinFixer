@@ -45,7 +45,7 @@ public class PlayerJoinEventListener implements Listener {
 					return;
 				}
 								
-				Triple<Boolean, String, String> mojangApiResponse = new SkinFixerApi().getUuid(event.getPlayer().getName());
+				Triple<Boolean, String, String> mojangApiResponse = new SkinFixerApi(PlayerJoinEventListener.this.plugin.remoteInfoManifest).getUuid(event.getPlayer().getName());
 				if(!mojangApiResponse.getA()) {
 					SkinFixer.logWarn("Something went wrong fetching the UUID from Mojang.");
 				} else if(mojangApiResponse.getB() != null) {

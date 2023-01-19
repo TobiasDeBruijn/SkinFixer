@@ -40,9 +40,9 @@ public class SkinChangeHandler {
 				//Fetch the skin from Mineskin.org's API
 				Triple<Boolean, GetSkinResponse, String> apiResponse;
 				if(isPremium) {
-					apiResponse = new SkinFixerApi().getSkinOfPremiumPlayer(externalUuid.toString());
+					apiResponse = new SkinFixerApi(SkinChangeHandler.this.plugin.remoteInfoManifest).getSkinOfPremiumPlayer(externalUuid.toString());
 				} else {
-					apiResponse = new SkinFixerApi().getSkin(skinUrl, slim);
+					apiResponse = new SkinFixerApi(SkinChangeHandler.this.plugin.remoteInfoManifest).getSkin(skinUrl, slim);
 				}
 				
 				if(!apiResponse.getA()) {
@@ -65,7 +65,7 @@ public class SkinChangeHandler {
 			@Override
 			public void run() {
 				Player p = Bukkit.getPlayer(localPlayerUuid);
-				Triple<Boolean, GetSkinResponse, String> apiResponse = new SkinFixerApi().getSkinOfPremiumPlayer(mojangUuid.toString());
+				Triple<Boolean, GetSkinResponse, String> apiResponse = new SkinFixerApi(SkinChangeHandler.this.plugin.remoteInfoManifest).getSkinOfPremiumPlayer(mojangUuid.toString());
 				if(!apiResponse.getA()) {
 					p.sendMessage(ChatColor.RED + LangHandler.model.skinApplyFailed.replaceAll("%ERROR%", ChatColor.GRAY + apiResponse.getC() + ChatColor.RED));
 					return;

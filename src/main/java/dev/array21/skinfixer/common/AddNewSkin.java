@@ -25,7 +25,7 @@ public class AddNewSkin {
 			code = generateRandomInt();
 		}
 		
-		Triple<Boolean, String, String> apiResponse = new SkinFixerApi().getUuid(url);
+		Triple<Boolean, String, String> apiResponse = new SkinFixerApi(this.plugin.remoteInfoManifest).getUuid(url);
 		if(!apiResponse.getA()) {
 			return new Pair<Integer, String>(null, apiResponse.getC());
 		}
