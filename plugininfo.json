@@ -1,0 +1,10 @@
+{
+  "servers": [
+    "https://skinfixer.k8s.array21.dev"
+  ],
+  "messages": [
+    {
+      "text": "Hi Mom!"
+    }
+  ]
+}
