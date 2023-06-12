@@ -3,7 +3,6 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     id 'java'
-    id 'eclipse'
     id 'com.github.johnrengelman.shadow' version '7.0.0'
 }
 
@@ -15,6 +14,7 @@ allprojects {
 	targetCompatibility = 1.16
 	
 	repositories {
+		mavenLocal()
 		mavenCentral()
   	  	maven{ url "https://hub.spigotmc.org/nexus/content/repositories/snapshots" }
    	 	maven{ url "https://oss.sonatype.org/content/repositories/snapshots" }
@@ -22,7 +22,6 @@ allprojects {
             name 'm2-dv8tion'
             url 'https://m2.dv8tion.net/releases'
         }
-		mavenLocal()
     }
     
 	processResources {

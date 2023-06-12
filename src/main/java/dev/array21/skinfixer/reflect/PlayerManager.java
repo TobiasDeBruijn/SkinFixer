@@ -35,7 +35,7 @@ public class PlayerManager {
         PlayerConnection playerConnection = craftPlayer.getPlayerConnection();
 
         // PlayerOutInfoPacket no longer exists as of 1.19.3
-        if(ReflectionUtil.getMajorVersion() > 19 || (ReflectionUtil.getMajorVersion() == 19 && ReflectionUtil.getMinorVersion() == 3)) {
+        if(ReflectionUtil.getMajorVersion() > 19 || (ReflectionUtil.getMajorVersion() == 19 && ReflectionUtil.getMinorVersion() >= 3)) {
             ClientboundPlayerInfoRemovePacket removePacket = ClientboundPlayerInfoRemovePacket.getInstance(craftPlayer);
             ClientboundPlayerInfoUpdatePacket addPacket = ClientboundPlayerInfoUpdatePacket.createPlayerInitializing(craftPlayer);
 
