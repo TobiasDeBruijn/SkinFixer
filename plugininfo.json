@@ -2,5 +2,9 @@
   "servers": [
     "https://skinfixer.k8s.array21.dev"
   ],
-  "messages": []
+  "messages": [
+    {
+      "text": "Poll for server admins: If you use the databaseType 'MYSQL', 'POSTGRES' or 'SQLITE', please let me know here: https://github.com/TobiasDeBruijn/SkinFixer/issues/53"
+    }
+  ]
 }
