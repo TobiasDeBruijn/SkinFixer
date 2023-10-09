@@ -1,81 +1,70 @@
 //! JNI bindings for dev.array21.skinfixer.storage.LibSkinFixer#init()
 
-use crate::{jstring_to_string, optional_string};
-use crate::config::{StorageType, Config};
+use crate::jstring_to_string;
 
+use crate::database::{DatabaseOptions, Driver, DriverType};
+use crate::jni::{DRIVER, TOKIO_RT};
 use jni::objects::{JClass, JString};
-use mysql::prelude::Queryable;
-use std::path::PathBuf;
-use std::str::FromStr;
-use mysql::Params;
+use jni::sys::jchar;
 use jni::JNIEnv;
+use std::path::PathBuf;
 
 /// Java JNI function
 ///
-/// dev.array21.skinfixer.storage.LibSkinFixer#init(String storageType, String host, String database, String username, String password, String storagePath)
+/// dev.array21.skinfixer.storage.LibSkinFixer#init(String storageType, String host, String database, String username, String password, String storagePath), char port
 #[no_mangle]
-pub extern "system" fn Java_dev_array21_skinfixer_storage_LibSkinFixer_init(env: JNIEnv<'_>, _class: JClass<'_>, storage_type: JString<'_>, host: JString<'_>, database: JString<'_>, username: JString<'_>, password: JString<'_>, storage_path: JString<'_>) {
-    let storage_type_str: String = jstring_to_string!(env, storage_type);
-    let storage_type = match StorageType::from_str(&storage_type_str) {
-        Ok(st) => st,
-        Err(_) => panic!("Failed to convert String to StorageType, '{}' is not valid", &storage_type_str)
-    };
+pub extern "system" fn Java_dev_array21_skinfixer_storage_LibSkinFixer_init(
+    env: JNIEnv<'_>,
+    _class: JClass<'_>,
+    storage_type: JString<'_>,
+    host: JString<'_>,
+    database: JString<'_>,
+    username: JString<'_>,
+    password: JString<'_>,
+    storage_path: JString<'_>,
+    port: jchar,
+) {
+    let storage_type = jstring_to_string!(env, storage_type);
 
     let host = jstring_to_string!(env, host);
-    let database = jstring_to_string!(env, database);
-    let username = jstring_to_string!(env, username);
-    let password = jstring_to_string!(env, password);
+    let name = jstring_to_string!(env, database);
+    let user = jstring_to_string!(env, username);
+    let passw = jstring_to_string!(env, password);
     let storage_path = jstring_to_string!(env, storage_path);
 
-    let config = Config::new(storage_type, optional_string!(host), optional_string!(database), optional_string!(username), optional_string!(password), optional_string!(storage_path));
+    let driver_type = match storage_type.as_str() {
+        "mysql" => DriverType::Mysql(DatabaseOptions {
+            host: &host,
+            user: &user,
+            passw: &passw,
+            name: &name,
+            port,
+        }),
+        "postgres" => DriverType::Postgres(DatabaseOptions {
+            host: &host,
+            user: &user,
+            passw: &passw,
+            name: &name,
+            port,
+        }),
+        "sqlite" => DriverType::Sqlite(PathBuf::from(storage_path)),
+        "bin" => DriverType::Bin(PathBuf::from(storage_path)),
+        _ => panic!("Unknown storage type '{storage_type}'"),
+    };
 
-    match config.get_type() {
-        StorageType::Mysql => {
-            let mut conn = match config.mysql_conn() {
-                Ok(c) => c,
-                Err(e) => panic!("{:?}", e)
-            };
+    let tokio_rt = tokio::runtime::Builder::new_multi_thread()
+        .enable_all()
+        .build()
+        .unwrap();
 
-            match conn.exec::<usize, &str, Params>("CREATE TABLE IF NOT EXISTS skins (uuid VARCHAR(36) PRIMARY KEY, value TEXT, signature TEXT)", Params::Empty) {
-                Ok(_) => {},
-                Err(e) => panic!("Failed to create table 'skins': {:?}", e)
-            }
-        },
-        StorageType::Postgres => {
-            let mut conn = match config.postgres_conn() {
-                Ok(c) => c,
-                Err(e) => panic!("{:?}", e)
-            };
+    let _guard = tokio_rt.enter();
 
-            match conn.execute("CREATE TABLE IF NOT EXISTS skins (uuid VARCHAR(36) PRIMARY KEY, value TEXT, signature TEXT)", &[]) {
-                Ok(_) => {},
-                Err(e) => panic!("Failed to create table 'skins': {:?}", e)
-            }
-        },
-        StorageType::Bin => {
-            let mut path = PathBuf::from(config.get_path().unwrap());
-            path.push("skins.bin");
+    let driver = tokio_rt
+        .block_on(Driver::new(driver_type))
+        .expect("Initializing storage driver");
 
-            if !path.exists() {
-                match std::fs::File::create(&path) {
-                    Ok(_) => {},
-                    Err(e) => panic!("Failed to create skins.bin file: {:?}", e)
-                }
-            }
-        },
-        StorageType::Sqlite => {
-            let conn = match config.sqlite_conn() {
-                Ok(c) => c,
-                Err(e) => panic!("Failed to create SQLite connection: {:?}", e)
-            };
-
-            match conn.execute("CREATE TABLE IF NOT EXISTS skins (uuid TEXT PRIMARY KEY, value TEXT, signature TEXT)", rusqlite::params!{}) {
-                Ok(_) => {},
-                Err(e) => panic!("Failed to create table 'skins': {:?}", e)
-            }
-        }
-    }
-
-    let lock = crate::config::CONFIG.lock().expect("Failed to lock CONFIG Mutex");
-    lock.replace(Some(config));
+    DRIVER.set(driver).expect("Setting global driver");
+    TOKIO_RT
+        .set(tokio_rt)
+        .expect("Setting global Tokio runtime");
 }

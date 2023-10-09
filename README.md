@@ -52,6 +52,7 @@ sqlSettings:
     database: 'skinfixer_database'
     username: 'skinfixer_user'
     password: 'super secure password herer'
+    port: YOUR_DATABASE_PORT
 
 # Should SkinFixer itegrate with Discord, if this is set to true you will need to configure discordSettigns
 useDiscord: false

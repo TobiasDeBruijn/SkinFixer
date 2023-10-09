@@ -37,7 +37,7 @@ public class SkinFixer extends JavaPlugin {
 		PLUGIN_VERSION = this.getDescription().getVersion();
 		LOGGER = this.getLogger();
 
-		SkinFixer.logInfo("Welcome to SkinFixer version " + PLUGIN_VERSION + " by TheDutchMC!");
+		SkinFixer.logInfo("Welcome to SkinFixer version " + PLUGIN_VERSION + " by TobiasDeBruijn!");
 		
 		//Read the configuration
 		this.configHandler = new ConfigHandler(this);

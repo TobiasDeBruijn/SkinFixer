@@ -5,4 +5,6 @@ public class SqlSettings {
 	public String database;
 	public String username;
 	public String password;
+
+	public Character port;
 }

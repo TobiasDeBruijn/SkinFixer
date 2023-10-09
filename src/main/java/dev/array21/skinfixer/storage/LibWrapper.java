@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -70,7 +71,6 @@ public class LibWrapper {
 				SkinFixer.logWarn(Utils.getStackTrace(e));
 			}
 			
-			SkinFixer.logInfo("libskinfixer loaded.");
 			LIB_LOADED = true;
 		}
 	}
@@ -120,22 +120,38 @@ public class LibWrapper {
 		ConfigManifest configManifest = this.plugin.getConfigManifest();
 
 		String host, database, username, password;
+		char port;
+
 		SqlSettings sqlSettings = configManifest.sqlSettings;
+
 		if(sqlSettings != null) {
 			host = (sqlSettings.host != null) ? sqlSettings.host : "";
 			database = (sqlSettings.database != null) ? sqlSettings.database : "";
 			username = (sqlSettings.username != null) ? sqlSettings.username : "";
-			password = (sqlSettings.password != null) ? sqlSettings.password : "";	
-		} else {
+			password = (sqlSettings.password != null) ? sqlSettings.password : "";
+
+			port = sqlSettings.port != null ? sqlSettings.port : (char) switch (configManifest.databaseType) {
+				case MYSQL -> 3306;
+				case POSTGRES -> 5432;
+				default -> 0;
+			};
+        } else {
 			host = database = username = password = "";
+			port = 0;
 		}
 		
 		File pluginFolder = this.plugin.getDataFolder();
 		if(!pluginFolder.exists()) {
 			pluginFolder.mkdirs();
 		}
-		
-		LibSkinFixer.init(configManifest.databaseType.toString(), host, database, username, password, pluginFolder.getAbsolutePath());
+
+        String storageFile = switch(configManifest.databaseType) {
+            case SQLITE -> new File(pluginFolder.getAbsolutePath(), "skins.sqlite").getAbsolutePath();
+            case BIN -> new File(pluginFolder.getAbsolutePath(), "skins.bin").getAbsolutePath();
+            default -> null;
+        };
+
+		LibSkinFixer.init(configManifest.databaseType.toString().toLowerCase(Locale.ROOT), host, database, username, password, storageFile, port);
 	}
 	
 	public SkinData getSkinProfile(UUID owner) {
