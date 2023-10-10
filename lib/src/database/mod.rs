@@ -65,6 +65,11 @@ impl Driver {
             .port(options.port);
 
         let pool = MySqlPool::connect_with(opts).await?;
+
+        sqlx::query(include_str!("skins.sql"))
+            .execute(&mut *pool.acquire().await?)
+            .await?;
+
         Ok(Self::Mysql(pool))
     }
 
@@ -77,6 +82,11 @@ impl Driver {
             .port(options.port);
 
         let pool = PgPool::connect_with(opts).await?;
+        sqlx::query(include_str!("skins.sql"))
+            .execute(&mut *pool.acquire().await?)
+            .await?;
+
+
         Ok(Self::Postgres(pool))
     }
 
@@ -84,6 +94,11 @@ impl Driver {
         let opts = SqliteConnectOptions::new().filename(path);
 
         let pool = SqlitePool::connect_with(opts).await?;
+        sqlx::query(include_str!("skins.sql"))
+            .execute(&mut *pool.acquire().await?)
+            .await?;
+
+
         Ok(Self::Sqlite(pool))
     }
 
